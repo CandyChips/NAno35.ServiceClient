@@ -1,3 +1,15 @@
 ﻿@page "/log-out"
 @using Microsoft.AspNetCore.Authorization
+@using Nano35.WebClient.Services
 @attribute [Authorize]
+@inject IAuthService AuthService 
+@inject NavigationManager NavigationManager 
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.LogOut();
+        NavigationManager.NavigateTo("/log-in");
+    }
+}

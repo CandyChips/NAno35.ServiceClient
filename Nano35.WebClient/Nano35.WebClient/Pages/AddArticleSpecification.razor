@@ -8,22 +8,28 @@
         <InputText @bind-Value="_model.Value" type="text" class="form-control"/>
         <button class="btn btn-outline-secondary" type="button" @onclick="AddSpec">Добавить</button>
     </div>
-    <ul class="list-group">
-        @foreach (var item in AddedSpecs)
-        {
-            <li class="list-group-item">@item.Key : @item.Value</li>
-        }
-    </ul>
 </EditForm>
 
 @code
 {
-    [Parameter] public List<SpecHttpContext> AddedSpecs { get; set; }
+    private List<SpecHttpContext> _value = new List<SpecHttpContext>();
+    [Parameter] public EventCallback<List<SpecHttpContext>> ValueChanged { get; set; }
+    [Parameter] public List<SpecHttpContext> Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value ) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    
     private SpecHttpContext _model = new SpecHttpContext();
 
     private void AddSpec()
     {
-        AddedSpecs.Add(_model);
+        Value.Add(_model);
         _model = new SpecHttpContext();
     }
 }

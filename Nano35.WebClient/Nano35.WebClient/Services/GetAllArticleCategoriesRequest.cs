@@ -17,7 +17,12 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllArticleCategoriesSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.StorageServer}/Category/GetAllArticleCategories?InstanceId={Request.InstanceId}");
+            var url = $"{RequestManager.StorageServer}/Category/GetAllArticleCategories?InstanceId={Request.InstanceId}";
+            if (Request.ParentId != Guid.Empty)
+            {
+                url += $"&ParentId={Request.ParentId}";
+            }
+            var response = await HttpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllArticleCategoriesSuccessHttpResponse>());

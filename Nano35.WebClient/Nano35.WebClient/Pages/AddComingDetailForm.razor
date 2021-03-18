@@ -6,9 +6,35 @@
 
 <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator/>
+    
+    <InputField Title="Товар">
+        <Controls>
+            <SelectStorageItem
+                @bind-StorageItemId="_model.StorageItemId"
+                 CanCreate="true"/>
+        </Controls>
+    </InputField>
+    
+    <InputField Title="Ячейка на складе">
+        <Controls>
+            <SelectComingDetailPlaceOnStorage 
+                @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
+        </Controls>
+    </InputField>
+    
+    <InputField Title="Количество">
+        <Controls>
+            <InputNumber @bind-Value="_model.Count" class="form-control" />
+        </Controls>
+    </InputField>
+    
+    <InputField Title="Цена за еденицу">
+        <Controls>
+            <InputNumber @bind-Value="_model.Price" class="form-control" />
+        </Controls>
+    </InputField>
 
-
-    <input type="submit" class="btn btn-primary" @(_loading ? "disabled" : "") value="Создать"/>
+    <input type="submit" class="btn btn-primary" value="Создать"/>
 
 </EditForm>
 
@@ -17,12 +43,10 @@
     [Parameter] public EventCallback<CreateComingDetailViewModel> OnAddNewComingDetail { get; set; }
         
     private CreateComingDetailViewModel _model = new CreateComingDetailViewModel();
-    private bool _loading = true;
 
     protected override void OnInitialized()
     {
         _model.Count = 1;
-        _loading = false;
     }
 
     private void HandleValidSubmit()

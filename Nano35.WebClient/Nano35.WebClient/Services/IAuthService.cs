@@ -18,12 +18,14 @@ namespace Nano35.WebClient.Services
     {
         Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest);
         Task LogOut();
-        Task<IGetUserByIdResultContract> GetCurrentUser();
+        Task<GetUserByIdSuccessHttpResponse> GetCurrentUser();
         Task<IRegisterResultContract> Register(RegisterHttpBody model);
     }
 
     public class AuthService : IAuthService
     {
+        [Inject] private ISessionProvider SessionProvider { get; set; }
+        
         private readonly IRequestManager _requestManager;
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
@@ -44,17 +46,15 @@ namespace Nano35.WebClient.Services
         public async Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest)
         {
             var result = await _httpClient.PostAsJsonAsync($"{_requestManager.IdentityServer}/Identity/Authenticate", loginRequest);
-            if (result.IsSuccessStatusCode)
-            {
-                var success = await result.Content
-                    .ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
-                await _localStorage.SetItemAsync("authToken", success?.Token);
-                ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(
-                    success?.Token);
-                return success;
-            }
+            if (!result.IsSuccessStatusCode)
                 throw new Exception((await result.Content
                     .ReadFromJsonAsync<GenerateUserTokenErrorHttpResponse>())?.Message);
+            var success = await result.Content
+                .ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
+            await _localStorage.SetItemAsync("authToken", success?.Token);
+            ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(
+                success?.Token);
+            return success;
         }
 
         public async Task LogOut()
@@ -63,12 +63,12 @@ namespace Nano35.WebClient.Services
             ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsLogout();
         }
 
-        public async Task<IGetUserByIdResultContract> GetCurrentUser()
+        public async Task<GetUserByIdSuccessHttpResponse> GetCurrentUser()
         {
             var result = await _httpClient.GetAsync($"{_requestManager.IdentityServer}/Identity/GetUserFromToken");
             if (result.IsSuccessStatusCode)
             {
-                return await result.Content.ReadFromJsonAsync<impl3>();
+                return await result.Content.ReadFromJsonAsync<GetUserByIdSuccessHttpResponse>();
             }
 
             throw new NotImplementedException();
@@ -78,20 +78,5 @@ namespace Nano35.WebClient.Services
         {
             throw new NotImplementedException();
         }
-    }
-
-    public class impl1 : IGenerateTokenSuccessResultContract
-    {
-        public string Token { get; set; }
-    }
-
-    public class impl2 : IGenerateTokenErrorResultContract
-    {
-        public string Message { get; set; }
-    }
-    
-    public class impl3 : IGetUserByIdSuccessResultContract
-    {
-        public IUserViewModel Data { get; set; }
     }
 }

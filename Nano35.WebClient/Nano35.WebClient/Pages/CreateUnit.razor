@@ -4,7 +4,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<UnitForm FormSubmitted="SendCreateUnitRequest"
+<UnitForm FormSubmitted="Submit"
           Model="_model" 
           Error="@Error"/>
 
@@ -13,7 +13,7 @@
     private CreateUnitHttpBody _model;
     private string Error { get; set; }
     
-    private async Task SendCreateUnitRequest()
+    private async Task Submit()
     {
         try
         {

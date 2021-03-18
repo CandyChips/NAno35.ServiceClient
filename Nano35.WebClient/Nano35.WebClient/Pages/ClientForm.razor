@@ -4,7 +4,7 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model" OnValidSubmit="Create">
+<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
     <InputField Title="Имя клиента">
@@ -73,22 +73,14 @@
         </Controls>
     </InputField>
     
-    @if (!string.IsNullOrEmpty(_error))
+    @if (!string.IsNullOrEmpty(Error))
     {
-        <div class="alert alert-danger mt-3 mb-0">@_error</div>
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
-    @if (_loading)
-    {
-        <button class="btn btn-primary" disabled>
-            Создать
-        </button>
-    }
-    else
-    {
-        <button class="btn btn-primary">
-            Создать
-        </button>
-    }
+    
+    <button class="btn btn-primary">
+        Создать
+    </button>
 </EditForm>
 
 @code
@@ -96,11 +88,10 @@
     [Parameter] public CreateClientHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
-        
-    private List<ClientTypeViewModel> Types { get; set; }
-    private List<ClientStateViewModel> State { get; set; }
+
+    private List<ClientTypeViewModel> Types = new List<ClientTypeViewModel>();
+    private List<ClientStateViewModel> State = new List<ClientStateViewModel>();
     private bool _loading = true;
-    private string _error = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,7 +100,7 @@
         _loading = false;
     }
 
-    private async void Create()
+    private async void HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
     }

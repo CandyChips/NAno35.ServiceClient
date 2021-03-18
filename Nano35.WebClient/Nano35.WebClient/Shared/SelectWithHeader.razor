@@ -1,0 +1,37 @@
+﻿@typeparam TItem
+
+<div class="dropdown" style="width: 100%;">
+    <button class="btn btn-outline-secondary dropdown-toggle"
+            style="width: 100%;" 
+            type="button" 
+            id="dropdownMenuButton"
+            data-toggle="dropdown"
+            aria-expanded="false">
+        @Title
+    </button>
+    <div class="dropdown-menu" style="display: grid;" aria-labelledby="dropdownMenuButton">
+        <span class="dropdown-header input-group">
+            @Header
+        </span>
+        @foreach (var item in Items)
+        {
+            <button type="button" 
+                    class="btn btn-outline-primary"
+                    @onclick="() => { ValueChanged.InvokeAsync(item); }">@Row(item)</button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; }
+    
+    [Parameter] public RenderFragment Header { get; set; }
+
+    [Parameter] public RenderFragment<TItem> Row { get; set; }
+
+    [Parameter] public IEnumerable<TItem> Items { get; set; }
+    
+    [Parameter] public TItem Value { get; set; }
+    
+    [Parameter] public EventCallback<TItem> ValueChanged { get; set; }
+}

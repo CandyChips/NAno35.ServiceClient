@@ -1,0 +1,34 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider 
+@inject HttpClient HttpClient 
+
+<StorageItemForm FormSubmitted="Submit"
+                 Model="_model" 
+                 Error="@Error"/>
+
+@code
+{
+    private CreateStorageItemHttpBody _model;
+    private string Error { get; set; }
+    
+    private async Task Submit()
+    {
+        try
+        {
+            await new CreateStorageItemRequest(RequestManager, HttpClient, _model).Send();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateStorageItemHttpBody();
+        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        _model.NewId = Guid.NewGuid();
+    }
+}

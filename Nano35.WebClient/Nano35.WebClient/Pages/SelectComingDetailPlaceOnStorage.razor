@@ -1,21 +1,25 @@
-﻿<InputText @oninput="OnPlaceOnStorageChanged" 
+﻿<InputText @bind-Value="PlaceOnStorage" 
             class="form-control" 
             placeholder="Введите название ячейки или выберите из используемых"/>
             
             
 @code
 {
-    [Parameter] public string PlaceOnStorage { get; set; }
+    private string _value; 
+    [Parameter] public string PlaceOnStorage 
+    {
+        get => _value;
+        set
+        {
+            if (_value == value ) return;
+            _value = value;
+            PlaceOnStorageChanged.InvokeAsync(value);
+        }
+    }
     [Parameter] public EventCallback<string> PlaceOnStorageChanged { get; set; }
 
-    private bool _isLoading = true;
     private string SelectedPlaceOnStorage { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        _isLoading = false;
-    }
-        
     private async Task OnPlaceOnStorageChanged(ChangeEventArgs e)
     {
         SelectedPlaceOnStorage = e.Value?.ToString();

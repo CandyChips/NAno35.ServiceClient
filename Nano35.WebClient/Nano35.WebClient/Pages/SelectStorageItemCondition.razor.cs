@@ -12,7 +12,18 @@ namespace Nano35.WebClient.Pages
     public partial class SelectStorageItemCondition :
         ComponentBase
     {
-        [Parameter] public Guid SelectedConditionId { get; set; }
+        [Parameter] public EventCallback<Guid> SelectedConditionIdChanged { get; set; }
+        private Guid _value;
+        [Parameter] public Guid SelectedConditionId 
+        {
+            get => _value;
+            set
+            {
+                if (_value == value ) return;
+                _value = value;
+                SelectedConditionIdChanged.InvokeAsync(value);
+            }
+        }
         [Inject] private HttpClient HttpClient { get; set; }
         [Inject] private IRequestManager RequestManager { get; set; }
 

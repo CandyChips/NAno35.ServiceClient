@@ -16,20 +16,23 @@ namespace Nano35.WebClient.Pages
         [Inject] private ISessionProvider SessionProvider { get; set; }
         [Inject] private IRequestManager RequestManager { get; set; }
         [Inject] private HttpClient HttpClient { get; set; }
-        [Parameter] public Guid StorageItemId { get; set; }
+        [Parameter] public bool CanCreate { get; set; }
+        private Guid _value;
         [Parameter] public EventCallback<Guid> StorageItemIdChanged { get; set; }
+        [Parameter] public Guid StorageItemId 
+        {
+            get => _value;
+            set
+            {
+                if (_value == value ) return;
+                _value = value;
+                StorageItemIdChanged.InvokeAsync(value);
+            }
+        }
         
-        private Guid SelectedStorageItemId { get; set; }
         private List<StorageItemViewModel> StorageItems { get; set; }
         private bool _isNewStorageItemDisplay = false;
         private bool _loading = true;
-        private bool _serverAvailable = false;
-        
-        private async Task OnStorageItemIdChanged(ChangeEventArgs e)
-        {
-            SelectedStorageItemId = (Guid) e.Value;
-            await StorageItemIdChanged.InvokeAsync(SelectedStorageItemId);
-        }
 
         protected override async Task OnInitializedAsync()
         {

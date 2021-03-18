@@ -30,11 +30,6 @@ namespace Nano35.WebClient.Pages
             _loading = false;
         }
 
-        private async void Create()
-        {
-            
-        }
-
         private void HideModalNewStorageItem()
         {
             OnHideModalNewInstance.InvokeAsync();

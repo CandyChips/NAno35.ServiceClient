@@ -17,31 +17,42 @@
                 <div class="card-body">
                     <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
-                        <div class="form-group">
-                            <label>Ф.И.О.</label>
-                            <InputText @bind-Value="model.Name" class="form-control" />
-                            <ValidationMessage For="@(() => model.Name)" />
-                        </div>
-                        <div class="form-group">
-                            <label>Номер телефона</label>
-                            <InputText @bind-Value="model.Phone" class="form-control" />
-                            <ValidationMessage For="@(() => model.Phone)" />
-                        </div>
-                        <div class="form-group">
-                            <label>Электронная почта</label>
-                            <InputText @bind-Value="model.Email" class="form-control" />
-                            <ValidationMessage For="@(() => model.Email)" />
-                        </div>
-                        <div class="form-group">
-                            <label>Пароль</label>
-                            <InputText @bind-Value="model.Password" class="form-control" />
-                            <ValidationMessage For="@(() => model.Password)" />
-                        </div>
-                        <div class="form-group">
-                            <label>Подтверждение пароля</label>
-                            <InputText @bind-Value="model.PasswordConfirm" class="form-control" />
-                            <ValidationMessage For="@(() => model.PasswordConfirm)" />
-                        </div>
+    
+                        <InputField Title="Ф.И.О.">
+                            <Controls>
+                                <InputText @bind-Value="model.Name" class="form-control" />
+                                <ValidationMessage For="@(() => model.Name)" />
+                            </Controls>
+                        </InputField>
+    
+                        <InputField Title="Номер телефона">
+                            <Controls>
+                                <InputText @bind-Value="model.Phone" class="form-control" />
+                                <ValidationMessage For="@(() => model.Phone)" />
+                            </Controls>
+                        </InputField>
+    
+                        <InputField Title="Электронная почта">
+                            <Controls>
+                                <InputText @bind-Value="model.Email" class="form-control" />
+                                <ValidationMessage For="@(() => model.Email)" />
+                            </Controls>
+                        </InputField>
+    
+                        <InputField Title="Пароль">
+                            <Controls>
+                                <InputText @bind-Value="model.Password" class="form-control" />
+                                <ValidationMessage For="@(() => model.Password)" />
+                            </Controls>
+                        </InputField>
+    
+                        <InputField Title="Подтверждение пароля">
+                            <Controls>
+                                <InputText @bind-Value="model.PasswordConfirm" class="form-control" />
+                                <ValidationMessage For="@(() => model.PasswordConfirm)" />
+                            </Controls>
+                        </InputField>
+                        
                         <button class="btn btn-primary">
                             @if (_loading)
                             {
@@ -49,6 +60,11 @@
                             }
                             Зарегитрироваться
                         </button>
+                        
+                        <NavLink class="btn btn-secondary" href="log-in">
+                            Авторизация
+                        </NavLink>
+                        
                         @if (!string.IsNullOrEmpty(_error))
                         {
                             <div class="alert alert-danger mt-3 mb-0">@_error</div>

@@ -4,7 +4,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<ClientForm FormSubmitted="SendCreateClientRequest"
+<ClientForm FormSubmitted="Submit"
             Model="_model" 
             Error="@Error"/>
 
@@ -13,7 +13,7 @@
     private CreateClientHttpBody _model;
     private string Error { get; set; }
     
-    private async Task SendCreateClientRequest()
+    private async Task Submit()
     {
         try
         {

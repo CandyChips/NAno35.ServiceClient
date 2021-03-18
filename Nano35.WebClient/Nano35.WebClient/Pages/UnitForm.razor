@@ -50,9 +50,8 @@
     {
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
-    <button class="btn btn-primary">
-        Создать
-    </button>
+    
+    <button class="btn btn-primary"> Создать </button>
 </EditForm>
 
 @code
@@ -61,7 +60,7 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private async void Create()
+    private async Task Create()
     {
         await FormSubmitted.InvokeAsync();
     }

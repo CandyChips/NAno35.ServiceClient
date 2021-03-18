@@ -1,74 +1,73 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
-@inject ISessionProvider SessionProvider
-@inject IRequestManager RequestManager 
 @inject HttpClient HttpClient 
+@inject IRequestManager RequestManager 
+@inject ISessionProvider SessionProvider
 
 
-<EditForm Model="@_model" 
-          OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    
     <InputField Title="Категория">
         <Controls>
-            <SelectArticleCategory SelectedCategoryId="_model.CategoryId"/>
+            <SelectArticleCategory @bind-Value="Model.CategoryId"/>
         </Controls>
     </InputField>
     
     <InputField Title="Бренд">
         <Controls>
-            <InputText @bind-Value="_model.Brand" 
+            <InputText @bind-Value="Model.Brand" 
                         class="form-control"/>
         </Controls>
     </InputField>
     
     <InputField Title="Модель">
         <Controls>
-            <InputText @bind-Value="_model.Model" 
+            <InputText @bind-Value="Model.Model" 
                         class="form-control"/>
         </Controls>
     </InputField>
     
     <InputField Title="Описание">
         <Controls>
-            <InputText @bind-Value="_model.Info" 
+            <InputText @bind-Value="Model.Info" 
                         class="form-control"/>
         </Controls>
     </InputField>
     
     <InputField Title="Харрактеристики">
         <Controls>
-            <AddArticleSpecification AddedSpecs="_model.Specs"/>
+            <AddArticleSpecification @bind-Value="_specs"/>
         </Controls>
     </InputField>
+    <ul class="list-group">
+        @foreach (var item in _specs)
+        {
+            <li class="list-group-item">@item.Key : @item.Value</li>
+        }
+    </ul>
     
-    @if (_loading)
+    @if (!string.IsNullOrEmpty(Error))
     {
-        <button class="btn btn-primary" 
-                disabled>
-            Создать
-        </button>
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
-    else
-    {
-        <button class="btn btn-primary">
-            Создать
-        </button>
-    }
+    
+    <button class="btn btn-primary">
+        Создать
+    </button>
 </EditForm>
 
 @code
 {
-    private bool _loading = true;
-    private CreateArticleHttpBody _model = new CreateArticleHttpBody();
-        
-    protected override async Task OnInitializedAsync()
-    {
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.NewId = Guid.NewGuid();
-        _loading = false;
-    }
+    [Parameter] public CreateArticleHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+
+    private List<SpecHttpContext> _specs = new List<SpecHttpContext>();
 
     private async void HandleValidSubmit()
     {
-        await new CreateArticleRequest(RequestManager, HttpClient, _model).Send();
+        Model.Specs = _specs;
+        await FormSubmitted.InvokeAsync();
     }
 }

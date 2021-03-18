@@ -11,6 +11,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nano35.Contracts.Identity.Artifacts;
 using Nano35.Contracts.Identity.Models;
+using Nano35.HttpContext.identity;
 
 
 namespace Nano35.WebClient.Services
@@ -56,11 +57,6 @@ namespace Nano35.WebClient.Services
             var authState = Task.FromResult(_anonymous);
             NotifyAuthenticationStateChanged(authState);
         }
-    }
-
-    public class GetUserByIdSuccessResultContract : IGetUserByIdSuccessResultContract
-    {
-        public IUserViewModel Data { get; set; }
     }
 
     public class GetUserByIdErrorResultContract : IGetUserByIdErrorResultContract

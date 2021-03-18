@@ -1,72 +1,113 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Radzen
+@using Radzen.Blazor
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
 <EditForm Model="@Model" OnSubmit="Create">
-    <InputField Title="Номер оприходования">
-        <Controls>
-            <InputText @bind-Value="Model.Number" 
-                        class="form-control"
-                        placeholder="Введите уникальный номер оприходования"/>
-        </Controls>
-    </InputField>
     
-    <InputField Title="Клиент">
-        <Controls>
-            <SelectClient @bind-ClientId="Model.ClientId"
-                           CanCreate="true"/>
-        </Controls>
-    </InputField>
+    @if (_isLoaded)
+    {
+        <InputField Title="Номер оприходования*">
+            <Controls>
+                <RadzenTextBox style="width: 100%;" 
+                               Placeholder="Введите уникальный номер оприходования..."
+                               @bind-Value="Model.Number"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Клиент*">
+            <Controls>
+                <RadzenDropDown Data=@(Clients.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                TextProperty="Name" 
+                                ValueProperty="Id"
+                                TValue="Guid" 
+                                @bind-Value="Model.ClientId"
+                                style="width: 100%;" 
+                                AllowClear="true"
+                                Placeholder="Выберите поставщика..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"/>
+                <RadzenButton Click=@(args => { _isNewClientDisplay = true; }) 
+                              Text="Добавить" 
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Style="margin-bottom: 20px; width: 150px" />
+                <Modal Title="Новый клиент" 
+                       IsDisplay="@_isNewClientDisplay">
+                    <Form>
+                        <CreateClient/>  
+                    </Form>
+                </Modal>
+            </Controls>
+        </InputField>
+        
+        
+        <InputField Title="Подразделение*">
+            <Controls>
+                <RadzenDropDown Data=@(Units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
+                                TextProperty="Name" 
+                                ValueProperty="Id"
+                                TValue="Guid" 
+                                @bind-Value="Model.UnitId"
+                                style="width: 100%;" 
+                                AllowClear="true"
+                                Placeholder="Выберите целевое подразделение..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"/>
+                <RadzenButton Click=@(args => { _isNewUnitDisplay = true; })
+                              Text="Добавить"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Style="margin-bottom: 20px; width: 150px" />
+                <Modal Title="Новое подразделение" 
+                       IsDisplay="@_isNewUnitDisplay">
+                    <Form>
+                        <UnitForm/>  
+                    </Form>
+                </Modal>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Комментарий">
+            <Controls>
+                <RadzenTextBox style="width: 100%;" 
+                               Placeholder="Введите коментарий к оприходованию..."
+                               @bind-Value="Model.Comment"/>
+            </Controls>
+        </InputField>
+    }
     
-    <InputField Title="Подразделение">
-        <Controls>
-            <SelectUnit @bind-UnitId="Model.UnitId"
-                         CanCreate="false"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Комментарий">
-        <Controls>
-            <InputText @bind-Value="Model.Comment" 
-                        class="form-control"
-                        placeholder="Введите коментарий к оприходованию"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Оприходуемые товары">
-        <Controls>
-            <button class="btn btn-outline-primary"
-                    style="width: 100%"
-                    @onclick="() => { _isNewComingDetailDisplay = true; }">
-                Добавить
-            </button>
-            
-            <Modal Title="Новая позиция к оприходованию"
-                   IsDisplay="@_isNewComingDetailDisplay">
-                <Form>
-                    <AddComingDetailForm OnAddNewComingDetail="AddComingDetail"/>
-                </Form>
-            </Modal>
-
-            <Grid Items="@_details"
-                  TItem="CreateComingDetailViewModel">
-                <Header>
-                    <th>Товар</th>
-                    <th>Место на складе</th>
-                    <th>Количество</th>
-                    <th>Цена</th>
-                </Header>
-                <Row Context="item">
-                    <td>@item.PlaceOnStorage</td>
-                    <td>@item.PlaceOnStorage</td>
-                    <td>@item.Count</td>
-                    <td>@item.Price</td>
-                </Row>
-            </Grid>
-        </Controls>
-    </InputField>
+    <RadzenFieldset Text="Оприходуемые товары">           
+        <RadzenButton Click=@(args => { _isNewComingDetailDisplay = true; }) 
+                      Text="Добавить"
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Style="margin-bottom: 20px; width: 100%" />
+        <Modal Title="Новая позиция к оприходованию"
+               IsDisplay="@_isNewComingDetailDisplay">
+            <Form>
+                <AddComingDetailForm OnAddNewComingDetail="AddComingDetail"/>
+            </Form>
+        </Modal>
+        <Grid Items="@_details"
+              TItem="CreateComingDetailViewModel">
+            <Header>
+                <th>Товар</th>
+                <th>Место на складе</th>
+                <th>Количество</th>
+                <th>Цена</th>
+            </Header>
+            <Row Context="item">
+                <td>@item.PlaceOnStorage</td>
+                <td>@item.PlaceOnStorage</td>
+                <td>@item.Count</td>
+                <td>@item.Price</td>
+            </Row>
+        </Grid>
+    </RadzenFieldset>
     
     @if (!string.IsNullOrEmpty(Error))
     {
@@ -85,15 +126,21 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     
+    private List<ClientViewModel> Clients { get; set; }
+    private List<UnitViewModel> Units { get; set; }
     private List<CreateComingDetailViewModel> _details = new List<CreateComingDetailViewModel>();
     private bool _isNewComingDetailDisplay = false;
+    private bool _isLoaded;
+    private bool _isNewClientDisplay = false;
     private bool _isNewUnitDisplay = false;
 
     private async void Create()
     {
-        Model.Details = _details.Select(a => 
-            new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-        await FormSubmitted.InvokeAsync();
+        Console.WriteLine($"Number {Model.Number}");
+        Console.WriteLine($"ClientId {Model.ClientId}");
+        //Model.Details = _details.Select(a => 
+        //    new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+        //await FormSubmitted.InvokeAsync();
     }
 
     private void AddComingDetail(CreateComingDetailViewModel model)
@@ -102,4 +149,21 @@
         _isNewComingDetailDisplay = false;
     }
     
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        await LoadClients();
+        await LoadUnits();
+        _isLoaded = true;
+    }
+
+    private async Task LoadClients()
+    {
+        Clients = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    }
+
+    private async Task LoadUnits()
+    {
+        Units = (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    }
 }

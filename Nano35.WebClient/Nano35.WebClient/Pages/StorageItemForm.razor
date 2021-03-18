@@ -4,39 +4,40 @@
 @inject ISessionProvider SessionProvider 
 @inject HttpClient HttpClient 
 
-<EditForm Model="@_model" OnValidSubmit="Create">
+<EditForm Model="@Model" OnValidSubmit="Create">
     <DataAnnotationsValidator />
                 
     <SelectArticle
-        SelectedArticlesId="_model.ArticleId"/>
+        @bind-ArticlesId="Model.ArticleId"
+        CanCreate="true"/>
                 
     <SelectStorageItemCondition
-        SelectedConditionId="_model.ConditionId"/>
+        SelectedConditionId="Model.ConditionId"/>
                 
     <InputField Title="Комментарий">
         <Controls>
-            <InputText @bind-Value="_model.Comment" 
+            <InputText @bind-Value="Model.Comment" 
                         class="form-control"/>
         </Controls>
     </InputField>
                 
     <InputField Title="Скрытый комментарий">
         <Controls>
-            <InputText @bind-Value="_model.HiddenComment" 
+            <InputText @bind-Value="Model.HiddenComment" 
                         class="form-control"/>
         </Controls>
     </InputField>
                 
     <InputField Title="Закупочная цена">
         <Controls>
-            <InputNumber @bind-Value="_model.RetailPrice" 
+            <InputNumber @bind-Value="Model.RetailPrice" 
                           class="form-control"/>
         </Controls>
     </InputField>
                 
     <InputField Title="Цена продажи">
         <Controls>
-            <InputNumber @bind-Value="_model.PurchasePrice" 
+            <InputNumber @bind-Value="Model.PurchasePrice" 
                           class="form-control"/>
         </Controls>
     </InputField>
@@ -47,26 +48,27 @@
         <input type="file" class="form-control" id="inputGroupFile01">
     </div>
             
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
+    }
+    
     <button class="btn btn-primary"> Создать </button>
 </EditForm>
 
 @code
 {
-    private bool _loading = true;
-    private CreateStorageItemHttpBody _model = new CreateStorageItemHttpBody();
+    [Parameter] public CreateStorageItemHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+    
     private List<StorageItemConditionViewModel> _conditions = new List<StorageItemConditionViewModel>();
         
-        
-    protected override async Task OnInitializedAsync()
-    {
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.NewId = Guid.NewGuid();
-        _loading = false;
-    }
 
     private async Task Create()
     { 
-        await new CreateStorageItemRequest(RequestManager, HttpClient, _model).Send();
+        Console.WriteLine(Model.ArticleId);
+        await new CreateStorageItemRequest(RequestManager, HttpClient, Model).Send();
     }
     
 }

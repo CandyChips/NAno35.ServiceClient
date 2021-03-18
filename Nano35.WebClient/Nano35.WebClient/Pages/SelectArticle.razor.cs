@@ -12,15 +12,34 @@ namespace Nano35.WebClient.Pages
     public partial class SelectArticle : 
         ComponentBase
     {
-        [Parameter] public Guid SelectedArticlesId { get; set; }
         [Inject] private ISessionProvider SessionProvider { get; set; }
         [Inject] private IRequestManager RequestManager { get; set; }
         [Inject] private HttpClient HttpClient { get; set; }
+        [Parameter] public bool CanCreate { get; set; }
+        [Parameter] public EventCallback<Guid> ArticlesIdChanged { get; set; }
+        private Guid _value;
+        [Parameter] public Guid ArticlesId 
+        {
+            get => _value;
+            set
+            {
+                if (_value == value ) return;
+                _value = value;
+                Console.WriteLine(value);
+                ArticlesIdChanged.InvokeAsync(value);
+            }
+        }
         
         private List<ArticleViewModel> Articles { get; set; }
-        private Guid _selectedArticlesId;
+
+        private List<ArticleViewModel> FiltratedArticles
+        {
+            get => Articles.Where(a => (a.Brand + a.Category + a.Model + a.Info).Contains(_filter)).ToList();
+            set => FiltratedArticles = value;
+        }
         private bool _isLoading = true;
         private bool _isNewArticleDisplay = false;
+        private string _filter = string.Empty;
         
         protected override async Task OnInitializedAsync()
         {

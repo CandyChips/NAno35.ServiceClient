@@ -1,32 +1,54 @@
-﻿<div class="form-group">
+﻿@using Nano35.HttpContext.storage
+
+<div class="form-group">
     <label>Наименование</label>
     <div class="input-group">
-        <InputSelect class="custom-select"
-                     @bind-Value="SelectedArticlesId">
-            @if (!_isLoading)
-            {
-                <option selected disabled>Выберите наименование</option>
-                @foreach (var item in Articles)
-                {
-                    <option value="@item.Id">@item.Category @item.Model</option>
-                }
-            }
-            else
-            {
-                <option selected disabled>Загрузка</option>
-            }
-        </InputSelect>
-        <div class="input-group-append">
-            <button class="btn btn-outline-primary" 
-                    type="button"
-                    @onclick="() => { _isNewArticleDisplay = true; }">Создать</button>
-        </div>
+        @if (!_isLoading)
+        {
+            <SelectWithHeader Items="FiltratedArticles"
+                              TItem="ArticleViewModel"
+                              Title='@(_tmp == null ? "Выберите наименование" : $"{_tmp.Category} {_tmp.Model}" )'
+                              @bind-Value="tmp">
+                <Header>
+                    <div class="input-group">
+                        <InputText @bind-Value="_filter" 
+                                    class="form-control" 
+                                    placeholder="Выберите категорию или создайте новую!"/>
+                        @if (CanCreate)
+                        {
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-primary"
+                                        type="button"
+                                        @onclick="() => { _isNewArticleDisplay = true; }">Создать</button>
+                            </div>
+                            <Modal Title="Новое наименование"
+                                   IsDisplay="@_isNewArticleDisplay">
+                                <Form>
+                                    <CreateArticle/>
+                                </Form>
+                            </Modal>
+                        }
+                    </div>
+                </Header>
+                <Row Context="item">
+                    <span>@item.Category @item.Model</span>
+                </Row>
+            </SelectWithHeader>
+        }
     </div>
 </div>
 
-<Modal Title="Новое наименование" 
-       IsDisplay="@_isNewArticleDisplay">
-    <Form>
-        <CreateArticleForm/>
-    </Form>
-</Modal>
+@code
+{
+    private ArticleViewModel _tmp;
+    private ArticleViewModel tmp
+    {
+        get => _tmp;
+        set 
+        { 
+            ArticlesId = value.Id;
+            _tmp = value; 
+        }
+    }
+}
+

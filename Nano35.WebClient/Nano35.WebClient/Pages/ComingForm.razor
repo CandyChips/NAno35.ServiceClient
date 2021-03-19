@@ -21,25 +21,25 @@
         
         <InputField Title="Клиент*">
             <Controls>
-                <RadzenDropDown Data=@(Clients.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
-                                TextProperty="Name" 
+                <RadzenDropDown Data=@(Clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                TextProperty="Name"
                                 ValueProperty="Id"
-                                TValue="Guid" 
+                                TValue="Guid"
                                 @bind-Value="Model.ClientId"
-                                style="width: 100%;" 
+                                style="flex: auto;"
                                 AllowClear="true"
                                 Placeholder="Выберите поставщика..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
-                <RadzenButton Click=@(args => { _isNewClientDisplay = true; }) 
-                              Text="Добавить" 
+                <RadzenButton Click=@(args => { _isNewClientDisplay = true; })
+                              Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"
-                              Style="margin-bottom: 20px; width: 150px" />
-                <Modal Title="Новый клиент" 
+                              Style="width: 150px"/>
+                <Modal Title="Новый клиент"
                        IsDisplay="@_isNewClientDisplay">
                     <Form>
-                        <CreateClient/>  
+                        <CreateClient/>
                     </Form>
                 </Modal>
             </Controls>
@@ -53,7 +53,7 @@
                                 ValueProperty="Id"
                                 TValue="Guid" 
                                 @bind-Value="Model.UnitId"
-                                style="width: 100%;" 
+                                Style="flex: auto;"
                                 AllowClear="true"
                                 Placeholder="Выберите целевое подразделение..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
@@ -62,11 +62,11 @@
                 <RadzenButton Click=@(args => { _isNewUnitDisplay = true; })
                               Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"
-                              Style="margin-bottom: 20px; width: 150px" />
+                              Style="width: 150px" />
                 <Modal Title="Новое подразделение" 
                        IsDisplay="@_isNewUnitDisplay">
                     <Form>
-                        <UnitForm/>  
+                        <CreateUnit/>  
                     </Form>
                 </Modal>
             </Controls>
@@ -74,50 +74,68 @@
         
         <InputField Title="Комментарий">
             <Controls>
-                <RadzenTextBox style="width: 100%;" 
+                <RadzenTextBox Style="width: 100%;" 
                                Placeholder="Введите коментарий к оприходованию..."
                                @bind-Value="Model.Comment"/>
             </Controls>
         </InputField>
-    }
     
-    <RadzenFieldset Text="Оприходуемые товары">           
-        <RadzenButton Click=@(args => { _isNewComingDetailDisplay = true; }) 
-                      Text="Добавить"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="margin-bottom: 20px; width: 100%" />
-        <Modal Title="Новая позиция к оприходованию"
-               IsDisplay="@_isNewComingDetailDisplay">
-            <Form>
-                <AddComingDetailForm OnAddNewComingDetail="AddComingDetail"/>
-            </Form>
-        </Modal>
-        <Grid Items="@_details"
-              TItem="CreateComingDetailViewModel">
-            <Header>
-                <th>Товар</th>
-                <th>Место на складе</th>
-                <th>Количество</th>
-                <th>Цена</th>
-            </Header>
-            <Row Context="item">
-                <td>@item.PlaceOnStorage</td>
-                <td>@item.PlaceOnStorage</td>
-                <td>@item.Count</td>
-                <td>@item.Price</td>
-            </Row>
-        </Grid>
-    </RadzenFieldset>
+        <RadzenFieldset Text="Оприходуемые товары">           
+            <RadzenButton Click=@(args => { _isNewComingDetailDisplay = true; }) 
+                          Text="Добавить"
+                          ButtonStyle="ButtonStyle.Secondary"
+                          Style="width: 100%" />
+            <Modal Title="Новая позиция к оприходованию"
+                   IsDisplay="@_isNewComingDetailDisplay">
+                <Form>
+                    <AddComingDetailForm OnAddNewComingDetail="AddComingDetail"/>
+                </Form>
+            </Modal>
+        
+            <RadzenGrid Data="@_details"
+                        EmptyText="Добавте оприходуемые товары..."
+                        TItem="CreateComingDetailViewModel">
+                <Columns>
+                    <RadzenGridColumn TItem="CreateComingDetailViewModel"
+                                      Property="PlaceOnStorage" 
+                                      Title="Товар" />
+                    <RadzenGridColumn TItem="CreateComingDetailViewModel" 
+                                      Property="PlaceOnStorage" 
+                                      Title="Место на складе" />
+                    <RadzenGridColumn TItem="CreateComingDetailViewModel"
+                                      Property="Count"
+                                      Title="Количество" />
+                    <RadzenGridColumn TItem="CreateComingDetailViewModel"
+                                      Property="Price" 
+                                      Title="Цена" />
+                    <RadzenGridColumn TItem="CreateComingDetailViewModel"
+                                      Context="order"
+                                      Bubble="false"
+                                      TextAlign="TextAlign.Center" 
+                                      Width="70px">
+                        <Template Context="item">
+                            <RadzenButton
+                                ButtonStyle="ButtonStyle.Danger"
+                                Icon="close"
+                                Size="ButtonSize.Small" 
+                                Click="@(args => { })">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+        </RadzenFieldset>
+    }
     
     @if (!string.IsNullOrEmpty(Error))
     {
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
     
-    <button type="submit"
-            class="btn btn-primary">
-         Создать
-    </button>
+    <RadzenButton type="submit"
+                  Text="Создать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%" />
 </EditForm>
 
 @code
@@ -125,9 +143,9 @@
     [Parameter] public CreateComingHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
-    
-    private List<ClientViewModel> Clients { get; set; }
-    private List<UnitViewModel> Units { get; set; }
+
+    private List<ClientViewModel> Clients = new List<ClientViewModel>();
+    private List<UnitViewModel> Units = new List<UnitViewModel>();
     private List<CreateComingDetailViewModel> _details = new List<CreateComingDetailViewModel>();
     private bool _isNewComingDetailDisplay = false;
     private bool _isLoaded;

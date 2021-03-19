@@ -9,67 +9,57 @@
     
     <InputField Title="Имя клиента">
         <Controls>
-            <InputText @bind-Value="Model.Name" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Name"/>
         </Controls>
     </InputField>
     
     <InputField Title="Эл почта">
         <Controls>
-            <InputText @bind-Value="Model.Email" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Email"/>
         </Controls>
     </InputField>
     
     <InputField Title="Номер телефона">
         <Controls>
-            <InputText @bind-Value="Model.Phone" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Phone"/>
         </Controls>
     </InputField>
     
     <InputField Title="Скидка">
         <Controls>
-            <InputNumber @bind-Value="Model.Selle" 
-                          class="form-control"/>
+            <RadzenNumeric Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Selle"/>
         </Controls>
     </InputField>
     
     <InputField Title="Статус клиента">
         <Controls>
-            <InputSelect @bind-Value="Model.ClientStateId" class="custom-select">
-                @if (_loading)
-                {
-                    <option selected disabled>Загрузка</option>
-                }
-                else
-                {
-                    <option selected disabled>Выберите статус клиента</option>
-                    @foreach (var item in State)
-                    {
-                        <option value="@item.Id">@item.Name </option>
-                    }
-                }
-            </InputSelect>
+            <RadzenDropDown Data=@(State.Select(a => new {Id = a.Id, Name = a.Name}))
+                            TextProperty="Name"
+                            ValueProperty="Id"
+                            TValue="Guid"
+                            @bind-Value="Model.ClientStateId"
+                            style="width: 100%"
+                            Placeholder="Выберите статус клиента..."/>
         </Controls>
     </InputField>
     
     <InputField Title="Тип клиента">
         <Controls>
-            <InputSelect @bind-Value="Model.ClientTypeId" class="custom-select">
-                @if (_loading)
-                {
-                    <option selected disabled>Загрузка</option>
-                }
-                else
-                {
-                    <option selected disabled>Выберите тип клиента</option>
-                    @foreach (var item in Types)
-                    {
-                        <option value="@item.Id">@item.Name </option>
-                    }
-                }
-            </InputSelect>
+            <RadzenDropDown Data=@(Types.Select(a => new {Id = a.Id, Name = a.Name}))
+                            TextProperty="Name"
+                            ValueProperty="Id"
+                            TValue="Guid"
+                            @bind-Value="Model.ClientTypeId"
+                            style="width: 100%"
+                            Placeholder="Выберите тип клиента..."/>
         </Controls>
     </InputField>
     
@@ -78,9 +68,10 @@
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
     
-    <button class="btn btn-primary">
-        Создать
-    </button>
+    <RadzenButton type="submit"
+                  Text="Создать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%" />
 </EditForm>
 
 @code
@@ -104,5 +95,4 @@
     {
         await FormSubmitted.InvokeAsync();
     }
-    
 }

@@ -1,12 +1,15 @@
 ﻿@using Nano35.HttpContext.storage
 
-<EditForm Model="@_model">
+<EditForm Model="@_model" OnValidSubmit="AddSpec">
     <div class="input-group mb-3">
         <span class="input-group-text">Харрактеристика: </span>
         <InputText @bind-Value="_model.Key" type="text" class="form-control"/>
         <span class="input-group-text">Значение: </span>
         <InputText @bind-Value="_model.Value" type="text" class="form-control"/>
-        <button class="btn btn-outline-secondary" type="button" @onclick="AddSpec">Добавить</button>
+        
+        <RadzenButton type="submit"
+                      Text="Добавить"
+                      ButtonStyle="ButtonStyle.Primary"/>
     </div>
 </EditForm>
 

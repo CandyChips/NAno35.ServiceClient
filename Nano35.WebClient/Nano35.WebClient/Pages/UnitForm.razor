@@ -4,45 +4,50 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model" OnValidSubmit="Create">
+<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
 
     <InputField Title="Название подразделения*">
         <Controls>
-            <InputText @bind-Value="Model.Name" 
-                        class="form-control"
-                        placeholder=""/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Name"/>
         </Controls>
     </InputField>
 
     <InputField Title="Адресс*">
         <Controls>
-            <InputText @bind-Value="Model.Address"
-                        class="form-control"
-                        placeholder=""/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Address"/>
         </Controls>
     </InputField>
 
     <InputField Title="Формат работы">
         <Controls>
-            <InputText @bind-Value="Model.WorkingFormat"
-                        class="form-control"
-                        placeholder=""/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.WorkingFormat"/>
         </Controls>
     </InputField>
 
     <InputField Title="Номер телефона*">
         <Controls>
-            <InputText @bind-Value="Model.Phone" 
-                        class="form-control"
-                        placeholder=""/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Phone"/>
         </Controls>
     </InputField>
 
     <InputField Title="Тип подразделения*">
         <Controls>
-            <SelectUnitsType
-                SelectedUnitsTypeId="Model.UnitTypeId"/>
+            <RadzenDropDown Data=@(Types.Select(a => new {Id = a.Id, Name = a.Name}))
+                            TextProperty="Name"
+                            ValueProperty="Id"
+                            TValue="Guid"
+                            @bind-Value="Model.UnitTypeId"
+                            style="width: 100%"
+                            Placeholder="Выберите статус клиента..."/>
         </Controls>
     </InputField>
                 
@@ -51,7 +56,10 @@
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
     
-    <button class="btn btn-primary"> Создать </button>
+    <RadzenButton type="submit"
+                  Text="Создать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%" />
 </EditForm>
 
 @code
@@ -60,7 +68,17 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private async Task Create()
+    private List<UnitTypeViewModel> Types = new List<UnitTypeViewModel>();
+    private bool _loading = true;
+        
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetAllUnitTypesHttpQuery();
+        Types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _loading = false;
+    }
+
+    private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
     }

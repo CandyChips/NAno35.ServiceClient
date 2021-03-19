@@ -22,28 +22,26 @@
 }
 else
 {
-    <button class="btn btn-outline-primary"
-            style="width: 100%"
-            @onclick="ShowModalNewComing">
-        Создать
-    </button>
-    <br/>
-    <Grid Items="@_data" TItem="ComingViewModel">    
-        <Header>  
-            <th>Номер</th>
-            <th>Дата</th>
-            <th>Подразделение</th>
-            <th>Клиент</th>
-            <th>Цена</th>  
-        </Header>  
-        <Row Context="item">  
-            <td>@item.Number</td>
-            <td>@item.Date.ToString("dd.MM.yyyy")</td>
-            <td>@item.Unit</td>
-            <td>@item.Client</td>
-            <td>@item.Cash</td>
-        </Row>  
-    </Grid>
+    <RadzenButton Click=@(args => { ShowModalNewComing(); }) 
+                  Text="Создать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%" />
+    <RadzenGrid AllowFiltering="true" 
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterMode="FilterMode.Advanced" 
+                AllowPaging="true"
+                PageSize="10"
+                AllowSorting="true" 
+                Data="@_data"
+                TItem="ComingViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" />
+            <RadzenGridColumn TItem="ComingViewModel" Property="Date" Title="Дата" />
+            <RadzenGridColumn TItem="ComingViewModel" Property="Unit" Title="Подразделение" />
+            <RadzenGridColumn TItem="ComingViewModel" Property="Client" Title="Клиент" />
+            <RadzenGridColumn TItem="ComingViewModel" Property="Cash" Title="Цена" />
+        </Columns>
+    </RadzenGrid>
     <Modal Title="Новое оприходование" 
            IsDisplay="@_isNewComingDisplay">
         <Form>

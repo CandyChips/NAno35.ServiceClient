@@ -3,17 +3,17 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout StorageLayout
-@page "/instance/storage"
+@page "/instance/sells"
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
 @inject ISessionProvider SessionProvider
 
 @if (_loading)
 {
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
+    <div class="d-flex justify-content-center" style="margin-top: 5rem">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden"></span>
+      </div>
     </div>
 }
 else
@@ -55,6 +55,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var isAvailable = await RequestManager.HealthCheck(RequestManager.StorageServer);
         _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
         _loading = false;
     }

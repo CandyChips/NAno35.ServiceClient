@@ -1,24 +1,23 @@
 ﻿@using Nano35.WebClient.Services
-@using Nano35.HttpContext.storage
+@using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
-@inject IAuthService AuthService
 
-<ArticleForm FormSubmitted="Submit"
-             Model="@_model"
-             Error="@Error"/>
+<InstanceForm FormSubmitted="Submit"
+            Model="_model" 
+            Error="@Error"/>
 
 @code
 {
-    private CreateArticleHttpBody _model;
+    private CreateInstanceHttpBody _model;
     private string Error { get; set; }
     
     private async Task Submit()
     {
         try
         {
-            await new CreateArticleRequest(RequestManager, HttpClient, _model).Send();
+            await new CreateInstanceRequest(RequestManager, HttpClient, _model).Send();
         }
         catch (Exception e)
         {
@@ -28,9 +27,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateArticleHttpBody();
+        _model = new CreateInstanceHttpBody();
         _model.NewId = Guid.NewGuid();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.Specs = new List<SpecHttpContext>();
     }
 }

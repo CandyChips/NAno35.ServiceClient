@@ -26,31 +26,33 @@ else
     }
     else
     {
-        <button class="btn btn-light"
-                style="width: 100%"
-                @onclick="() => { _isNewUnitDisplay = true; }">
-            Создать
-        </button>
+        <RadzenButton Click=@(args => { _isNewUnitDisplay = true; }) 
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Style="width: 100%" />
         <Modal Title="Новое подразделение" 
                IsDisplay="@_isNewUnitDisplay">
             <Form>
                 <UnitForm/>  
             </Form>
         </Modal>
-        <br/>
-        <Grid Items="@_data" TItem="UnitViewModel">    
-            <Header>  
-                <th>Название</th>
-                <th>Адресс</th>
-                <th>Телефон</th>
-                <th>Формат работы</th>
-            </Header>  
-            <Row Context="item">  
-                <td>@item.Name</td>
-                <td>@item.Adress</td>
-                <td>@item.Phone</td>
-                <td>@item.WorkingFormat</td>
-            </Row>  
-        </Grid>
+        <RadzenGrid Data="@_data"
+                    EmptyText="Добавте оприходуемые товары..."
+                    TItem="UnitViewModel">
+            <Columns>
+                <RadzenGridColumn TItem="UnitViewModel"
+                                  Property="Name" 
+                                  Title="Название" />
+                <RadzenGridColumn TItem="UnitViewModel" 
+                                  Property="Adress" 
+                                  Title="Адресс" />
+                <RadzenGridColumn TItem="UnitViewModel"
+                                  Property="Phone"
+                                  Title="Телефон" />
+                <RadzenGridColumn TItem="UnitViewModel"
+                                  Property="WorkingFormat" 
+                                  Title="Формат работы" />
+            </Columns>
+        </RadzenGrid>
     }
 }

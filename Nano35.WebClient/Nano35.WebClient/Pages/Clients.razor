@@ -11,12 +11,9 @@
 
 @if (_loading)
 {
-    <div class="col-md-6 offset-md-3 mt-5">
-        <div class="card">
-            <h4 class="card-header">Загрузка</h4>
-            <div class="card-body">
-                ...
-            </div>
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
         </div>
     </div>
 }
@@ -30,37 +27,56 @@ else
         </div>
     }
     else
-    {
-        <button class="btn btn-light"
-                style="width: 100%"
-                @onclick="() => { _isNewClientDisplay = true; }">
-            Создать
-        </button>
+    {          
+        <RadzenButton Click=@(args => { _isNewClientDisplay = true; }) 
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Style="width: 100%" />
         <Modal Title="Новое подразделение" 
                IsDisplay="@_isNewClientDisplay">
             <Form>
                 <CreateClient/>  
             </Form>
         </Modal>
-        <br/>
-        <Grid Items="@_data" TItem="ClientViewModel">    
-            <Header>  
-                <th>Название</th>
-                <th>Адресс</th>
-                <th>Телефон</th>
-                <th>Salle</th>
-                <th>Тип Клиента</th>
-                <th>Статус Клиента</th>
-            </Header>  
-            <Row Context="item">  
-                <td>@item.Name</td>
-                <td>@item.Email</td>
-                <td>@item.Phone</td>
-                <td>@item.Salle</td>
-                <td>@item.ClientType</td>
-                <td>@item.ClientState</td>
-            </Row>  
-        </Grid>
+        
+        <RadzenGrid Data="@_data"
+                    EmptyText="Добавте оприходуемые товары..."
+                    TItem="ClientViewModel">
+            <Columns>
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Property="Name" 
+                                  Title="Название" />
+                <RadzenGridColumn TItem="ClientViewModel" 
+                                  Property="Email" 
+                                  Title="Адресс" />
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Property="Phone"
+                                  Title="Телефон" />
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Property="Price" 
+                                  Title="Цена" />
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Property="ClientType" 
+                                  Title="Тип Клиента" />
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Property="ClientState" 
+                                  Title="Статус Клиента" />
+                <RadzenGridColumn TItem="ClientViewModel"
+                                  Context="order"
+                                  Bubble="false"
+                                  TextAlign="TextAlign.Center" 
+                                  Width="70px">
+                    <Template Context="item">
+                        <RadzenButton
+                            ButtonStyle="ButtonStyle.Danger"
+                            Icon="close"
+                            Size="ButtonSize.Small" 
+                            Click="@(args => { })">
+                        </RadzenButton>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
     }
 }
 

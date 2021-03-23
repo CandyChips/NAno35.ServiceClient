@@ -8,30 +8,31 @@
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
-    <InputField Title="Категория">
-        <Controls>
+    <RadzenFieldset Text="Категория">    
             <SelectArticleCategory @bind-Value="Model.CategoryId"/>
-        </Controls>
-    </InputField>
+    </RadzenFieldset>
     
     <InputField Title="Бренд">
         <Controls>
-            <InputText @bind-Value="Model.Brand" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Brand"/>
         </Controls>
     </InputField>
     
     <InputField Title="Модель">
         <Controls>
-            <InputText @bind-Value="Model.Model" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Model"/>
         </Controls>
     </InputField>
     
     <InputField Title="Описание">
         <Controls>
-            <InputText @bind-Value="Model.Info" 
-                        class="form-control"/>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Info"/>
         </Controls>
     </InputField>
     

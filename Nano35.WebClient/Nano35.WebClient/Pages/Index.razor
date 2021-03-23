@@ -6,3 +6,58 @@
         Организации
     </NavLink>
 </AuthorizeView>
+
+<nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+            @foreach (var item in selectedData)
+            {
+                <li class="breadcrumb-item active">
+                    <span>
+                        @item
+                    </span>
+                </li>
+                                                             
+            }
+      </ol>
+</nav>
+<RadzenTabs style="height: 880px">
+    <Tabs>
+        <RadzenTabsItem Text="Добавить">
+            <RadzenDropDown Data=@data
+                            Change=@(args => selectedData.Add(args.ToString()))
+                            TValue="string"
+                            AllowClear="true"
+                            Placeholder="..."
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            FilterOperator="StringFilterOperator.Contains"
+                            AllowFiltering="true"/>
+        </RadzenTabsItem>
+        <RadzenTabsItem Text="Создать">
+            <RadzenTextBox Change=@(args => CurrentData = args.ToString()) />
+            <RadzenButton Click=@(args => { selectedData.Add(CurrentData.ToString()); })
+                          Text="Добавить"
+                          ButtonStyle="ButtonStyle.Secondary" />
+        </RadzenTabsItem>
+    </Tabs>
+</RadzenTabs>
+@code
+{
+    List<string> data = new List<string>();
+    List<string> selectedData = new List<string>();
+    string CurrentData;
+        
+    protected override void OnInitialized()
+    {
+        data.Add("a");
+        data.Add("ab");
+        data.Add("ac");
+        data.Add("b");
+        data.Add("bb");
+        data.Add("bc");
+    }
+
+    private void AddToData()
+    {
+        Console.WriteLine(CurrentData);
+    }
+}

@@ -1,13 +1,16 @@
-﻿@using Nano35.WebClient.Services
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
+@using Radzen
+@using Radzen.Blazor
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
-@inject IInstanceService InstanceService
+@inject ISessionProvider SessionProvider
 
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
-    <InputField Title="Имя клиента">
+    <InputField Title="Название сервиса">
         <Controls>
             <RadzenTextBox Style="width: 100%;" 
                            Placeholder="..."
@@ -31,35 +34,43 @@
         </Controls>
     </InputField>
     
-    <InputField Title="Скидка">
+    <InputField Title="Название организации">
         <Controls>
             <RadzenNumeric Style="width: 100%;" 
                            Placeholder="..."
-                           @bind-Value="Model.Selle"/>
+                           @bind-Value="Model.RealName"/>
         </Controls>
     </InputField>
     
-    <InputField Title="Статус клиента">
+    <InputField Title="Описание">
         <Controls>
-            <RadzenDropDown Data=@(_state.Select(a => new {Id = a.Id, Name = a.Name}))
+            <RadzenNumeric Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Info"/>
+        </Controls>
+    </InputField>
+    
+    <InputField Title="Регион">
+        <Controls>
+            <RadzenDropDown Data=@(_regions.Select(a => new {Id = a.Id, Name = a.Name}))
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
-                            @bind-Value="Model.ClientStateId"
+                            @bind-Value="Model.RegionId"
                             style="width: 100%"
-                            Placeholder="Выберите статус клиента..."/>
+                            Placeholder="..."/>
         </Controls>
     </InputField>
     
-    <InputField Title="Тип клиента">
+    <InputField Title="Тип">
         <Controls>
             <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = a.Name}))
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
-                            @bind-Value="Model.ClientTypeId"
+                            @bind-Value="Model.TypeId"
                             style="width: 100%"
-                            Placeholder="Выберите тип клиента..."/>
+                            Placeholder="..."/>
         </Controls>
     </InputField>
     
@@ -76,18 +87,18 @@
 
 @code
 {
-    [Parameter] public CreateClientHttpBody Model { get; set; }
+    [Parameter] public CreateInstanceHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<ClientTypeViewModel> _types = new List<ClientTypeViewModel>();
-    private List<ClientStateViewModel> _state = new List<ClientStateViewModel>();
+    private List<InstanceTypeViewModel> _types = new List<InstanceTypeViewModel>();
+    private List<RegionViewModel> _regions = new List<RegionViewModel>();
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _state = (await (new GetAllClientStatesRequest(RequestManager, HttpClient, new GetAllClientStatesHttpQuery())).Send()).Data.ToList();
-        _types = (await (new GetAllClientTypesRequest(RequestManager, HttpClient, new GetAllClientTypesHttpQuery()).Send())).Data.ToList();
+        _types = (await (new GetAllInstanceTypesRequest(RequestManager, HttpClient, new GetAllInstanceTypesHttpQuery())).Send()).Data.ToList();
+        _regions = (await (new GetAllInstanceRegionsRequest(RequestManager, HttpClient, new GetAllRegionsHttpQuery()).Send())).Data.ToList();
         _loading = false;
     }
 

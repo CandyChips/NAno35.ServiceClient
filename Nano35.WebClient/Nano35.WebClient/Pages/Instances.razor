@@ -26,29 +26,44 @@
         }
         else
         {
-            <button class="btn btn-outline-primary"
-                    style="width: 100%"
-                    @onclick="ShowModalNewInstance">
-                Создать
-            </button>
-            <br/>
-            <Grid Items="@_data" TItem="InstanceViewModel"
-                  DetailsRow="(item) => OpenOrg(item.Id)">    
-                <Header>  
-                    <th>Название</th>
-                    <th>Организации</th>
-                </Header>  
-                <Row Context="item">  
-                    <td>@item.OrgName</td>
-                    <td>@item.OrgRealName</td>
-                </Row>  
-            </Grid>
-            @if (_isNewInstanceDisplay)
-            {
+            <RadzenButton Click=@(args => { _isNewInstanceDisplay = true; }) 
+                          Text="Создать"
+                          ButtonStyle="ButtonStyle.Secondary"
+                          Style="width: 100%" />
             
-                <ModalNewInstance 
-                    OnHideModalNewInstance="HideModalNewInstance"/>
-            }
+            <Modal Title="Новая организация" 
+                   IsDisplay="@_isNewInstanceDisplay">
+                <Form>
+                    <CreateInstance/>  
+                </Form>
+            </Modal>
+        
+            <RadzenGrid Data="@_data"
+                        EmptyText="..."
+                        TItem="InstanceViewModel">
+                <Columns>
+                    <RadzenGridColumn TItem="InstanceViewModel"
+                                      Property="OrgName" 
+                                      Title="Название" />
+                    <RadzenGridColumn TItem="InstanceViewModel" 
+                                      Property="OrgRealName" 
+                                      Title="Организация" />
+                    <RadzenGridColumn TItem="InstanceViewModel"
+                                      Context="order"
+                                      Bubble="false"
+                                      TextAlign="TextAlign.Center" 
+                                      Width="70px">
+                        <Template Context="item">
+                            <RadzenButton
+                                ButtonStyle="ButtonStyle.Danger"
+                                Icon="close"
+                                Size="ButtonSize.Small" 
+                                Click="@(args => { OpenOrg(item.Id); })">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
         }
     }
 </AuthorizeView>

@@ -11,24 +11,25 @@
         
         <InputField Title="Товар">
             <Controls>
-                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                style="flex: auto;"
-                                AllowClear="true"
-                                Placeholder="..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-                <RadzenButton Click=@(args => { _isNewStorageItemDisplay = true; })
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"
-                              Style="width: 150px"/>
-                <Modal Title="Новый товар" 
+                <div style="display: flex; width: 100%">
+                    <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    style="width: 100%;"
+                                    AllowClear="true"
+                                    Placeholder="..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(args => { _isNewStorageItemDisplay = true; })
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                </div>
+                <Modal Title="Новый товар"
                        IsDisplay="@_isNewStorageItemDisplay">
                     <Form>
-                        <CreateStorageItem />  
+                        <CreateStorageItem/>
                     </Form>
                 </Modal>
             </Controls>

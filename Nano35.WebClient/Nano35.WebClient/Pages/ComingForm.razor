@@ -7,9 +7,10 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@Model" OnSubmit="Create">
+<EditForm Model="@Model" 
+          OnSubmit="Create">
     
-    @if (_isLoaded)
+    @if (IsLoaded)
     {
         <InputField Title="Номер оприходования*">
             <Controls>
@@ -21,21 +22,22 @@
         
         <InputField Title="Клиент*">
             <Controls>
-                <RadzenDropDown Data=@(Clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="Model.ClientId"
-                                style="flex: auto;"
-                                AllowClear="true"
-                                Placeholder="Выберите поставщика..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-                <RadzenButton Click=@(args => { _isNewClientDisplay = true; })
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"
-                              Style="width: 150px"/>
+                <div style="display: flex; width: 100%;">
+                    <RadzenDropDown Data=@(Clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="Model.ClientId"
+                                    Style="width: 100%;"
+                                    AllowClear="true"
+                                    Placeholder="Выберите поставщика..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(args => { _isNewClientDisplay = true; })
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                </div>
                 <Modal Title="Новый клиент"
                        IsDisplay="@_isNewClientDisplay">
                     <Form>
@@ -48,21 +50,22 @@
         
         <InputField Title="Подразделение*">
             <Controls>
-                <RadzenDropDown Data=@(Units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
-                                TextProperty="Name" 
-                                ValueProperty="Id"
-                                TValue="Guid" 
-                                @bind-Value="Model.UnitId"
-                                Style="flex: auto;"
-                                AllowClear="true"
-                                Placeholder="Выберите целевое подразделение..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-                <RadzenButton Click=@(args => { _isNewUnitDisplay = true; })
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"
-                              Style="width: 150px" />
+                <div style="display: flex; width: 100%;">
+                    <RadzenDropDown Data=@(Units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
+                                    TextProperty="Name" 
+                                    ValueProperty="Id"
+                                    TValue="Guid" 
+                                    @bind-Value="Model.UnitId"
+                                    Style="width: 100%;"
+                                    AllowClear="true"
+                                    Placeholder="Выберите целевое подразделение..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(args => { _isNewUnitDisplay = true; })
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                </div>
                 <Modal Title="Новое подразделение" 
                        IsDisplay="@_isNewUnitDisplay">
                     <Form>
@@ -126,7 +129,14 @@
             </RadzenGrid>
         </RadzenFieldset>
     }
-    
+    else
+    {
+        <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+        </div>
+    }
     @if (!string.IsNullOrEmpty(Error))
     {
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
@@ -148,9 +158,9 @@
     private List<UnitViewModel> Units = new List<UnitViewModel>();
     private List<CreateComingDetailViewModel> _details = new List<CreateComingDetailViewModel>();
     private bool _isNewComingDetailDisplay = false;
-    private bool _isLoaded;
     private bool _isNewClientDisplay = false;
     private bool _isNewUnitDisplay = false;
+    private bool IsLoaded;
 
     private async void Create()
     {
@@ -169,10 +179,10 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _isLoaded = false;
+        IsLoaded = false;
         await LoadClients();
         await LoadUnits();
-        _isLoaded = true;
+        IsLoaded = true;
     }
 
     private async Task LoadClients()

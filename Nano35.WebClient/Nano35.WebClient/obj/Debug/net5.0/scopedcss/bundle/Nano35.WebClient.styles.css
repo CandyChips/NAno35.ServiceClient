@@ -1,54 +1,3 @@
-/* /Pages/Clients.razor.rz.scp.css */
-/* /Pages/Coming.razor.rz.scp.css */
-.page[b-glttx2o4an] {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.main[b-glttx2o4an] {
-    flex: 1;
-}
-
-
-
-.top-row[b-glttx2o4an] {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.top-row[b-glttx2o4an]  a, .top-row .btn-link[b-glttx2o4an] {
-    white-space: nowrap;
-    margin-left: 1.5rem;
-}
-
-.top-row a:first-child[b-glttx2o4an] {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-
-.page[b-glttx2o4an] {
-    flex-direction: row;
-}
-
-.sidebar[b-glttx2o4an] {
-    width: 250px;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-}
-
-.top-row[b-glttx2o4an] {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
 /* /Pages/Instance.razor.rz.scp.css */
 .page[b-rb3lbjc8me] {
     position: relative;
@@ -153,155 +102,8 @@
 }
 /* /Pages/Login.razor.rz.scp.css */
 /* /Pages/ModalEditClient.razor.rz.scp.css */
-div.modal-background[b-0hmlggpah4] {
-    display: block;
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-div.modal-content[b-0hmlggpah4] {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: 2px solid #888;
-    width: 90%;
-}
-/* /Pages/ModalNewClient.razor.rz.scp.css */
-div.modal-background[b-w2wafjl30e] {
-    display: block;
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-div.modal-content[b-w2wafjl30e] {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: 2px solid #888;
-    width: 90%;
-}
 /* /Pages/ModalNewInstance.razor.rz.scp.css */
-div.modal-background[b-kdspcsomfv] {
-    display: block;
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-div.modal-content[b-kdspcsomfv] {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: 2px solid #888;
-    width: 90%;
-}
-/* /Pages/ModalNewUnit.razor.rz.scp.css */
-div.modal-background[b-s7v5w9d8gz] {
-    display: block;
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-div.modal-content[b-s7v5w9d8gz] {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: 2px solid #888;
-    width: 90%;
-}
-/* /Pages/ModalNewWorker.razor.rz.scp.css */
-div.modal-background[b-25o2fr4lh4] {
-    display: block;
-    position: fixed;
-    z-index: 1; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-div.modal-content[b-25o2fr4lh4] {
-    background-color: #fefefe;
-    margin: 5% auto;
-    border: 2px solid #888;
-    width: 90%;
-}
-/* /Pages/Storage.razor.rz.scp.css */
-.page[b-coboazispe] {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}
-
-.main[b-coboazispe] {
-    flex: 1;
-}
-
-
-
-.top-row[b-coboazispe] {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
-    display: flex;
-    align-items: center;
-}
-
-.top-row[b-coboazispe]  a, .top-row .btn-link[b-coboazispe] {
-    white-space: nowrap;
-    margin-left: 1.5rem;
-}
-
-.top-row a:first-child[b-coboazispe] {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-
-.page[b-coboazispe] {
-    flex-direction: row;
-}
-
-.sidebar[b-coboazispe] {
-    width: 250px;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-}
-
-.top-row[b-coboazispe] {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
+/* /Pages/SelectArticleCategory.razor.rz.scp.css */
 /* /Pages/Units.razor.rz.scp.css */
 .page[b-l3gwhaakhi] {
     position: relative;
@@ -402,6 +204,7 @@ div.modal-content[b-25o2fr4lh4] {
     top: 0;
     z-index: 1;
 }
+/* /Shared/Grid.razor.rz.scp.css */
 /* /Shared/InstanceLayout.razor.rz.scp.css */
 .page[b-wqd426slov] {
     position: relative;
@@ -522,9 +325,14 @@ div.modal-content[b-25o2fr4lh4] {
         padding: 0;
     }
 }
+/* /Shared/Modal.razor.rz.scp.css */
 /* /Shared/NavBar.razor.rz.scp.css */
 .spacer[b-6pwetrcovu] {
     flex: 1 1 auto;
+}
+
+.navbar[b-6pwetrcovu] {
+    padding: .5rem;
 }
 /* /Shared/NavMenu.razor.rz.scp.css */
 .navbar-toggler[b-kxcgb8xrqk] {
@@ -588,4 +396,14 @@ div.modal-content[b-25o2fr4lh4] {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+/* /Shared/StorageLayout.razor.rz.scp.css */
+.page[b-eitt13wvrw] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.main[b-eitt13wvrw] {
+    flex: 1;
 }

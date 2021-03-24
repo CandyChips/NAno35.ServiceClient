@@ -7,6 +7,7 @@
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
 @inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
 
 @if (_loading)
 {
@@ -18,7 +19,7 @@
 }
 else
 {
-    <RadzenButton Click=@(args => { ShowModalNewComing(); }) 
+    <RadzenButton Click=@(_ => { _isNewComingDisplay = true; }) 
                   Text="Создать"
                   ButtonStyle="ButtonStyle.Primary"
                   Style="width: 100%" />
@@ -29,13 +30,12 @@ else
                 PageSize="10"
                 AllowSorting="true" 
                 Data="@_data"
-                TItem="ComingViewModel">
+                TItem="CancellationViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Client" Title="Клиент" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="CancellationViewModel" Property="Number" Title="Номер" />
+            <RadzenGridColumn TItem="CancellationViewModel" Property="Date" Title="Дата" />
+            <RadzenGridColumn TItem="CancellationViewModel" Property="Unit" Title="Подразделение" />
+            <RadzenGridColumn TItem="CancellationViewModel" Property="Client" Title="Клиент" />
         </Columns>
     </RadzenGrid>
     <Modal Title="Новое оприходование" 
@@ -49,18 +49,14 @@ else
 
 @code
 {
-    private IEnumerable<ComingViewModel> _data;
-    private bool _isNewComingDisplay = false;
+    private IEnumerable<CancellationViewModel> _data;
+    private bool _isNewComingDisplay;
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        var isAvailable = await RequestManager.HealthCheck(RequestManager.StorageServer);
-        _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
+        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
         _loading = false;
     }
-
-    private void ShowModalNewComing() => _isNewComingDisplay = true;
-    private void HideModalNewComing() => _isNewComingDisplay = false;
     
 }

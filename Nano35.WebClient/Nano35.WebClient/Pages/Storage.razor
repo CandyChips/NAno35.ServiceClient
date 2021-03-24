@@ -18,7 +18,7 @@
 }
 else
 {
-    <RadzenButton Click=@(args => { ShowModalNewComing(); }) 
+    <RadzenButton Click=@(args => { _isNewComingDisplay = true; }) 
                   Text="Создать"
                   ButtonStyle="ButtonStyle.Primary"
                   Style="width: 100%" />
@@ -58,8 +58,5 @@ else
         _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
         _loading = false;
     }
-
-    private void ShowModalNewComing() => _isNewComingDisplay = true;
-    private void HideModalNewComing() => _isNewComingDisplay = false;
     
 }

@@ -1,25 +1,29 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\RiderProjects\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj": {}
+    "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\RiderProjects\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj": {
+    "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\RiderProjects\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj",
+        "projectUniqueName": "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj",
         "projectName": "Nano35.WebClient",
-        "projectPath": "C:\\Users\\user\\RiderProjects\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj",
+        "projectPath": "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\Nano35.WebClient.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\RiderProjects\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\obj\\",
+        "outputPath": "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\user\\RiderProjects\\123\\Nano35.ServiceClient\\Nano35.WebClient\\Nano35.WebClient\\NuGet.Config",
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "http://192.168.100.120:81/v3/index.json": {},
           "http://192.168.100.120:81/v3/index.json": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -58,11 +62,19 @@
             },
             "Nano35.Contracts": {
               "target": "Package",
-              "version": "[1.7.7, )"
+              "version": "[1.8.4, )"
             },
             "Nano35.HttpContext": {
               "target": "Package",
-              "version": "[1.2.3, )"
+              "version": "[1.3.8, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[12.0.3, )"
+            },
+            "Radzen.Blazor": {
+              "target": "Package",
+              "version": "[3.1.6, )"
             },
             "System.Net.Http.Json": {
               "target": "Package",
@@ -82,7 +94,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Runtime.browser-wasm",
-              "version": "[5.0.2, 5.0.2]"
+              "version": "[5.0.4, 5.0.4]"
             }
           ],
           "frameworkReferences": {
@@ -90,7 +102,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Users\\user\\.dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.201\\RuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {

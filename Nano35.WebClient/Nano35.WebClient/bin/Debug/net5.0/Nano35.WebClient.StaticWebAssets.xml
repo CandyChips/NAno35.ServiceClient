@@ -1,5 +1,6 @@
 ﻿<StaticWebAssets Version="1.0">
   <ContentRoot BasePath="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication" Path="C:\Users\user\.nuget\packages\microsoft.aspnetcore.components.webassembly.authentication\5.0.3\build\..\staticwebassets\" />
-  <ContentRoot BasePath="/" Path="C:\Users\user\RiderProjects\Nano35.ServiceClient\Nano35.WebClient\Nano35.WebClient\bin\Debug\net5.0\wwwroot\" />
-  <ContentRoot BasePath="/" Path="C:\Users\user\RiderProjects\Nano35.ServiceClient\Nano35.WebClient\Nano35.WebClient\obj\Debug\net5.0\scopedcss\bundle\" />
+  <ContentRoot BasePath="_content/Radzen.Blazor" Path="C:\Users\user\.nuget\packages\radzen.blazor\3.1.6\build\..\staticwebassets\" />
+  <ContentRoot BasePath="/" Path="C:\Users\user\RiderProjects\123\Nano35.ServiceClient\Nano35.WebClient\Nano35.WebClient\bin\Debug\net5.0\wwwroot\" />
+  <ContentRoot BasePath="/" Path="C:\Users\user\RiderProjects\123\Nano35.ServiceClient\Nano35.WebClient\Nano35.WebClient\obj\Debug\net5.0\scopedcss\bundle\" />
 </StaticWebAssets>

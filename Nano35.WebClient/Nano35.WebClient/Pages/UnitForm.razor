@@ -4,7 +4,8 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@Model"
+          OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
 
     <InputField Title="Название подразделения*">
@@ -41,7 +42,7 @@
 
     <InputField Title="Тип подразделения*">
         <Controls>
-            <RadzenDropDown Data=@(Types.Select(a => new {Id = a.Id, Name = a.Name}))
+            <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = a.Name}))
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
@@ -68,13 +69,13 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<UnitTypeViewModel> Types = new List<UnitTypeViewModel>();
+    private List<UnitTypeViewModel> _types = new List<UnitTypeViewModel>();
     private bool _loading = true;
         
     protected override async Task OnInitializedAsync()
     {
         var request = new GetAllUnitTypesHttpQuery();
-        Types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
         _loading = false;
     }
 

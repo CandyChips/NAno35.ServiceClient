@@ -4,7 +4,8 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@Model" 
+          OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
     <InputField Title="Имя клиента">
@@ -91,7 +92,7 @@
         _loading = false;
     }
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
     }

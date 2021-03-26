@@ -27,10 +27,9 @@
                 <h4 class="card-header" style="display: flex;">
                     @Title
                     <span style="flex: 1 1 auto;"></span>
-                    <button class="btn btn-secondary btn-sm"
-                            @onclick="() => { IsDisplay = false; }">
-                        Закрыть
-                    </button>
+                    <RadzenButton Click=@(_ => Hide())
+                                  Text="Закрыть"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
                 </h4>
                 <div class="card-body">
                     @Form
@@ -44,4 +43,10 @@
     [Parameter] public string Title { get; set; }
     [Parameter] public RenderFragment Form { get; set; }
     [Parameter] public bool IsDisplay { get; set; }
+
+    private void Hide()
+    {
+        this.IsDisplay = false;
+    }  
+    
 }  

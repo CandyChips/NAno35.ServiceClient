@@ -58,14 +58,4 @@ namespace Nano35.WebClient.Services
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }
     }
-    
-    public class InstanceViewModel
-    {
-        public Guid Id { get; set; }
-        public string OrgName { get; set; }
-        public string OrgRealName { get; set; }
-        public string OrgEmail { get; set; }
-        public string CompanyInfo { get; set; }
-        public Guid RegionId { get; set; }
-    }
 }

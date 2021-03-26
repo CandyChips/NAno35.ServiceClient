@@ -27,7 +27,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateInstanceHttpBody();
-        _model.NewId = Guid.NewGuid();
+        _model = new CreateInstanceHttpBody { NewId = Guid.NewGuid() };
     }
 }

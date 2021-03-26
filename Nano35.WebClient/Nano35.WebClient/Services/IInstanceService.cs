@@ -12,8 +12,8 @@ namespace Nano35.WebClient.Services
 {
     public interface IInstanceService
     {
-        public IInstanceViewModel Instance { get; set; }
-        IInstanceViewModel GetCurrentInstance();
+        public InstanceViewModel Instance { get; set; }
+        InstanceViewModel GetCurrentInstance();
         Task SetInstanceById(Guid id);
         Task<bool> IsInstanceExist();
     }
@@ -30,9 +30,9 @@ namespace Nano35.WebClient.Services
             _requestManager = requestManager;
             _sessionProvider = sessionProvider;
         }
-        public IInstanceViewModel Instance { get; set; }
+        public InstanceViewModel Instance { get; set; }
         
-        public IInstanceViewModel GetCurrentInstance()
+        public InstanceViewModel GetCurrentInstance()
         {
             return Instance;
         }

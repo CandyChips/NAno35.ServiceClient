@@ -18,7 +18,7 @@
 }
 else
 {
-    <RadzenButton Click=@(args => { ShowModalNewComing(); }) 
+    <RadzenButton Click=@(_ => { NewComing(); }) 
                   Text="Создать"
                   ButtonStyle="ButtonStyle.Primary"
                   Style="width: 100%" />
@@ -36,22 +36,30 @@ else
             <RadzenGridColumn TItem="ComingViewModel" Property="Unit" Title="Подразделение" />
             <RadzenGridColumn TItem="ComingViewModel" Property="Client" Title="Клиент" />
             <RadzenGridColumn TItem="ComingViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Context="coming"
+                              Bubble="false"
+                              TextAlign="TextAlign.Center" 
+                              Width="70px">
+                <Template Context="item">
+                    <RadzenButton
+                        ButtonStyle="ButtonStyle.Info"
+                        Icon="search"
+                        Size="ButtonSize.Small" 
+                        Click="@(_ => { OpenComing(item); })">
+                    </RadzenButton>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-    <Modal Title="Новое оприходование" 
-           IsDisplay="@_isNewComingDisplay">
-        <Form>
-            <CreateComing/>
-        </Form>
-    </Modal>
 
 }
 
 @code
 {
     private IEnumerable<ComingViewModel> _data;
-    private bool _isNewComingDisplay = false;
     private bool _loading = true;
+    [CascadingParameter] public IModalService Modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +67,15 @@ else
         _loading = false;
     }
 
-    private void ShowModalNewComing() => _isNewComingDisplay = true;
-    private void HideModalNewComing() => _isNewComingDisplay = false;
-    
+    private void NewComing()
+    {
+        Modal.Show<CreateComing>("Новое оприходование");
+    }
+
+    private void OpenComing(ComingViewModel coming)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ComingDetails.Coming), coming);
+        Modal.Show<ComingDetails>($"Оприходование", parameters);
+    }
 }

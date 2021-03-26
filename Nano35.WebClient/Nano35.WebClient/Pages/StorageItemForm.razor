@@ -14,6 +14,7 @@
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
+                                @bind-Value="Model.ArticleId"
                                 Disabled="@(!_articles.Any())"
                                 style="width: 100%;"
                                 AllowClear="true"
@@ -40,6 +41,7 @@
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
+                            @bind-Value="Model.ConditionId"
                             style="flex: auto;"
                             AllowClear="true"
                             Placeholder="Выберите состояние товара"
@@ -118,6 +120,7 @@
         
     protected override async Task OnInitializedAsync()
     {
+        _conditions = (await new GetAllStorageItemConditionsRequest(RequestManager, HttpClient, new GetAllStorageItemConditionsHttpQuery()).Send()).Data.ToList();
         _articles = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
         _isLoading = false;
     }

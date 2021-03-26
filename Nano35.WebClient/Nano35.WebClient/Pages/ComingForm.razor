@@ -1,16 +1,13 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@using Radzen
-@using Radzen.Blazor
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
 <EditForm Model="@Model" 
           OnSubmit="Create">
-    
-    @if (IsLoaded)
+    @if (_isLoaded)
     {
         <InputField Title="Номер оприходования*">
             <Controls>
@@ -23,27 +20,29 @@
         <InputField Title="Клиент*">
             <Controls>
                 <div style="display: flex; width: 100%;">
-                    <RadzenDropDown Data=@(Clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                    <RadzenDropDown Data=@(_clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     TValue="Guid"
                                     @bind-Value="Model.ClientId"
                                     Style="width: 100%;"
-                                    AllowClear="true"
                                     Placeholder="Выберите поставщика..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(args => { _isNewClientDisplay = true; })
+                    <RadzenButton Click=@(_ => OpenNewClient())
                                   Text="Добавить"
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
-                <Modal Title="Новый клиент"
-                       IsDisplay="@_isNewClientDisplay">
-                    <Form>
-                        <CreateClient/>
-                    </Form>
-                </Modal>
+                @if (_isNewClientDisplay)
+                {
+                    <Modal Title="Новый клиент"
+                           IsDisplay="@_isNewClientDisplay">
+                        <Form>
+                            <CreateClient/>
+                        </Form>
+                    </Modal>
+                }
             </Controls>
         </InputField>
         
@@ -51,27 +50,29 @@
         <InputField Title="Подразделение*">
             <Controls>
                 <div style="display: flex; width: 100%;">
-                    <RadzenDropDown Data=@(Units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
+                    <RadzenDropDown Data=@(_units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
                                     TextProperty="Name" 
                                     ValueProperty="Id"
                                     TValue="Guid" 
                                     @bind-Value="Model.UnitId"
                                     Style="width: 100%;"
-                                    AllowClear="true"
                                     Placeholder="Выберите целевое подразделение..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(args => { _isNewUnitDisplay = true; })
+                    <RadzenButton Click=@(_ => OpenNewUnit())
                                   Text="Добавить"
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
-                <Modal Title="Новое подразделение" 
-                       IsDisplay="@_isNewUnitDisplay">
-                    <Form>
-                        <CreateUnit/>  
-                    </Form>
-                </Modal>
+                @if (_isNewUnitDisplay)
+                {
+                    <Modal Title="Новое подразделение" 
+                           IsDisplay="@_isNewUnitDisplay">
+                        <Form>
+                            <CreateUnit/>  
+                        </Form>
+                    </Modal>
+                }
             </Controls>
         </InputField>
         
@@ -84,7 +85,7 @@
         </InputField>
     
         <RadzenFieldset Text="Оприходуемые товары">           
-            <RadzenButton Click=@(args => { _isNewComingDetailDisplay = true; }) 
+            <RadzenButton Click=@(_ => { _isNewComingDetailDisplay = true; }) 
                           Text="Добавить"
                           ButtonStyle="ButtonStyle.Secondary"
                           Style="width: 100%" />
@@ -120,8 +121,7 @@
                             <RadzenButton
                                 ButtonStyle="ButtonStyle.Danger"
                                 Icon="close"
-                                Size="ButtonSize.Small" 
-                                Click="@(args => { })">
+                                Size="ButtonSize.Small">
                             </RadzenButton>
                         </Template>
                     </RadzenGridColumn>
@@ -154,21 +154,19 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<ClientViewModel> Clients = new List<ClientViewModel>();
-    private List<UnitViewModel> Units = new List<UnitViewModel>();
+    private List<ClientViewModel> _clients = new List<ClientViewModel>();
+    private List<UnitViewModel> _units = new List<UnitViewModel>();
     private List<CreateComingDetailViewModel> _details = new List<CreateComingDetailViewModel>();
-    private bool _isNewComingDetailDisplay = false;
-    private bool _isNewClientDisplay = false;
-    private bool _isNewUnitDisplay = false;
-    private bool IsLoaded;
+    private bool _isNewComingDetailDisplay;
+    private bool _isNewClientDisplay;
+    private bool _isNewUnitDisplay;
+    private bool _isLoaded;
 
     private async void Create()
     {
-        Console.WriteLine($"Number {Model.Number}");
-        Console.WriteLine($"ClientId {Model.ClientId}");
-        //Model.Details = _details.Select(a => 
-        //    new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-        //await FormSubmitted.InvokeAsync();
+        Model.Details = _details.Select(a => 
+            new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+        await FormSubmitted.InvokeAsync();
     }
 
     private void AddComingDetail(CreateComingDetailViewModel model)
@@ -179,19 +177,18 @@
     
     protected override async Task OnInitializedAsync()
     {
-        IsLoaded = false;
-        await LoadClients();
-        await LoadUnits();
-        IsLoaded = true;
+        _isLoaded = false;
+        _clients = await LoadClients();
+        _units = await LoadUnits();
+        _isLoaded = true;
     }
+    
+    private async Task<List<ClientViewModel>> LoadClients() => 
+        (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private async Task LoadClients()
-    {
-        Clients = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
-    }
+    private async Task<List<UnitViewModel>> LoadUnits() =>
+        (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private async Task LoadUnits()
-    {
-        Units = (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
-    }
+    private void OpenNewUnit() { _isNewUnitDisplay = true; Console.WriteLine($"_isNewUnitDisplay: {_isNewUnitDisplay} _isNewClientDisplay: {_isNewClientDisplay} from OpenNewUnit"); }
+    private void OpenNewClient() { _isNewClientDisplay = true; Console.WriteLine($"_isNewUnitDisplay: {_isNewUnitDisplay} _isNewClientDisplay: {_isNewClientDisplay} from OpenNewClient"); }
 }

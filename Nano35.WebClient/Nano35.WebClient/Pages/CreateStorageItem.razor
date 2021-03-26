@@ -27,8 +27,10 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateStorageItemHttpBody();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.NewId = Guid.NewGuid();
+        _model = new CreateStorageItemHttpBody
+        {
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            NewId = Guid.NewGuid()
+        };
     }
 }

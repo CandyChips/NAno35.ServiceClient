@@ -10,6 +10,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
+using Blazored.Modal;
+using Radzen;
 
 namespace Nano35.WebClient
 {
@@ -33,6 +35,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<IComingsService, ComingsService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
+            builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();
         }

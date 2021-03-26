@@ -4,13 +4,19 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<ComingForm FormSubmitted="SendCreateComingRequest"
-            Model="_model" 
-            Error="@Error"/>
+<div style="width: 40rem;">
+    <ComingForm FormSubmitted="SendCreateComingRequest"
+                Model="_model" 
+                Error="@Error"/>
+</div>
 
 @code
 {
-    private CreateComingHttpBody _model;
+    private CreateComingHttpBody _model = new CreateComingHttpBody
+    {
+        NewId = Guid.NewGuid(),
+        InstanceId = Guid.Empty
+    };
     private string Error { get; set; }
     
     private async Task SendCreateComingRequest()
@@ -27,8 +33,10 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateComingHttpBody();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.NewId = Guid.NewGuid();
+        _model = new CreateComingHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
     }
 }

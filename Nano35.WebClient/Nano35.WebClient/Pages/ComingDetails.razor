@@ -1,0 +1,58 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<div style="width: 20rem;">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="margin-top:20px">Номер оприходования:</div>
+            <b>@Coming.Number</b>
+            <div style="margin-top:20px">Дата:</div>
+            <b>@Coming.Date</b>
+            <div style="margin-top:20px">Целевое подразделение:</div>
+            <b>@Coming.Unit</b>
+            <div style="margin-top:20px">Поставщик:</div>
+            <b>@Coming.Client</b>
+    
+            <RadzenFieldset Text="Оприходуемые товары">
+                <RadzenGrid Data="@Details"
+                            EmptyText="Добавте оприходуемые товары..."
+                            TItem="ComingDetailViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="ComingDetailViewModel"
+                                          Property="StorageItem" 
+                                          Title="Товар" />
+                        <RadzenGridColumn TItem="ComingDetailViewModel" 
+                                          Property="PlaceOnStorage" 
+                                          Title="Место на складе" />
+                        <RadzenGridColumn TItem="ComingDetailViewModel"
+                                          Property="Count"
+                                          Title="Количество" />
+                        <RadzenGridColumn TItem="ComingDetailViewModel"
+                                          Property="Price" 
+                                          Title="Цена" />
+                    </Columns>
+                </RadzenGrid>
+            </RadzenFieldset>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public ComingViewModel Coming { get; set; }
+    private List<ComingDetailViewModel> Details { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new GetComingDetailsByIdHttpQuery() {Id = Coming.Id};
+        Details = (await new GetAllComingDetailsRequest(
+                RequestManager, 
+                HttpClient, 
+                request).Send())
+            .Data;
+    }
+}

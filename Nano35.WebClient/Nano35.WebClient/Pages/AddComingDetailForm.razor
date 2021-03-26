@@ -16,8 +16,8 @@
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     TValue="Guid"
-                                    style="width: 100%;"
-                                    AllowClear="true"
+                                    @bind-Value="_model.StorageItemId"
+                                    Style="width: 100%;"
                                     Placeholder="..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
@@ -69,14 +69,18 @@
 {
     [Parameter] public EventCallback<CreateComingDetailViewModel> OnAddNewComingDetail { get; set; }
         
-    private CreateComingDetailViewModel _model = new CreateComingDetailViewModel();
+    private CreateComingDetailViewModel _model;
     private List<StorageItemViewModel> StorageItems { get; set; }
-    private bool _isNewStorageItemDisplay = false;
-    private bool _isLoaded = false;
+    private bool _isNewStorageItemDisplay;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
-        _model.Count = 1;
+        _model = new CreateComingDetailViewModel()
+        {
+            NewId = Guid.NewGuid(),
+            Count = 1
+        };
         StorageItems = await GetAllStorageItems();
         _isLoaded = true;
     }

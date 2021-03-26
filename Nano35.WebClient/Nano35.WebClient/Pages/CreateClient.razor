@@ -10,7 +10,11 @@
 
 @code
 {
-    private CreateClientHttpBody _model;
+    private CreateClientHttpBody _model = new CreateClientHttpBody
+    {
+        NewId = Guid.NewGuid(),
+        InstanceId = Guid.Empty
+    };
     private string Error { get; set; }
     
     private async Task Submit()
@@ -27,8 +31,10 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateClientHttpBody();
-        _model.NewId = Guid.NewGuid();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        _model = new CreateClientHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
     }
 }

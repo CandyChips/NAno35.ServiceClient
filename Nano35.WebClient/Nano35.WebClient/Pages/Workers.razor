@@ -1,7 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.instance
+@using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
+@inject NavigationManager NavigationManager;
+@inject IInstanceService InstanceService;
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
 @page "/instance/workers"
 
 @if (_loading)
@@ -17,18 +23,13 @@
 }
 else
 {
-    <button class="btn btn-light"
-            style="width: 100%"
-            @onclick="() => { _isNewWorkerDisplay = true; }">
-        Создать
-    </button>
-    <Modal Title="Новый сотрудник" 
-           IsDisplay="@_isNewWorkerDisplay">
-        <Form>
-            <WorkerForm/>  
-        </Form>
-    </Modal>
-    <br/>
+    <RadzenHeading Text="Сотрудники"/>
+    
+    <RadzenButton Click=@(_ => NewWorker()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+    
     <Grid Items="@_data" TItem="WorkerViewModel">    
         <Header>  
             <th>ФИО</th>
@@ -41,4 +42,26 @@ else
             <td>@item.Phone</td>
         </Row>  
     </Grid>
+}
+
+@code
+{
+    private IEnumerable<WorkerViewModel> _data;
+    private bool _loading = true;
+    [CascadingParameter] public IModalService Modal { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _data = (await new GetAllWorkersRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+            .Send()).Data;
+        _loading = false;
+    }
+    
+    private void NewWorker()
+    {
+        Modal.Show<WorkerForm>("Новое подразделение");
+    }
 }

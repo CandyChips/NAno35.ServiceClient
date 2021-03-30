@@ -20,10 +20,10 @@
     <RadzenTabs>
         <Tabs>
             <RadzenTabsItem Text="Добавить">
-                <RadzenDropDown Data=@_categories
+                <RadzenDropDown Data="@(_categories)"
                                 style="width: 100%;"
                                 @bind-Value="_selectedCategory"
-                                Change="@(args => OnAddCategory(_selectedCategory))"
+                                Change="@(_ => OnAddCategory(_selectedCategory))"
                                 TValue="ArticleCategoryViewModel"
                                 AllowClear="true"
                                 Placeholder=@(_selectedCategories.Any() ? $"Выберите подкатегорию к {_selectedCategories.Last().Name}" : "Выберите категорию" )
@@ -37,7 +37,7 @@
                     <RadzenTextBox Change=@(args => _name = args.ToString())
                                    style="width: 100%;"
                                    Placeholder=@(_selectedCategories.Any() ? $"Введите название новой подкатегории к {_selectedCategories.Last().Name}" : "Введите название новой категории" ) />
-                    <RadzenButton Click=@(args => { OnCreateCategory(); })
+                    <RadzenButton Click="@(_ => OnCreateCategory())"
                                   Text="Добавить"
                                   ButtonStyle="ButtonStyle.Secondary" />
                 </div>

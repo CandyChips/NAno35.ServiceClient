@@ -1,7 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.instance
+@using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
+@inject NavigationManager NavigationManager;
+@inject IRequestManager RequestManager;
+@inject IInstanceService InstanceService;
+@inject IUnitService UnitService;
+@inject ISessionProvider SessionProvider;
 @page "/instance/units"
 
 @if (_loading)
@@ -17,42 +23,47 @@
 }
 else
 {
-    @if (!_serverAvailable)
+    <RadzenHeading Text="Подразделения"/>
+    
+    <RadzenButton Click=@(_ => NewUnit()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+        
+    <RadzenGrid Data="@_data"
+                EmptyText="Добавте оприходуемые товары..."
+                TItem="UnitViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="UnitViewModel"
+                              Property="Name" 
+                              Title="Название" />
+            <RadzenGridColumn TItem="UnitViewModel" 
+                              Property="Adress" 
+                              Title="Адресс" />
+            <RadzenGridColumn TItem="UnitViewModel"
+                              Property="Phone"
+                              Title="Телефон" />
+            <RadzenGridColumn TItem="UnitViewModel"
+                              Property="WorkingFormat" 
+                              Title="Формат работы" />
+        </Columns>
+    </RadzenGrid>
+}
+
+@code
+{
+    private IEnumerable<UnitViewModel> _data;
+    private bool _loading = true;
+    [CascadingParameter] public IModalService Modal { get; set; }
+    
+    protected override async Task OnInitializedAsync()
     {
-        <h4 class="card-header">Сервер недоступен</h4>
-        <div class="card-body">
-            Повторите попытку позднее
-        </div>
+        _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
+        _loading = false;
     }
-    else
+    
+    private void NewUnit()
     {
-        <RadzenButton Click=@(args => { _isNewUnitDisplay = true; }) 
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="width: 100%" />
-        <Modal Title="Новое подразделение" 
-               IsDisplay="@_isNewUnitDisplay">
-            <Form>
-                <UnitForm/>  
-            </Form>
-        </Modal>
-        <RadzenGrid Data="@_data"
-                    EmptyText="Добавте оприходуемые товары..."
-                    TItem="UnitViewModel">
-            <Columns>
-                <RadzenGridColumn TItem="UnitViewModel"
-                                  Property="Name" 
-                                  Title="Название" />
-                <RadzenGridColumn TItem="UnitViewModel" 
-                                  Property="Adress" 
-                                  Title="Адресс" />
-                <RadzenGridColumn TItem="UnitViewModel"
-                                  Property="Phone"
-                                  Title="Телефон" />
-                <RadzenGridColumn TItem="UnitViewModel"
-                                  Property="WorkingFormat" 
-                                  Title="Формат работы" />
-            </Columns>
-        </RadzenGrid>
+        Modal.Show<CreateUnit>("Новое подразделение");
     }
 }

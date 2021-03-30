@@ -83,13 +83,11 @@
 
     private List<ClientTypeViewModel> _types = new List<ClientTypeViewModel>();
     private List<ClientStateViewModel> _state = new List<ClientStateViewModel>();
-    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         _state = (await (new GetAllClientStatesRequest(RequestManager, HttpClient, new GetAllClientStatesHttpQuery())).Send()).Data.ToList();
         _types = (await (new GetAllClientTypesRequest(RequestManager, HttpClient, new GetAllClientTypesHttpQuery()).Send())).Data.ToList();
-        _loading = false;
     }
 
     private async Task HandleValidSubmit()

@@ -1,28 +1,29 @@
-﻿@using Nano35.WebClient.Services
-@using Nano35.HttpContext.instance
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<ClientForm FormSubmitted="Submit"
-            Model="_model" 
-            Error="@Error"/>
+<div style="width: 40rem;">
+    <SellesForm FormSubmitted="SendCreateSelleRequest"
+                Model="_model" 
+                Error="@Error"/>
+</div>
 
 @code
 {
-    private CreateClientHttpBody _model = new CreateClientHttpBody
+    private CreateSelleHttpBody _model = new CreateSelleHttpBody
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
     };
-    
     private string Error { get; set; }
     
-    private async Task Submit()
+    private async Task SendCreateSelleRequest()
     {
         try
         {
-            await new CreateClientRequest(RequestManager, HttpClient, _model).Send();
+            await new CreateSelleRequest(RequestManager, HttpClient, _model).Send();
         }
         catch (Exception e)
         {
@@ -32,7 +33,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateClientHttpBody
+        _model = new CreateSelleHttpBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId()

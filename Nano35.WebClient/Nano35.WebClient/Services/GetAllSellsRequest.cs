@@ -10,18 +10,16 @@ namespace Nano35.WebClient.Services
         RequestProvider<GetAllSellsHttpQuery, GetAllSellsSuccessHttpResponse>
     {
         public GetAllSellsRequest(IRequestManager requestManager, HttpClient httpClient, GetAllSellsHttpQuery request) : 
-            base(requestManager, httpClient, request)
-        {
-        }
+            base(requestManager, httpClient, request) { }
 
         public override async Task<GetAllSellsSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/Warehouse/GetAllSells?InstanceId={Request.InstanceId}");
+            var response = await HttpClient.GetAsync($"{RequestManager.StorageServer}/Warehouse/GetAllSells?InstanceId={Request.InstanceId}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllSellsSuccessHttpResponse>());
             }
-            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
+            throw new Exception(await response.Content.ReadFromJsonAsync<string>());
         }
     }
 }

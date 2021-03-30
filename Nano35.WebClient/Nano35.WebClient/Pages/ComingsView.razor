@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @attribute [Authorize]
-@layout StorageLayout
+@layout InstanceLayout
 @page "/instance/coming"
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
@@ -18,10 +18,13 @@
 }
 else
 {
-    <RadzenButton Click=@(_ => { NewComing(); }) 
+    <RadzenHeading Text="Оприходования"/>
+    
+    <RadzenButton Click=@(_ => NewComing()) 
                   Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+    
     <RadzenGrid AllowFiltering="true" 
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced" 
@@ -69,13 +72,13 @@ else
 
     private void NewComing()
     {
-        Modal.Show<CreateComing>("Новое оприходование");
+        Modal.Show<ComingsCreate>("Новое оприходование");
     }
 
     private void OpenComing(ComingViewModel coming)
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ComingDetails.Coming), coming);
-        Modal.Show<ComingDetails>($"Оприходование", parameters);
+        parameters.Add(nameof(ComingsDetails.Coming), coming);
+        Modal.Show<ComingsDetails>($"Оприходование", parameters);
     }
 }

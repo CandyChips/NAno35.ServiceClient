@@ -1,0 +1,76 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.storage
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+    @if (_isLoaded)
+    {
+        <DataAnnotationsValidator/>
+        
+        <InputField Title="Товар">
+            <Controls>
+                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="_model.StorageItemId"
+                                Style="width: 100%;"
+                                Placeholder="..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Ячейка на складе">
+            <Controls>
+                <SelectComingDetailPlaceOnStorage 
+                    @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Количество">
+            <Controls>
+                <RadzenNumeric Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Count"/>
+            </Controls>
+        </InputField>
+
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    }
+</EditForm>
+
+@code
+{
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    
+    private CreateCancellationDetailViewModel _model;
+    private List<StorageItemViewModel> StorageItems { get; set; }
+    private bool _isLoaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateCancellationDetailViewModel()
+        {
+            NewId = Guid.NewGuid(),
+            Count = 1
+        };
+        StorageItems = await GetAllStorageItems();
+        _isLoaded = true;
+    }
+
+    private void HandleValidSubmit() 
+    {
+        ModalInstance.CloseAsync(ModalResult.Ok(_model));
+    }
+    
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
+        (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+
+}

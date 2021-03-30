@@ -7,7 +7,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
     <InputField Title="Название сервиса">
@@ -52,7 +52,7 @@
     
     <InputField Title="Регион">
         <Controls>
-            <RadzenDropDown Data=@(_regions.Select(a => new {Id = a.Id, Name = a.Name}))
+            <RadzenDropDown Data="@(_regions.Select(a => new {Id = a.Id, Name = a.Name}))"
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
@@ -64,7 +64,7 @@
     
     <InputField Title="Тип">
         <Controls>
-            <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = a.Name}))
+            <RadzenDropDown Data="@(_types.Select(a => new {Id = a.Id, Name = a.Name}))"
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
@@ -76,7 +76,7 @@
     
     @if (!string.IsNullOrEmpty(Error))
     {
-        <div class="alert alert-danger mt-3 mb-0">@Error</div>
+        <div class="alert alert-danger mt-3 mb-0">@(Error)</div>
     }
     
     <RadzenButton type="submit"
@@ -93,13 +93,11 @@
 
     private List<InstanceTypeViewModel> _types = new List<InstanceTypeViewModel>();
     private List<RegionViewModel> _regions = new List<RegionViewModel>();
-    private bool _loading = true;
-
+    
     protected override async Task OnInitializedAsync()
     {
         _types = (await (new GetAllInstanceTypesRequest(RequestManager, HttpClient, new GetAllInstanceTypesHttpQuery())).Send()).Data.ToList();
         _regions = (await (new GetAllInstanceRegionsRequest(RequestManager, HttpClient, new GetAllRegionsHttpQuery()).Send())).Data.ToList();
-        _loading = false;
     }
 
     private async void HandleValidSubmit()

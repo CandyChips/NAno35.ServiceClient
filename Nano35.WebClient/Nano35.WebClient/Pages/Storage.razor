@@ -1,9 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
+@using StorageItemOnInstanceViewModel = Nano35.Contracts.Storage.Models.StorageItemOnInstanceViewModel
 @attribute [Authorize]
-@layout StorageLayout
+@layout InstanceLayout
 @page "/instance/storage"
+@inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
 @inject ISessionProvider SessionProvider
@@ -18,10 +20,8 @@
 }
 else
 {
-    <RadzenButton Click=@(args => { _isNewComingDisplay = true; }) 
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
+    <RadzenHeading Text="Наличие"/>
+    
     <RadzenGrid AllowFiltering="true" 
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced" 
@@ -29,33 +29,28 @@ else
                 PageSize="10"
                 AllowSorting="true" 
                 Data="@_data"
-                TItem="ComingViewModel">
+                TItem="StorageItemOnInstanceViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Client" Title="Клиент" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.Name" Title="Изделие"/>
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.RetailPrice" Title="Цена продажи" />
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.PurchasePrice" Title="Закупочная стоимость" />
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Count" Title="Количество" />
         </Columns>
     </RadzenGrid>
-    <Modal Title="Новое оприходование" 
-           IsDisplay="@_isNewComingDisplay">
-        <Form>
-            <CreateComing/>
-        </Form>
-    </Modal>
-
 }
 
 @code
 {
-    private IEnumerable<ComingViewModel> _data;
-    private bool _isNewComingDisplay = false;
+    private IEnumerable<StorageItemOnInstanceViewModel> _data;
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
-    {
-        _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
+    {        
+        _data = (await (new GetAllStorageItemsOnInstanceRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllStorageItemsOnInstanceHttpQuery() 
+            { InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Contains;
         _loading = false;
     }
     

@@ -1,0 +1,63 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@attribute [Authorize]
+@layout InstanceLayout
+@page "/instance/sells"
+@inject IRequestManager RequestManager
+@inject IComingsService ComingsService
+@inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
+
+@if (_loading)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden"></span>
+      </div>
+    </div>
+}
+else
+{
+    <RadzenHeading Text="Продажи"/>
+    
+    <RadzenButton Click=@(_ => NewSelle()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+    
+    <RadzenGrid AllowFiltering="true" 
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterMode="FilterMode.Advanced" 
+                AllowPaging="true"
+                PageSize="10"
+                AllowSorting="true" 
+                Data=@(_data)
+                TItem="SelleViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="SelleViewModel" Property="Number" Title="Номер" />
+            <RadzenGridColumn TItem="SelleViewModel" Property="Date" Title="Дата" />
+            <RadzenGridColumn TItem="SelleViewModel" Property="Unit" Title="Подразделение" />
+            <RadzenGridColumn TItem="SelleViewModel" Property="Client" Title="Клиент" />
+            <RadzenGridColumn TItem="SelleViewModel" Property="Cash" Title="Цена" />
+        </Columns>
+    </RadzenGrid>
+}
+
+@code
+{
+    private IEnumerable<SelleViewModel> _data;
+    private bool _loading = true;
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _data = (await (new GetAllSellsRequest(RequestManager, HttpClient, new GetAllSellsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+        _loading = false;
+    }
+
+    private void NewSelle()
+    {
+        Modal.Show<SellesCreate>("Новая продажа");
+    }
+}

@@ -1,84 +1,84 @@
 ﻿@page "/Registration"
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.identity
+@inject IAuthService AuthService 
+@inject NavigationManager NavigationManager
 
 <div class="col-md-6 offset-md-3 mt-5">
     <div class="card">
-        @if (_loading)
-        {
-            <h4 class="card-header">Загрузка</h4>
-            <div class="card-body">
-                ...
-            </div>
-        }
-        else
-        {
-            @if (_serverAvailable)
-            {
-                <h4 class="card-header">Авторизация</h4>
-                <div class="card-body">
-                    <EditForm Model="@model" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator />
-    
-                        <InputField Title="Ф.И.О.">
-                            <Controls>
-                                <InputText @bind-Value="model.Name" class="form-control" />
-                                <ValidationMessage For="@(() => model.Name)" />
-                            </Controls>
-                        </InputField>
-    
-                        <InputField Title="Номер телефона">
-                            <Controls>
-                                <InputText @bind-Value="model.Phone" class="form-control" />
-                                <ValidationMessage For="@(() => model.Phone)" />
-                            </Controls>
-                        </InputField>
-    
-                        <InputField Title="Электронная почта">
-                            <Controls>
-                                <InputText @bind-Value="model.Email" class="form-control" />
-                                <ValidationMessage For="@(() => model.Email)" />
-                            </Controls>
-                        </InputField>
-    
-                        <InputField Title="Пароль">
-                            <Controls>
-                                <InputText @bind-Value="model.Password" class="form-control" />
-                                <ValidationMessage For="@(() => model.Password)" />
-                            </Controls>
-                        </InputField>
-    
-                        <InputField Title="Подтверждение пароля">
-                            <Controls>
-                                <InputText @bind-Value="model.PasswordConfirm" class="form-control" />
-                                <ValidationMessage For="@(() => model.PasswordConfirm)" />
-                            </Controls>
-                        </InputField>
-                        
-                        <button class="btn btn-primary">
-                            @if (_loading)
-                            {
-                                <span class="spinner-border spinner-border-sm mr-1"></span>
-                            }
-                            Зарегитрироваться
-                        </button>
-                        
-                        <NavLink class="btn btn-secondary" href="log-in">
-                            Авторизация
-                        </NavLink>
-                        
-                        @if (!string.IsNullOrEmpty(_error))
-                        {
-                            <div class="alert alert-danger mt-3 mb-0">@_error</div>
-                        }
-                    </EditForm>
-                </div>
-            }
-            else
-            {
-                <h4 class="card-header">Сервер недоступен</h4>
-                <div class="card-body">
-                    Повторите попытку позднее
-                </div>
-            }
-        }
+        <h4 class="card-header">Авторизация</h4>
+        <div class="card-body">
+            <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <InputField Title="Ф.И.О.">
+                    <Controls>
+                        <InputText @bind-Value="_model.Name" class="form-control" />
+                        <ValidationMessage For="@(() => _model.Name)" />
+                    </Controls>
+                </InputField>
+
+                <InputField Title="Номер телефона">
+                    <Controls>
+                        <InputText @bind-Value="_model.Phone" class="form-control" />
+                        <ValidationMessage For="@(() => _model.Phone)" />
+                    </Controls>
+                </InputField>
+
+                <InputField Title="Электронная почта">
+                    <Controls>
+                        <InputText @bind-Value="_model.Email" class="form-control" />
+                        <ValidationMessage For="@(() => _model.Email)" />
+                    </Controls>
+                </InputField>
+
+                <InputField Title="Пароль">
+                    <Controls>
+                        <InputText @bind-Value="_model.Password" class="form-control" />
+                        <ValidationMessage For="@(() => _model.Password)" />
+                    </Controls>
+                </InputField>
+
+                <InputField Title="Подтверждение пароля">
+                    <Controls>
+                        <InputText @bind-Value="_model.PasswordConfirm" class="form-control" />
+                        <ValidationMessage For="@(() => _model.PasswordConfirm)" />
+                    </Controls>
+                </InputField>
+                
+                <button class="btn btn-primary">
+                    Зарегитрироваться
+                </button>
+                
+                <NavLink class="btn btn-secondary" href="log-in">
+                    Авторизация
+                </NavLink>
+                
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="alert alert-danger mt-3 mb-0">@_error</div>
+                }
+            </EditForm>
+        </div>
     </div>
 </div>
+
+
+@code
+{
+    private readonly RegisterHttpBody _model = new RegisterHttpBody();
+    private string _error;
+
+    private async void HandleValidSubmit()
+    {
+        try
+        {
+            await AuthService.Register(_model);
+            NavigationManager.NavigateTo("/log-in");
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}

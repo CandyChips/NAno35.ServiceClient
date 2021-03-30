@@ -4,30 +4,21 @@
     </NavLink>
 </div>
 <div>
-    <ul class="nav flex-column">
-        <AuthorizeView>
-            <Authorized>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/instance/units">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Подразделения
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/instance/workers">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Сотрудники
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/instance/clients">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Клиенты
-                    </NavLink>
-                </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/instance/storage">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Склад
-                    </NavLink>
-                </li>
-            </Authorized>
-        </AuthorizeView>
-    </ul>
+    <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Подразделения" Path="/instance/units" Icon="account_circle"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Сотрудники" Path="/instance/workers" Icon="account_circle"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Клиенты" Path="/instance/clients" Icon="account_circle"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Склад" Icon="payment">
+                <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage" Icon="input"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Оприходования" Path="/instance/coming" Icon="description"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Списания" Path="/instance/cancellations" Icon="payment"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Продажи" Path="/instance/sells" Icon="aspect_ratio"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Перемещения" Path="/instance/moves" Icon="date_range"></RadzenPanelMenuItem>
+            </RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Заказы на ремонт" Icon="payment">
+                <RadzenPanelMenuItem Text="Заказ наряды" Path="/instance/repairs" Icon="input"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Ремонты" Path="/instance/works" Icon="description"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="История" Path="/instance/works-story" Icon="payment"></RadzenPanelMenuItem>
+            </RadzenPanelMenuItem>
+    </RadzenPanelMenu>
 </div>

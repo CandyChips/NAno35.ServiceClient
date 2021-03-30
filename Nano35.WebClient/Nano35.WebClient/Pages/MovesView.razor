@@ -3,7 +3,7 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
-@page "/instance/cancellations"
+@page "/instance/moves"
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
 @inject ISessionProvider SessionProvider
@@ -19,7 +19,7 @@
 }
 else
 {
-    <RadzenHeading Text="Списания"/>
+    <RadzenHeading Text="Перемещения"/>
     
     <RadzenButton Click=@(_ => NewCancellation()) 
                   Text="Создать"
@@ -51,17 +51,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await (new GetAllCancellationsRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllCancellationsHttpQuery() 
-            {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
         _loading = false;
     }
 
     private void NewCancellation()
     {
-        Modal.Show<CancellationsCreate>("Новое списание");
+        Modal.Show<MovesCreate>("Новое списание");
     }
     
 }

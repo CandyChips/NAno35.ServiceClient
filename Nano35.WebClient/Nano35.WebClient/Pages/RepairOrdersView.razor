@@ -1,0 +1,43 @@
+﻿@attribute [Authorize]
+@layout InstanceLayout
+@page "/instance/repairs"
+@using Microsoft.AspNetCore.Authorization
+@using Nano35.WebClient.Services
+@inject IRequestManager RequestManager
+@inject IComingsService ComingsService
+@inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
+
+@if (_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <RadzenHeading Text="Заказ наряды"/>
+    
+    <RadzenButton Click=@(_ => NewOrder()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+}
+
+@code {
+    private bool _isLoaded;
+    [CascadingParameter] public IModalService Modal { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        _isLoaded = true;
+    }
+    
+    private void NewOrder()
+    {
+        Modal.Show<RepairOrdersCreate>("Новое оприходование");
+    }
+
+}

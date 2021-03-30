@@ -28,10 +28,13 @@ else
     }
     else
     {          
-        <RadzenButton Click=@(args => { _isNewClientDisplay = true; }) 
+        <RadzenHeading Text="Клиентская база"/>
+        
+        <RadzenButton Click=@(_ => { _isNewClientDisplay = true; }) 
                       Text="Создать"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="width: 100%" />
+                      Style="margin: 1rem 0;"
+                      ButtonStyle="ButtonStyle.Primary"/>
+        
         <Modal Title="Новое подразделение" 
                IsDisplay="@_isNewClientDisplay">
             <Form>
@@ -71,7 +74,7 @@ else
                             ButtonStyle="ButtonStyle.Danger"
                             Icon="close"
                             Size="ButtonSize.Small" 
-                            Click="@(args => { })">
+                            Click="@(_ => { })">
                         </RadzenButton>
                     </Template>
                 </RadzenGridColumn>

@@ -22,14 +22,14 @@
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
-                <RadzenButton Click=@(args => { _isNewArticleDisplay = true; })
+                <RadzenButton Click="@(_ => { _isNewArticleDisplay = true; })"
                               Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"/>
             </div>
             <Modal Title="Новое наименование"
                    IsDisplay="@_isNewArticleDisplay">
                 <Form>
-                    <CreateArticle/>
+                    <ArticleCreate/>
                 </Form>
             </Modal>
         </Controls>
@@ -37,7 +37,7 @@
 
     <InputField Title="Состояние*">
         <Controls>
-            <RadzenDropDown Data=@(_conditions.Select(a => new {Id = a.Id, Name = a.Name}))
+            <RadzenDropDown Data="@(_conditions.Select(a => new {Id = a.Id, Name = a.Name}))"
                             TextProperty="Name"
                             ValueProperty="Id"
                             TValue="Guid"
@@ -107,7 +107,6 @@
     [Parameter] public string Error { get; set; }
     
     private bool _isNewArticleDisplay = false;
-    private bool _isLoading = true;
     private List<ArticleViewModel> _articles = new List<ArticleViewModel>();
     private List<StorageItemConditionViewModel> _conditions = new List<StorageItemConditionViewModel>();
 
@@ -122,7 +121,6 @@
     {
         _conditions = (await new GetAllStorageItemConditionsRequest(RequestManager, HttpClient, new GetAllStorageItemConditionsHttpQuery()).Send()).Data.ToList();
         _articles = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
-        _isLoading = false;
     }
     
 }

@@ -30,11 +30,69 @@ else
                 AllowSorting="true" 
                 Data="@_data"
                 TItem="StorageItemOnInstanceViewModel">
+        <Template Context="item">
+            <div>
+                <div>
+                    @item.Item.RetailPrice руб.
+                </div>
+                <div>
+                    @item.Item.RetailPrice руб.
+                </div>
+            </div>
+        </Template>
         <Columns>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.Name" Title="Изделие"/>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.RetailPrice" Title="Цена продажи" />
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Item.PurchasePrice" Title="Закупочная стоимость" />
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel" Property="Count" Title="Количество" />
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+                              Property="Item.Name"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Изделие"/>
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px"
+                              Title="Цена продажи">
+                <Template Context="item">
+                    @item.Item.RetailPrice руб.
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px"
+                              Title="Закуп. стоимость">
+                <Template Context="item">
+                    @item.Item.PurchasePrice руб.
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Width="100px"
+                              Title="Наличие">
+                <Template Context="item">
+                    @item.Count шт.
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+                              Context="coming"
+                              Bubble="false"
+                              Sortable="false"
+                              Filterable="false"
+                              Width="200px"
+                              TextAlign="TextAlign.Center">
+                <Template Context="item">
+                    <RadzenButton
+                        ButtonStyle="ButtonStyle.Primary"
+                        Text="Продать"
+                        Size="ButtonSize.Small"
+                        Click="@(_ => { })"/>
+                    <RadzenButton
+                        ButtonStyle="ButtonStyle.Secondary"
+                        Text="Списать"
+                        Size="ButtonSize.Small"
+                        Click="@(_ => { })"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }

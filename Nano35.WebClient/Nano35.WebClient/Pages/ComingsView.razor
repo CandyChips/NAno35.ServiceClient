@@ -31,26 +31,51 @@ else
                 AllowPaging="true"
                 PageSize="10"
                 AllowSorting="true" 
+                RowExpand=@(args => { Console.WriteLine(args.ToString()); })
+                RowCollapse=@(args => { Console.WriteLine(args.ToString()); })
                 Data="@_data"
                 TItem="ComingViewModel">
+        <Template Context="item">
+            <div>
+                <div>
+                    @item.Cash руб.
+                </div>
+                <div>
+                    @item.Cash руб.
+                </div>
+            </div>
+        </Template>
         <Columns>
-            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Client" Title="Клиент" />
-            <RadzenGridColumn TItem="ComingViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="ComingViewModel" 
+                              Property="Number"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Номер" />
             <RadzenGridColumn TItem="ComingViewModel"
-                              Context="coming"
-                              Bubble="false"
-                              TextAlign="TextAlign.Center" 
-                              Width="70px">
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Дата">
                 <Template Context="item">
-                    <RadzenButton
-                        ButtonStyle="ButtonStyle.Info"
-                        Icon="search"
-                        Size="ButtonSize.Small" 
-                        Click="@(_ => { OpenComing(item); })">
-                    </RadzenButton>
+                    @item.Date.ToString("dd-MM-yyyy")
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Property="Unit" 
+                              Title="Подразделение" />
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Property="Client" 
+                              Title="Клиент" />
+            <RadzenGridColumn TItem="ComingViewModel" 
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px"
+                              Title="Цена">
+                <Template Context="item">
+                    @item.Cash руб.
                 </Template>
             </RadzenGridColumn>
         </Columns>

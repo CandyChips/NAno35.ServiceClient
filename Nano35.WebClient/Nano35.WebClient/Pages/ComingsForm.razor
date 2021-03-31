@@ -62,10 +62,7 @@
     </InputField>
 
     <RadzenFieldset Text="Оприходуемые товары">           
-        <RadzenButton Click=@(_ => AddDetail()) 
-                      Text="Добавить"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="width: 100%" />
+        
     
         <RadzenGrid Data="@_details"
                     EmptyText="Добавте оприходуемые товары..."
@@ -98,6 +95,10 @@
                 </RadzenGridColumn>
             </Columns>
         </RadzenGrid>
+        <RadzenButton Click=@(_ => AddDetail()) 
+            Text="Добавить"
+            ButtonStyle="ButtonStyle.Secondary"
+            Style="width: 100%" />
     </RadzenFieldset>
 }
 else

@@ -5,7 +5,7 @@
 @inject ISessionProvider SessionProvider
 
 <div style="width: 40rem;">
-    <CancellationsForm FormSubmitted="SendCreateComingRequest"
+    <CancellationsForm FormSubmitted="SendCreateCancellationRequest"
                        Model="_model" 
                        Error="@Error"/>
 </div>
@@ -19,8 +19,7 @@
     };
     
     private string Error { get; set; }
-    
-    private async Task SendCreateComingRequest()
+    private async Task SendCreateCancellationRequest()
     {
         try
         {

@@ -35,10 +35,22 @@ else
                 Data="@_data"
                 TItem="CancellationViewModel">
         <Columns>
-            <RadzenGridColumn TItem="CancellationViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="CancellationViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="CancellationViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="CancellationViewModel" Property="Client" Title="Клиент" />
+            <RadzenGridColumn TItem="CancellationViewModel"
+                              Property="Number" 
+                              Title="Номер" />
+            <RadzenGridColumn TItem="CancellationViewModel" 
+                              Property="Date" 
+                              Title="Дата" />
+            <RadzenGridColumn TItem="CancellationViewModel" 
+                              Property="Unit" 
+                              Title="Подразделение" />
+            <RadzenGridColumn TItem="CancellationViewModel"
+                                          Filterable="false"
+                                          Title="Дата">
+                <Template Context="item">
+                    @item.Date.ToString("dd-MM-yyyy")
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }
@@ -63,5 +75,5 @@ else
     {
         Modal.Show<CancellationsCreate>("Новое списание");
     }
-    
+
 }

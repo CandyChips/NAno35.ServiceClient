@@ -1,17 +1,21 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
+@using PlaceOnStorageViewModel = Nano35.Contracts.Storage.Models.PlaceOnStorageViewModel
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@_model" OnSubmit="HandleValidSubmit">
     @if (_isLoaded)
     {
         <DataAnnotationsValidator/>
         
         <InputField Title="Товар">
             <Controls>
-                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
+                <RadzenDropDown Data=@(StorageItems
+                                         .Select(a => 
+                                             new {Id = a.Id, 
+                                                 Name = $"{a.Article + " " + a.Condition}"}))
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
@@ -20,17 +24,27 @@
                                 Placeholder="..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
+                                AllowFiltering="true"
+                                Change="@GetAllPlacesOfStorageItem"/>
             </Controls>
         </InputField>
         
         <InputField Title="Ячейка на складе">
             <Controls>
-                <SelectComingDetailPlaceOnStorage 
-                    @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
+                <RadzenDropDown Data=@(Warehouse
+                                         .Select(a => 
+                                             new {Name = $"{a.Name + ":" + a.Count}"+" шт"}))
+                                TextProperty="Name"
+                                ValueProperty="Name"
+                                TValue="string"
+                                @bind-Value="_model.PlaceOnStorage"
+                                Style="width: 100%;"
+                                Placeholder="..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"/>
             </Controls>
         </InputField>
-        
         <InputField Title="Количество">
             <Controls>
                 <RadzenNumeric Style="width: 100%;" 
@@ -51,7 +65,8 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     private CreateCancellationDetailViewModel _model;
-    private List<StorageItemViewModel> StorageItems { get; set; }
+    private List<StorageItemViewModel> StorageItems { get; set; } = new List<StorageItemViewModel>();
+    private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new List<PlaceWithStorageItemOnUnit>();
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
@@ -65,12 +80,43 @@
         _isLoaded = true;
     }
 
+    private async Task GetAllPlacesOfStorageItem()
+    {
+        Console.WriteLine("1" + _model.StorageItemId);
+        var unitId = await SessionProvider.GetCurrentUnitId();
+        Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
+                RequestManager, 
+                HttpClient, 
+                new GetAllPlacesOfStorageItemOnUnitHttpQuery()
+                {
+                    StorageItemId = _model.StorageItemId,
+                    UnitContainsStorageItemId = unitId
+                    
+                })
+                .Send())
+                .Contains
+                .ToList();
+    }
+    
     private void HandleValidSubmit() 
     {
+        Console.WriteLine(_model.NewId);
+        Console.WriteLine(_model.Count);
+        Console.WriteLine(_model.PlaceOnStorage);
+        Console.WriteLine(_model.StorageItemId);
         ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        (await new GetAllStorageItemsRequest(
+            RequestManager, 
+            HttpClient, 
+            new GetAllStorageItemsQuery()
+            {
+                InstanceId = await SessionProvider.GetCurrentInstanceId()
+            })
+            .Send())
+            .Data
+            .ToList();
 
 }

@@ -68,6 +68,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<Guid> GetCurrentUnitId()
         {
+            Console.Write("qwe");
             return await _localStorage.GetItemAsync<Guid>("CurrentUnitId");
         }
 

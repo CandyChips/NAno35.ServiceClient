@@ -23,7 +23,7 @@
                                 TextProperty="Name" 
                                 ValueProperty="Id"
                                 TValue="Guid" 
-                                @bind-Value="Model.UnitId"
+                                @bind-Value="UnitId"
                                 Style="width: 100%;"
                                 Placeholder="Выберите целевое подразделение..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
@@ -42,9 +42,6 @@
         
         <InputField Title="Списываемые товары">
             <Controls>
-                <RadzenButton Click=@(_ => OpenAddDetail()) 
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"/>
                 <RadzenGrid Data=@(_details)
                             EmptyText="Добавте списываемые товары..."
                             TItem="CreateCancellationDetailViewModel">
@@ -72,6 +69,10 @@
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
+                <RadzenButton Click=@(_ => OpenAddDetail()) 
+                    Text="Добавить"
+                    ButtonStyle="ButtonStyle.Secondary"
+                    style = "width: 100%"/>
             </Controls>
         </InputField>
     }
@@ -100,6 +101,16 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public Guid UnitId
+    {
+        get => Model.UnitId;
+        set
+        {
+            if (Model.UnitId == value ) return;
+            Model.UnitId = value;
+            SessionProvider.SetCurrentUnitId(UnitId);
+        }
+    }
     private bool _isLoaded;
     private List<UnitViewModel> _units = new List<UnitViewModel>();
     private List<CreateCancellationDetailViewModel> _details = new List<CreateCancellationDetailViewModel>();

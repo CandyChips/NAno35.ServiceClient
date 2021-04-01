@@ -60,6 +60,8 @@ else
     private IEnumerable<CancellationViewModel> _data;
     private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,13 +69,27 @@ else
             RequestManager, 
             HttpClient, 
             new GetAllCancellationsHttpQuery() 
-            {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+                {UnitId = await SessionProvider.GetCurrentUnitId(), 
+                    InstanceId = await SessionProvider.GetCurrentInstanceId(),
+                }))
+            .Send())
+            .Data;
         _loading = false;
     }
 
-    private void NewCancellation()
+    private async void NewCancellation()
     {
         Modal.Show<CancellationsCreate>("Новое списание");
+        
+        _data = (await (new GetAllCancellationsRequest(
+            RequestManager, 
+            HttpClient, 
+            new GetAllCancellationsHttpQuery() 
+            {UnitId = await SessionProvider.GetCurrentUnitId(), 
+                InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            }))
+            .Send())
+            .Data;
     }
 
 }

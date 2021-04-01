@@ -126,6 +126,7 @@ else
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
     private List<ClientViewModel> _clients = new List<ClientViewModel>();
     private List<UnitViewModel> _units = new List<UnitViewModel>();
@@ -163,6 +164,7 @@ else
     {
         var modal = Modal.Show<AddComingDetailForm>($"Новая позиция к оприходованию");
         _details.Add((CreateComingDetailViewModel)(await modal.Result).Data);
+        await ModalInstance.CloseAsync();
     }
     
     private void NewClient()

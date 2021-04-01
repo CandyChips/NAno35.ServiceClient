@@ -17,10 +17,10 @@
 }
 else
 {
-    <InputField Title="Номер оприходования*">
+    <InputField Title="Номер продажи*">
         <Controls>
             <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="Введите уникальный номер оприходования..."
+                           Placeholder="Введите уникальный номер продажи..."
                            @bind-Value="Model.Number"/>
         </Controls>
     </InputField>
@@ -38,7 +38,7 @@ else
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
-                <RadzenButton Click=@(_ => NewClient())
+                <RadzenButton Click=@(_ => OpenAddClient())
                               Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"/>
             </div>
@@ -61,44 +61,44 @@ else
         </Controls>
     </InputField>
 
-    <RadzenFieldset Text="Оприходуемые товары">           
-        <RadzenButton Click=@(_ => NewSelleDetail())
-                      Text="Добавить"
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="width: 100%" />
-    
-        <RadzenGrid Data="@_details"
-                    EmptyText="Добавте оприходуемые товары..."
-                    TItem="CreateSelleDetailViewModel">
-            <Columns>
-                <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                  Property="PlaceOnStorage" 
-                                  Title="Товар" />
-                <RadzenGridColumn TItem="CreateSelleDetailViewModel" 
-                                  Property="PlaceOnStorage" 
-                                  Title="Место на складе" />
-                <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                  Property="Count"
-                                  Title="Количество" />
-                <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                  Property="Price" 
-                                  Title="Цена" />
-                <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                  Context="order"
-                                  Bubble="false"
-                                  TextAlign="TextAlign.Center" 
-                                  Width="70px">
-                    <Template Context="item">
-                        <RadzenButton
-                            ButtonStyle="ButtonStyle.Danger"
-                            Icon="close"
-                            Size="ButtonSize.Small">
-                        </RadzenButton>
-                    </Template>
-                </RadzenGridColumn>
-            </Columns>
-        </RadzenGrid>
-    </RadzenFieldset>
+    <InputField Title="Продаваемые товары">
+        <Controls>
+            <RadzenGrid Data=@(_details)
+                        EmptyText="Добавте продаваемые товары..."
+                        TItem="CreateSelleDetailViewModel">
+                <Columns>
+                    <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                      Property="PlaceOnStorage" 
+                                      Title="Товар" />
+                    <RadzenGridColumn TItem="CreateSelleDetailViewModel" 
+                                      Property="PlaceOnStorage" 
+                                      Title="Место на складе" />
+                    <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                      Property="Count"
+                                      Title="Количество" />
+                    <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                      Property="Price"
+                                      Title="Цена" />
+                    <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                      Bubble="false"
+                                      TextAlign="TextAlign.Center" 
+                                      Width="70px">
+                        <Template Context="item">
+                            <RadzenButton Click=@(_ => DeleteDetail(item))
+                                          ButtonStyle="ButtonStyle.Danger"
+                                          Icon="close"
+                                          Size="ButtonSize.Small">
+                            </RadzenButton>
+                        </Template>
+                    </RadzenGridColumn>
+                </Columns>
+            </RadzenGrid>
+            <RadzenButton Click=@(_ => OpenAddDetail()) 
+                          Text="Добавить"
+                          ButtonStyle="ButtonStyle.Secondary"
+                          style = "width: 100%"/>
+        </Controls>
+    </InputField>
 }
 @if (!string.IsNullOrEmpty(Error))
 {
@@ -117,31 +117,51 @@ else
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
     private List<ClientViewModel> _clients = new List<ClientViewModel>();
     private List<UnitViewModel> _units = new List<UnitViewModel>();
     private List<CreateSelleDetailViewModel> _details = new List<CreateSelleDetailViewModel>();
     private bool _isLoaded;
-
-    private async void Create()
-    {
-        Model.Details = _details.Select(a => 
-            new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-        await FormSubmitted.InvokeAsync();
-    }
-
-    private void AddSelleDetail(CreateSelleDetailViewModel model)
-    {
-        _details.Add(model);
-    }
     
     protected override async Task OnInitializedAsync()
+        {
+            _isLoaded = false;
+            _clients = await LoadClients();
+            _units = await LoadUnits();
+            _isLoaded = true;
+        }
+
+    private void OpenAddClient()
     {
-        _isLoaded = false;
-        _clients = await LoadClients();
-        _units = await LoadUnits();
-        _isLoaded = true;
+        var moviesModal = Modal.Show<CreateClient>("Новый клиент");
     }
+    
+    private async Task OpenAddDetail()
+    {
+        var moviesModal = Modal.Show<SellesDetailForm>("Новая деталь продажи");
+        var result = await moviesModal.Result;
+
+        if (result.Data is CreateSelleDetailViewModel success)
+        {
+            _details.Add(success);  
+        }
+    }
+    
+    private void DeleteDetail(CreateSelleDetailViewModel item)
+    {
+        Console.WriteLine("Detail deleted");
+        _details.Remove(item);
+        StateHasChanged();
+    }
+    
+    private async void Create()
+        {
+            Model.Details = _details.Select(a => 
+                new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            await FormSubmitted.InvokeAsync();
+            await ModalInstance.CloseAsync();
+        }
     
     private async Task<List<ClientViewModel>> LoadClients() => 
         (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
@@ -149,12 +169,4 @@ else
     private async Task<List<UnitViewModel>> LoadUnits() =>
         (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private void NewClient()
-    {
-        Modal.Show<CreateClient>("Новый клиент");
-    }
-    private void NewSelleDetail()
-    {
-        Modal.Show<SellesDetailForm>("Новая деталь продажи");
-    }
 }

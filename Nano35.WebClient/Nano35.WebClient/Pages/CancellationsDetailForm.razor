@@ -33,7 +33,7 @@
             <Controls>
                 <RadzenDropDown Data=@(Warehouse
                                          .Select(a => 
-                                             new {Name = $"{a.Name + ":" + a.Count}"+" шт"}))
+                                             new {Name = a.Name}))
                                 TextProperty="Name"
                                 ValueProperty="Name"
                                 TValue="string"
@@ -82,7 +82,6 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        Console.WriteLine("1" + _model.StorageItemId);
         var unitId = await SessionProvider.GetCurrentUnitId();
         Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
                 RequestManager, 
@@ -100,10 +99,6 @@
     
     private void HandleValidSubmit() 
     {
-        Console.WriteLine(_model.NewId);
-        Console.WriteLine(_model.Count);
-        Console.WriteLine(_model.PlaceOnStorage);
-        Console.WriteLine(_model.StorageItemId);
         ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     

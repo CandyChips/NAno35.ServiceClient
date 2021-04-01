@@ -23,7 +23,7 @@
                                 TextProperty="Name" 
                                 ValueProperty="Id"
                                 TValue="Guid" 
-                                @bind-Value="UnitId"
+                                @bind-Value="Model.UnitId"
                                 Style="width: 100%;"
                                 Placeholder="Выберите целевое подразделение..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
@@ -101,6 +101,7 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid UnitId
     {
         get => Model.UnitId;
@@ -145,6 +146,7 @@
         Model.Details = _details.Select(a => 
             new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
         await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
     }
     
     private async Task<List<UnitViewModel>> LoadUnits() =>

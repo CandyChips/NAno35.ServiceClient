@@ -16,7 +16,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllCancellationsSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.StorageServer}/Warehouse/GetAllCancellations?InstanceId={Request.InstanceId}");
+            var response = await HttpClient.GetAsync($"{RequestManager.StorageServer}/Warehouse/GetAllCancellations?InstanceId={Request.InstanceId}&UnitId={Request.UnitId}");
             if (response.IsSuccessStatusCode) 
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllCancellationsSuccessHttpResponse>());

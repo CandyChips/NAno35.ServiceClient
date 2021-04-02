@@ -1,0 +1,141 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Blazored.FluentValidation
+@using Nano35.HttpContext.Repair
+@using Nano35.HttpContext.storage
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<EditForm Model="@Model"
+          OnValidSubmit="Create">
+    <FluentValidationValidator/>
+    <ValidationSummary/>
+    @if (_isLoaded)
+    {
+        <InputField Title="Клиент*">
+            <Controls>
+                <div style="display: flex; width: 100%;">
+                    <RadzenDropDown Data=@(_clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="Model.ClientId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите клиента..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(_ => NewClient())
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                </div>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Артикул*">
+            <Controls>
+                <div style="display: flex; width: 100%;">
+                    <RadzenDropDown Data=@(_articles.Select(a => new {Id = a.Id, Name = $"{a.Brand} - {a.Model}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="Model.DeviceId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите артикул..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </div>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Серийный номер*">
+            <Controls>
+                <RadzenTextBox style="width: 100%;"
+                               Placeholder="Введите серийный номер"
+                               @bind-Value="Model.Serial"/>
+            </Controls>
+        </InputField>
+
+        <InputField Title="Состояние*">
+            <Controls>
+                <RadzenTextBox style="width: 100%;"
+                               Placeholder="Опишите состояние устройства"
+                               @bind-Value="Model.Condition"/>
+            </Controls>
+        </InputField>
+
+        <InputField Title="Неисправность">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;"
+                               Placeholder="Опишите неисправность"
+                               @bind-Value="Model.Trouble"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Комплектация">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;"
+                               Placeholder="Опишите Комплектацию"
+                               @bind-Value="Model.Complication"/>
+            </Controls>
+        </InputField>
+    }
+    else
+    {
+        <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden"></span>
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
+    }
+
+    <RadzenButton type="submit"
+                  Text="Списать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%"/>
+</EditForm>
+
+@code
+{
+    [Parameter] public CreateRepairOrderHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    
+    private bool _isLoaded;
+    private List<ClientViewModel> _clients = new List<ClientViewModel>();
+    private List<ArticleViewModel> _articles = new List<ArticleViewModel>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        _clients = await LoadClients();
+        _articles = await LoadArticles();
+        _isLoaded = true;
+    }
+
+    private async void Create()
+    {
+        await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
+    }
+    
+    private void NewClient()
+    {
+        Modal.Show<CreateClient>($"Новый клиент");
+    }
+   
+    private async Task<List<ClientViewModel>> LoadClients() => 
+        (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId(), ClientTypeId = Guid.Parse("5E9FFC4F-4A52-4C49-0CF2-08D8D1D70D30")}).Send()).Data.ToList();
+    private async Task<List<ArticleViewModel>> LoadArticles() => 
+        (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+
+    
+}

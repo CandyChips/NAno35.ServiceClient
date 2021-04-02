@@ -25,16 +25,17 @@ namespace Nano35.WebClient
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>(); 
-            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<IRepairOrdersService, RepairOrdersService>();
             builder.Services.AddScoped<IRequestManager, ClusterRequestManager>();
             builder.Services.AddScoped<IInstancesService, InstancesService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();
-            builder.Services.AddScoped<IWorkerService, WorkerService>();
-            builder.Services.AddScoped<IUnitService, UnitService>();
-            builder.Services.AddScoped<IClientService, ClientService>();
-            builder.Services.AddScoped<IComingsService, ComingsService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
+            builder.Services.AddScoped<IComingsService, ComingsService>();
+            builder.Services.AddScoped<IWorkerService, WorkerService>();
+            builder.Services.AddScoped<IClientService, ClientService>();
+            builder.Services.AddScoped<IUnitService, UnitService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();

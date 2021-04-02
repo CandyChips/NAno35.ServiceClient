@@ -1,0 +1,47 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.storage
+@using PlaceOnStorageViewModel = Nano35.Contracts.Storage.Models.PlaceOnStorageViewModel
+@using Nano35.HttpContext.Repair
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject IRepairOrdersService RepairService
+@inject ISessionProvider SessionProvider
+
+@if (_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <h3>Работник: @_model.Manager</h3>
+    <h3>Серийный номер: @_model.Serial</h3>
+    <h3>Состояние: @_model.Condition</h3>
+    <h3>Комплектация: @_model.Complication</h3>
+
+}
+@code
+{
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public Guid Id { get; set; }
+
+    private GetRepairOrderByIdSuccessHttpResponse.RepairOrderViewModel _model = new GetRepairOrderByIdSuccessHttpResponse.RepairOrderViewModel();
+    private bool _isLoaded  ;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = (await (new GetRepairOrderByIdRequest(
+            RequestManager, 
+            HttpClient, 
+            new GetRepairOrderByIdHttpBody() 
+            {Id = Id
+            }))
+            .Send())
+            .Data;
+        
+        _isLoaded = false;
+    }
+}

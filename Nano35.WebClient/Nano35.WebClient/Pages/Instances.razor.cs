@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Nano35.Contracts.Instance.Models;
 using Nano35.WebClient.Services;
 using InstanceViewModel = Nano35.HttpContext.instance.InstanceViewModel;
 

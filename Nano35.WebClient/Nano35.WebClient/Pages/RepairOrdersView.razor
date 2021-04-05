@@ -2,7 +2,6 @@
 @layout InstanceLayout
 @page "/instance/repairs"
 @using Microsoft.AspNetCore.Authorization
-@using Nano35.Contracts.Repair.Models
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Services
 @inject IRequestManager RequestManager
@@ -34,30 +33,34 @@ else
                 PageSize="10"
                 AllowSorting="true"
                 Data="@_data"
-                TItem="GetAllRepairOrdersSuccessHttpResponse.RepairOrderViewModel">
-        <Template Context="item">
-            <RadzenButton Click=@(_ => DetailsOpen(item.Id))
-                          Text="Информация"
-                          Style="margin: 1rem 0;"
-                          ButtonStyle="ButtonStyle.Info"/>
-            </Template>
+                TItem="RepairOrderViewModel">
         <Columns>
-            <RadzenGridColumn TItem="GetAllRepairOrdersSuccessHttpResponse.RepairOrderViewModel"
+            <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Client"
                               Title="Клиент"/>
-            <RadzenGridColumn TItem="GetAllRepairOrdersSuccessHttpResponse.RepairOrderViewModel"
+            <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Device"
                               Title="Изделие"/>
-            <RadzenGridColumn TItem="GetAllRepairOrdersSuccessHttpResponse.RepairOrderViewModel"
+            <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="LastState"
                               Title="Статус"/>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Bubble="false"
+                              TextAlign="TextAlign.Center" 
+                              Width="200px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => DetailsOpen(item.Id))
+                                  Text="Информация"
+                                  ButtonStyle="ButtonStyle.Info"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }
 
 @code {
     private bool _isLoaded = true;
-    private List<GetAllRepairOrdersSuccessHttpResponse.RepairOrderViewModel> _data;
+    private List<RepairOrderViewModel> _data;
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     
@@ -71,7 +74,7 @@ else
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(RepairOrdersDetailForm.Id), id);
-        Modal.Show<RepairOrdersDetailForm>("Информация", parameters);
+        Modal.Show<RepairOrdersDetailForm>($"Заказ наряд от {_data.FirstOrDefault().Client}", parameters);
     }
     
     private async Task NewOrder()

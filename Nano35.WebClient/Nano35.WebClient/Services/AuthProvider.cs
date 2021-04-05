@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Nano35.Contracts.Identity.Artifacts;
-using Nano35.Contracts.Identity.Models;
 using Nano35.HttpContext.identity;
 
 
@@ -59,7 +56,7 @@ namespace Nano35.WebClient.Services
         }
     }
 
-    public class GetUserByIdErrorResultContract : IGetUserByIdErrorResultContract
+    public class GetUserByIdErrorResultContract : GetUserByIdErrorHttpResponse //<- after remove contracts from project
     {
         public string Message { get; set; }
     }

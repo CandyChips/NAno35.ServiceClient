@@ -1,16 +1,11 @@
-﻿using Nano35.Contracts.Identity.Artifacts;
-using Nano35.HttpContext.identity;
+﻿using Nano35.HttpContext.identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Nano35.Contracts.Identity.Models;
-using Nano35.WebClient.Services;
 
 namespace Nano35.WebClient.Services
 {
@@ -19,7 +14,7 @@ namespace Nano35.WebClient.Services
         Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest);
         Task LogOut();
         Task<GetUserByIdSuccessHttpResponse> GetCurrentUser();
-        Task<IRegisterResultContract> Register(RegisterHttpBody model);
+        Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model);
     }
 
     public class AuthService : IAuthService
@@ -74,7 +69,7 @@ namespace Nano35.WebClient.Services
             throw new NotImplementedException();
         }
 
-        public Task<IRegisterResultContract> Register(RegisterHttpBody model)
+        public Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model)
         {
             throw new NotImplementedException();
         }

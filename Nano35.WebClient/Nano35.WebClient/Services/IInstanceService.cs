@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using Nano35.Contracts.Instance.Models;
 using Nano35.HttpContext.instance;
-using Nano35.WebClient.Pages;
 
 namespace Nano35.WebClient.Services
 {

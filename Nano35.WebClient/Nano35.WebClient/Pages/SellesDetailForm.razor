@@ -111,12 +111,6 @@
     
     private void HandleValidSubmit() 
     {
-        Console.WriteLine(_model.Price);
-        Console.WriteLine(_model.Count);
-        Console.WriteLine(_model.NewId);
-        Console.WriteLine(_model.PlaceOnStorage);
-        Console.WriteLine(_model.StorageItemId);
-
         ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     

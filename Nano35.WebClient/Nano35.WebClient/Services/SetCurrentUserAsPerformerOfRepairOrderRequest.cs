@@ -1,0 +1,26 @@
+﻿using System;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using Nano35.HttpContext.instance;
+using Nano35.HttpContext.Repair;
+
+namespace Nano35.WebClient.Services
+{
+    public class SetCurrentUserAsPerformerOfRepairOrderRequest : 
+        RequestProvider<SetCurrentUserAsPerformerOfRepairOrderHttpBody, SetCurrentUserAsPerformerOfRepairOrderHttpResponse>
+    {
+        public SetCurrentUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetCurrentUserAsPerformerOfRepairOrderHttpBody request) : 
+            base(requestManager, httpClient, request) { }
+
+        public override async Task<SetCurrentUserAsPerformerOfRepairOrderHttpResponse> Send()
+        {
+            var response = await HttpClient.GetAsync($"http://localhost:5004/Work/SetCurrentUserAsPerformerOfRepairOrder?CurrentUserId={Request.CurrentUserId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return (await response.Content.ReadFromJsonAsync<SetCurrentUserAsPerformerOfRepairOrderHttpResponse>());
+            }
+            throw new Exception(await response.Content.ReadFromJsonAsync<string>());
+        }
+    }
+}

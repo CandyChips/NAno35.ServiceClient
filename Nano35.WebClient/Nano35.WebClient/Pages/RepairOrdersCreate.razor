@@ -16,7 +16,7 @@
     private CreateRepairOrderHttpBody _model = new CreateRepairOrderHttpBody
     {
         NewId = Guid.NewGuid(),
-        InstanceId = Guid.Empty
+        InstanceId = Guid.Empty,
     };
     
     private string Error { get; set; }
@@ -37,7 +37,8 @@
         _model = new CreateRepairOrderHttpBody
         {
             NewId = Guid.NewGuid(),
-            InstanceId = await SessionProvider.GetCurrentInstanceId()
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+           
         };
     }
 }

@@ -1,0 +1,57 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Nano35.HttpContext.Repair
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject IInstanceService InstanceService
+
+<EditForm Model="@Model" 
+          OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    
+    <InputField Title="Название работы">
+        <Controls>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Name"/>
+        </Controls>
+    </InputField>
+    
+    <InputField Title="Цена">
+        <Controls>
+            <RadzenNumeric ShowUpDown="false" 
+                           TValue="double"
+                           Placeholder="..."
+                           @bind-Value="Model.Price"/>
+        </Controls>
+    </InputField>
+
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
+    }
+    
+    <RadzenButton type="submit"
+                  Text="Создать"
+                  ButtonStyle="ButtonStyle.Primary"
+                  Style="width: 100%" />
+</EditForm>
+
+@code
+{
+    [Parameter] public CreateWorkHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public string Error { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
+    }
+}

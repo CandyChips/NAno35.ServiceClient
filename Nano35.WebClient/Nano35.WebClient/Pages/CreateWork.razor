@@ -1,0 +1,41 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.Repair
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<WorkForm FormSubmitted="Submit"
+            Model="_model" 
+            Error="@Error"/>
+
+@code
+{
+    private CreateWorkHttpBody _model = new CreateWorkHttpBody
+    {
+        NewId = Guid.NewGuid(),
+        InstanceId = Guid.Empty
+    };
+    
+    private string Error { get; set; }
+    
+    private async Task Submit()
+    {
+        try
+        {
+            await new CreateWorkRequest(RequestManager, HttpClient, _model).Send();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateWorkHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+    }
+}

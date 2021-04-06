@@ -1,0 +1,99 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.storage
+@using Nano35.HttpContext.Repair
+@using Nano35.HttpContext.instance
+@using Radzen.Blazor.Rendering
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+@if (!_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <EditForm Model="_model" OnSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator/>
+        <InputField Title="Работа">
+                <Controls>
+                    <div style="display: flex; width: 100%;">
+                        <RadzenDropDown Data=@(_works.Select(a => new {Id = a.Id, Name = a.Name}))
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
+                                        TValue="Guid"
+                                        @bind-Value="_model.WorkId"
+                                        Style="width: 100%;"
+                                        Placeholder="Выберите выполняемую работу..."
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        FilterOperator="StringFilterOperator.Contains"
+                                        AllowFiltering="true"
+                                        Change="@WorkChanged"/>
+                        <RadzenButton Click=@(_ => NewWork())
+                                      Text="Добавить"
+                                      ButtonStyle="ButtonStyle.Secondary"/>
+                    </div>
+                </Controls>
+            </InputField>
+        <InputField Title="Комментарий">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="@_model.Comment"/>
+            </Controls>
+        </InputField>
+        <InputField Title="Цена">
+            <Controls>
+                <RadzenNumeric ShowUpDown="false" 
+                               TValue="double"
+                               Placeholder="..."
+                               @bind-Value="@_model.Price"/>
+            </Controls>
+        </InputField>
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    </EditForm>
+}
+
+@code
+{
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public Guid RepairOrderId { get; set; }
+    
+    private bool _isLoaded;
+    private UpdateRepairOrdersWorkHttpBody _model = new UpdateRepairOrdersWorkHttpBody();
+    private List<GetAllWorksSuccessHttpResponse.WorkViewModel>  _works = new List<GetAllWorksSuccessHttpResponse.WorkViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        _model.NewId = Guid.NewGuid();
+        _model.RepairOrderId = RepairOrderId;
+        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpBody() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+        _isLoaded = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await (new UpdateRepairOrdersWorkRequest(RequestManager, HttpClient, _model)).Send();
+        await ModalInstance.CloseAsync();
+    }
+
+    private async Task NewWork()
+    {
+        Modal.Show<CreateWork>($"Новая работа");
+        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpBody() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+    }
+
+    private void WorkChanged()
+    {
+        _model.Price = _works.FirstOrDefault(a=> a.Id == _model.WorkId).Price;
+    }
+}

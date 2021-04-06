@@ -17,7 +17,7 @@ else
 {
     <div style="display: flex;">
         <RadzenFieldset Text="Информация">
-            <div>Работник:</div>
+            <div>Должность:</div>
             <b>@_model.Manager</b>
             
             <div>Устройство:</div>
@@ -34,6 +34,11 @@ else
             
             <div>Серийный номер/IMEI:</div>
             <b>@_model.Serial</b>
+            
+            <RadzenButton Click=@(_ => BecomeWorker())
+                          Text="Стать исполнителем"
+                          Style="width: 100%;"
+                          ButtonStyle="ButtonStyle.Primary"/>
         </RadzenFieldset>
         <RadzenFieldset Text="Состояние">
             <ul class="list-group">
@@ -51,7 +56,25 @@ else
         </RadzenFieldset>
     </div>
     <RadzenFieldset Text="Работы">
-        123
+        <RadzenButton Click=@(_ => AddWork())
+                      Text="Добавить работу"
+                      Style="width: 100%;"
+                      ButtonStyle="ButtonStyle.Primary"/>
+        <RadzenGrid Data="@_works"
+                            EmptyText="Нет проведенных работ..."
+                            TItem="RepairOrderWorkViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="RepairOrderWorkViewModel" 
+                                          Property="Name" 
+                                          Title="Наименование работы" />
+                        <RadzenGridColumn TItem="RepairOrderWorkViewModel"
+                                          Property="Comment"
+                                          Title="Комментарий" />
+                        <RadzenGridColumn TItem="RepairOrderWorkViewModel"
+                                          Property="Price" 
+                                          Title="Цена" />
+                    </Columns>
+                </RadzenGrid>
     </RadzenFieldset>
     
 }
@@ -62,6 +85,7 @@ else
     [Parameter] public Guid Id { get; set; }
 
     private RepairOrderDetailsViewModel _model = new RepairOrderDetailsViewModel();
+    private List<RepairOrderWorkViewModel> _works = new List<RepairOrderWorkViewModel>();
     private bool _isLoaded = false;
     private enum StateTypes
     {
@@ -75,17 +99,30 @@ else
     protected override async Task OnInitializedAsync()
     {
         _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
+        _works = _model.Works;
         _isLoaded = true;
     }
 
+    private async Task AddWork()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
+        var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
+        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
+        _works = _model.Works;
+    }
+    
     private async Task UpdateState(Guid modelId)
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
         await modal.Result;
-        _isLoaded = false;
         _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
-        _isLoaded = true;
+    }
+
+    private void BecomeWorker()
+    {
+        
     }
 }

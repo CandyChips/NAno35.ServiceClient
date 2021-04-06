@@ -95,9 +95,11 @@ else
         _loading = false;
     }
 
-    private void NewComing()
+    private async void NewComing()
     {
-        Modal.Show<ComingsCreate>("Новое оприходование");
+        var tmp = Modal.Show<ComingsCreate>("Новое оприходование");
+        await tmp.Result;
+        _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
     }
 
     private void OpenComing(ComingViewModel coming)

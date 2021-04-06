@@ -139,6 +139,7 @@ else
         Model.Details = _details.Select(a => 
             new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
         await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
     }
 
     private void AddComingDetail(CreateComingDetailViewModel model)

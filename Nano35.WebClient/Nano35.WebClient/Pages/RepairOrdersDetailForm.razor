@@ -15,47 +15,54 @@
 }
 else
 {
-    <RadzenCard class="row">
-        <div class="col-12 col-sm-6 col-md-8" style="alignment: left">
-            <div class="row">
-                <div>Текущее состояние @laststate</div>
-                <RadzenButton Click=@(_ => UpdateState(_model.Id))
-                              Text="Информация"
-                              ButtonStyle="ButtonStyle.Info"/>
-            </div>
-            <div>Работник: @_model.Manager</div>
-            <div>Устройство: @_model.Device</div>
-            <div>Поломка: @_model.Trouble</div>
-            <div>Состояние: @_model.Condition</div>
-            <div>Комплектация: @_model.Complication</div>
-            <div>Серийный номер: @_model.Serial</div>
-        </div>
-      <div class="col-6 col-md-4" style="alignment: right">
-          @foreach (var state in _states)
-          {
-              <tr>
-                  <div>@state.Type</div>
-                  <div>@state.Date</div>
-                  <div>@state.Comment</div>
-                  <hr>
-              </tr>
-          }
-      </div>
-    </RadzenCard>
-
+    <div style="display: flex;">
+        <RadzenFieldset Text="Информация">
+            <div>Работник:</div>
+            <b>@_model.Manager</b>
+            
+            <div>Устройство:</div>
+            <b>@_model.Device</b>
+            
+            <div>Неисправность со слов клиента:</div>
+            <b>@_model.Trouble</b>
+            
+            <div>Внешний вид:</div>
+            <b>@_model.Condition</b>
+            
+            <div>Комплектация:</div>
+            <b>@_model.Complication</b>
+            
+            <div>Серийный номер/IMEI:</div>
+            <b>@_model.Serial</b>
+        </RadzenFieldset>
+        <RadzenFieldset Text="Состояние">
+            <ul class="list-group">
+            @foreach (var state in _model.States)
+            {
+                <li class="list-group-item alert alert-primary" role="alert">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>
+            }
+                <li class="list-group-item">
+                    <RadzenButton Click=@(_ => UpdateState(_model.Id))
+                                  Text="Изменить"
+                                  Style="width: 100%;"
+                                  ButtonStyle="ButtonStyle.Info"/>
+                </li>
+            </ul>
+        </RadzenFieldset>
+    </div>
+    <RadzenFieldset Text="Работы">
+        123
+    </RadzenFieldset>
     
-    
-    }
+}
 @code
 {
-    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    [Parameter] public Guid Id { get; set; }
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public Guid Id { get; set; }
 
     private RepairOrderDetailsViewModel _model = new RepairOrderDetailsViewModel();
-    private List<RepairOrdersStateViewModel> _states = new List<RepairOrdersStateViewModel>();
     private bool _isLoaded = false;
-    private StateTypes laststate;
     private enum StateTypes
     {
         Created = 0,
@@ -67,25 +74,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _model = (await (new GetRepairOrderDetailsByIdRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetRepairOrderDetailsByIdHttpBody() 
-            {Id = Id
-            }))
-            .Send())
-            .Data;
-
-        _states = _model.States;
-        var laststate = (StateTypes)_states.LastOrDefault().Type;
+        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
         _isLoaded = true;
     }
 
     private async Task UpdateState(Guid modelId)
     {
-        var modal = Modal.Show<UpdateRepairOrderStateForm>($"Новая позиция к оприходованию");
-        OnInitializedAsync();
-        _model.States.Add((RepairOrdersStateViewModel)(await modal.Result).Data);
-        await ModalInstance.CloseAsync();
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
+        var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
+        await modal.Result;
+        _isLoaded = false;
+        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
+        _isLoaded = true;
     }
 }

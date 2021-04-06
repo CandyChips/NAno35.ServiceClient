@@ -1,21 +1,29 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
+@using Nano35.HttpContext.Repair
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm OnSubmit="HandleValidSubmit">
-    @if (_isLoaded)
-    {
+@if (!_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <EditForm Model="_model" OnSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
-        
         <InputField Title="Товар">
             <Controls>
                 <RadzenDropDown Data=@(StateTypes.Select(a => new {Id = a.Item1, Name = a.Item2}))
                                 TextProperty="Name"
                                 ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="_model.TypeId"
+                                TValue="int"
+                                @bind-Value="@_model.TypeId"
                                 Style="width: 100%;"
                                 Placeholder="..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
@@ -23,34 +31,33 @@
                                 AllowFiltering="true"/>
             </Controls>
         </InputField>
-        
-        <InputField Title="комментарий">
+        <InputField Title="Комментарий">
             <Controls>
                 <RadzenTextBox Style="width: 100%;" 
                                Placeholder="..."
-                               @bind-Value="comment"/>
+                               @bind-Value="@_model.Comment"/>
             </Controls>
         </InputField>
-
         <RadzenButton type="submit"
                       Text="Создать"
                       ButtonStyle="ButtonStyle.Primary"
                       Style="width: 100%" />
-    }
-</EditForm>
+    </EditForm>
+}
 
 @code
 {
-    [CascadingParameter]
-    BlazoredModalInstance ModalInstance { get; set; }
-
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public Guid RepairOrderId { get; set; }
+    
     private bool _isLoaded;
-    private string comment;
-    private UpdateRepairOrderStateForm _model = new UpdateRepairOrderStateForm();
+    private UpdateRepairOrdersStateHttpBody _model = new UpdateRepairOrdersStateHttpBody();
 
-    private List<Tuple<int,string>> StateTypes { get; set; }
+    private List<Tuple<int, string>> StateTypes { get; set; } = new List<Tuple<int, string>>();
     protected override async Task OnInitializedAsync()
     {
+        _model.NewId = Guid.NewGuid();
+        _model.RepairOrderId = RepairOrderId;
         StateTypes.Add(new Tuple<int, string>(0, "Новый"));
         StateTypes.Add(new Tuple<int, string>(1, "В работе"));
         StateTypes.Add(new Tuple<int, string>(2, "Завершен"));
@@ -59,9 +66,10 @@
         _isLoaded = true;
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        ModalInstance.CloseAsync();
+        await (new UpdateRepairOrdersStateRequest(RequestManager, HttpClient, _model)).Send();
+        await ModalInstance.CloseAsync();
     }
 
 }

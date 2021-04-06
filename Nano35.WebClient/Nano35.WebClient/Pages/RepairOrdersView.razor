@@ -36,16 +36,24 @@ else
                 TItem="RepairOrderViewModel">
         <Columns>
             <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Property="LastState.Comment"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Статус"/>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Client"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Клиент"/>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Device"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Изделие"/>
             <RadzenGridColumn TItem="RepairOrderViewModel"
-                              Property="LastState"
-                              Title="Статус"/>
-            <RadzenGridColumn TItem="RepairOrderViewModel"
                               Bubble="false"
+                              Filterable="false"
+                              Sortable="false"
                               TextAlign="TextAlign.Center" 
                               Width="200px">
                 <Template Context="item">
@@ -74,7 +82,7 @@ else
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(RepairOrdersDetailForm.Id), id);
-        Modal.Show<RepairOrdersDetailForm>($"Заказ наряд от {_data.FirstOrDefault().Client}", parameters);
+        Modal.Show<RepairOrdersDetailForm>($"Заказ наряд", parameters);
     }
     
     private async Task NewOrder()

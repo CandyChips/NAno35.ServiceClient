@@ -8,18 +8,18 @@ using Nano35.HttpContext.storage;
 namespace Nano35.WebClient.Services
 {
     public class CreateRepairOrderRequest : 
-        RequestProvider<CreateRepairOrderHttpBody, CreateRepairOrderSuccessHttpResponse>
+        RequestProvider<CreateRepairOrderBody, CreateRepairOrderSuccessResponse>
     {
-        public CreateRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderHttpBody request) : 
+        public CreateRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderBody request) : 
             base(requestManager, httpClient, request)
         { }
 
-        public override async Task<CreateRepairOrderSuccessHttpResponse> Send()
+        public override async Task<CreateRepairOrderSuccessResponse> Send()
         {         
             var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrder/CreateRepairOrder", Request);
             if (response.IsSuccessStatusCode)
             {
-                return (await response.Content.ReadFromJsonAsync<CreateRepairOrderSuccessHttpResponse>());
+                return (await response.Content.ReadFromJsonAsync<CreateRepairOrderSuccessResponse>());
             }
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }

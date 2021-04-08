@@ -5,7 +5,6 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Services
 @inject IRequestManager RequestManager
-@inject IRepairOrdersService RepairService
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
@@ -74,7 +73,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await RepairService.GetAllRepairOrders(await SessionProvider.GetCurrentInstanceId())).Data;
+        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersBody() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
         _isLoaded = false;
     }
 
@@ -89,7 +88,7 @@ else
     {
         Modal.Show<RepairOrdersCreate>("Новый наряд");
         
-        _data = (await RepairService.GetAllRepairOrders(await SessionProvider.GetCurrentInstanceId())).Data;
+        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersBody() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
 
     }
 

@@ -26,7 +26,6 @@ namespace Nano35.WebClient
             builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-            builder.Services.AddScoped<IRepairOrdersService, RepairOrdersService>();
             builder.Services.AddScoped<IRequestManager, ClusterRequestManager>();
             builder.Services.AddScoped<IInstancesService, InstancesService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();

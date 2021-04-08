@@ -68,8 +68,8 @@ else
     [Parameter] public Guid RepairOrderId { get; set; }
     
     private bool _isLoaded;
-    private UpdateRepairOrdersWorkHttpBody _model = new UpdateRepairOrdersWorkHttpBody();
-    private List<GetAllWorksSuccessHttpResponse.WorkViewModel>  _works = new List<GetAllWorksSuccessHttpResponse.WorkViewModel>();
+    private CreateRepairOrderWorkBody _model = new CreateRepairOrderWorkBody();
+    private List<WorkViewModel>  _works = new List<WorkViewModel>();
 
     protected override async Task OnInitializedAsync()
     {

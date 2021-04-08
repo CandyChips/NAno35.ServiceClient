@@ -51,7 +51,7 @@ else
     [Parameter] public Guid RepairOrderId { get; set; }
     
     private bool _isLoaded;
-    private UpdateRepairOrdersStateHttpBody _model = new UpdateRepairOrdersStateHttpBody();
+    private CreateRepairOrderStateBody _model = new CreateRepairOrderStateBody();
 
     private List<Tuple<int, string>> StateTypes { get; set; } = new List<Tuple<int, string>>();
     protected override async Task OnInitializedAsync()
@@ -68,8 +68,11 @@ else
 
     private async Task HandleValidSubmit()
     {
-        await (new UpdateRepairOrdersStateRequest(RequestManager, HttpClient, _model)).Send();
+        var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrder/CreateRepairOrderState", _model);
+        if (response.IsSuccessStatusCode)
+            await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
+        else
+            throw new Exception((await response.Content.ReadFromJsonAsync<CreateRepairOrderStateErrorResponse>())?.Error);
         await ModalInstance.CloseAsync();
     }
-
 }

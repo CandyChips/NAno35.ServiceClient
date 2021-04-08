@@ -22,16 +22,10 @@
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(_ => { _isNewStorageItemDisplay = true; })
+                    <RadzenButton Click=@(_ => OpenCreateStorageItem())
                                   Text="Добавить"
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
-                <Modal Title="Новый товар"
-                       IsDisplay="@_isNewStorageItemDisplay">
-                    <Form>
-                        <CreateStorageItem/>
-                    </Form>
-                </Modal>
             </Controls>
         </InputField>
         
@@ -67,8 +61,8 @@
 
 @code
 {
-    [Parameter] public EventCallback<CreateComingDetailViewModel> OnAddNewComingDetail { get; set; }
-        
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateComingDetailViewModel _model;
     private List<StorageItemViewModel> StorageItems { get; set; }
     private bool _isNewStorageItemDisplay;
@@ -85,9 +79,16 @@
         _isLoaded = true;
     }
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        OnAddNewComingDetail.InvokeAsync(_model);
+        await ModalInstance.CloseAsync(ModalResult.Ok(_model));
+    }
+
+    private async Task OpenCreateStorageItem()
+    {
+        var moviesModal = Modal.Show<StorageItemCreate>("Новая позиция к списанию");
+        await moviesModal.Result;
+        await GetAllStorageItems();
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 

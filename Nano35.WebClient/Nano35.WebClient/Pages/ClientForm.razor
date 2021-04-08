@@ -77,6 +77,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public CreateClientHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
@@ -93,5 +95,6 @@
     private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
     }
 }

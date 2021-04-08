@@ -28,18 +28,11 @@
         {
             <RadzenHeading Text="Организации"/>
     
-            <RadzenButton Click=@(_ => { _isNewInstanceDisplay = true; }) 
+            <RadzenButton Click=@(_ => OpenNewInstance()) 
                           Text="Создать"
-                  Style="margin: 1rem 0;"
+                          Style="margin: 1rem 0;"
                           ButtonStyle="ButtonStyle.Secondary"/>
-            
-            <Modal Title="Новая организация" 
-                   IsDisplay=@(_isNewInstanceDisplay)>
-                <Form>
-                    <CreateInstance/>  
-                </Form>
-            </Modal>
-        
+
             <RadzenGrid Data=@(_data)
                         EmptyText="..."
                         TItem="InstanceViewModel">

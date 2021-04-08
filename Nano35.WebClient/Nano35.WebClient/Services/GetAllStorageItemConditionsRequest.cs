@@ -16,7 +16,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllStorageItemConditionsSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"http://localhost:5003/StorageItems/GetAllStorageItemConditions");
+            var response = await HttpClient.GetAsync($"{RequestManager.LocalStorageServer}/StorageItems/GetAllStorageItemConditions");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllStorageItemConditionsSuccessHttpResponse>());

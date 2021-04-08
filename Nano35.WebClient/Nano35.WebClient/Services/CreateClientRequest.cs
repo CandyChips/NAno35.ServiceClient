@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<CreateClientSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.StorageServer}/Client/CreateClient", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.InstanceServer}/Clients/CreateClient", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateClientSuccessHttpResponse>());

@@ -10,7 +10,7 @@ namespace Nano35.WebClient.Services
     {
         Task<GetAllWorkersSuccessHttpResponse> GetAllWorkers(Guid id);
         Task<GetAllWorkerRolesSuccessHttpResponse> GetAllWorkerRoles();
-        Task CreateWorker(CreateWorkerHttpBody model);
+        Task<CreateWorkerSuccessHttpResponse> Send(CreateUnitHttpBody request);
     }
 
     public class WorkerService : IWorkerService
@@ -44,14 +44,14 @@ namespace Nano35.WebClient.Services
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }
 
-        public async Task CreateWorker(CreateWorkerHttpBody model)
+        public async Task<CreateWorkerSuccessHttpResponse> Send(CreateUnitHttpBody request)
         {
-            HttpContent content = new StringContent(model.ToString());
-            var response = await _httpClient.PostAsync($"{_requestManager.InstanceServer}/Units/CreateUnit", content);
-            if (!response.IsSuccessStatusCode)
+            var response = await _httpClient.PostAsJsonAsync($"{_requestManager.InstanceServer}/Workers/CreateWorker", request);
+            if (response.IsSuccessStatusCode)
             {
-                throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
+                return (await response.Content.ReadFromJsonAsync<CreateWorkerSuccessHttpResponse>());
             }
+            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }
     }
 }

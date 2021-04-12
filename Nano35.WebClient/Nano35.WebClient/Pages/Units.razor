@@ -55,6 +55,7 @@ else
     private IEnumerable<UnitViewModel> _data;
     private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
@@ -62,8 +63,10 @@ else
         _loading = false;
     }
     
-    private void NewUnit()
+    private async Task NewUnit()
     {
-        Modal.Show<CreateUnit>("Новое подразделение");
+        var modal = Modal.Show<CreateUnit>("Новое подразделение");
+        await modal.Result;
+        _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
     }
 }

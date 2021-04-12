@@ -81,6 +81,6 @@
     private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
+        await ModalInstance.CloseAsync(ModalResult.Ok(""));
     }
 }

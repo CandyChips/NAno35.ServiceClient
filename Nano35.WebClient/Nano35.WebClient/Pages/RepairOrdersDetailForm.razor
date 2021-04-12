@@ -125,8 +125,8 @@ else
         _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
     }
 
-    private void BecomeWorker()
+    private async Task BecomeWorker()
     {
-        
+        await (new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient,new SetCurrentUserAsPerformerOfRepairOrderQuery() { RepairOrderId = _model.Id})).Send();
     }
 }

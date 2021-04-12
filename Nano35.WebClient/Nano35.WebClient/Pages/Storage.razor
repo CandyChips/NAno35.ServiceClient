@@ -84,12 +84,12 @@ else
                         ButtonStyle="ButtonStyle.Primary"
                         Text="Продать"
                         Size="ButtonSize.Small"
-                        Click="@(_ => { })"/>
+                        Click="@(_ => Sell())"/>
                     <RadzenButton
                         ButtonStyle="ButtonStyle.Secondary"
                         Text="Списать"
                         Size="ButtonSize.Small"
-                        Click="@(_ => { })"/>
+                        Click="@(_ => Cancellate())"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -98,6 +98,8 @@ else
 
 @code
 {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
     private IEnumerable<StorageItemOnInstanceViewModel> _data;
     private bool _loading = true;
 
@@ -110,5 +112,14 @@ else
             { InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Contains;
         _loading = false;
     }
-    
+
+    private void Cancellate()
+    {
+        Modal.Show<CancellationsCreate>("Новое списание");
+    }
+
+    private void Sell()
+    {
+        Modal.Show<SellesCreate>("Новая продажа");
+    }
 }

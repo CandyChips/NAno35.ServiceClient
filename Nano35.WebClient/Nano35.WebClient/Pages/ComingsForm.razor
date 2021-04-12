@@ -17,7 +17,7 @@
         </Controls>
     </InputField>
     
-    <InputField Title="Клиент*">
+    <InputField Title="Поставщик*">
         <Controls>
             <div style="display: flex; width: 100%;">
                 <RadzenDropDown Data=@(_clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
@@ -165,7 +165,6 @@ else
     {
         var modal = Modal.Show<AddComingDetailForm>($"Новая позиция к оприходованию");
         _details.Add((CreateComingDetailViewModel)(await modal.Result).Data);
-        await ModalInstance.CloseAsync();
     }
     
     private void NewClient()

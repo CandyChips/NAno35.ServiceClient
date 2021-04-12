@@ -60,8 +60,15 @@ else
         _loading = false;
     }
     
-    private void NewWorker()
+    private async Task NewWorker()
     {
-        Modal.Show<WorkerForm>("Новое подразделение");
+        var modal = Modal.Show<WorkerForm>("Новый Сотрудник");
+        await modal.Result;
+            _data = (await new GetAllWorkersRequest(
+                RequestManager,
+                HttpClient, 
+                new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+                .Send()).Data;
+        
     }
 }

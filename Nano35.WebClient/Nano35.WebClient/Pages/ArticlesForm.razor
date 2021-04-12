@@ -9,7 +9,7 @@
     <DataAnnotationsValidator />
     
     <RadzenFieldset Text="Категория">    
-            <SelectArticleCategory @bind-Value="Model.CategoryId"/>
+            <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
     </RadzenFieldset>
     
     <InputField Title="Бренд">
@@ -38,11 +38,11 @@
     
     <InputField Title="Харрактеристики">
         <Controls>
-            <AddArticleSpecification @bind-Value="_specs"/>
+            <ArticlesFormSpecification @bind-Value="Model.Specs"/>
         </Controls>
     </InputField>
     <ul class="list-group">
-        @foreach (var item in _specs)
+        @foreach (var item in Model.Specs)
         {
             <li class="list-group-item">@item.Key : @item.Value</li>
         }
@@ -65,11 +65,8 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<SpecHttpContext> _specs = new List<SpecHttpContext>();
-
     private async void HandleValidSubmit()
     {
-        Model.Specs = _specs;
         await FormSubmitted.InvokeAsync();
     }
 }

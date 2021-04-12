@@ -1,62 +1,84 @@
 ﻿@page "/log-in"
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.identity
+@inject IAuthService AuthService           
+@inject NavigationManager NavigationManager
+@inject IRequestManager RequestManager     
 
 <div class="col-md-6 offset-md-3 mt-5">
     <div class="card">
         @if (_loading)
         {
-            <h4 class="card-header">Загрузка</h4>
-            <div class="card-body">
-                ...
+            <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
             </div>
         }
         else
         {
-            @if (!_serverAvailable)
-            {
-            
-                <h4 class="card-header">Сервер недоступен</h4>
-                <div class="card-body">
-                    Повторите попытку позднее
-                </div>
-            }
-            else
-            {
-                <h4 class="card-header">Авторизация</h4>
-                <div class="card-body">
-                    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator />
+            <h4 class="card-header">Авторизация</h4>
+            <div class="card-body">
+                <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
     
-                        <InputField Title="Номер телефона">
-                            <Controls>
-                                <InputText @bind-Value="_model.Login" 
-                                            class="form-control"/>
+                    <InputField Title="Номер телефона">
+                        <Controls>
+                            <InputText @bind-Value="_model.Login" 
+                                        class="form-control"/>
                             <ValidationMessage For="@(() => _model.Login)" />
-                            </Controls>
-                        </InputField>
+                        </Controls>
+                    </InputField>
     
-                        <InputField Title="Пароль">
-                            <Controls>
-                                <InputText @bind-Value="_model.Password"
-                                            type="password" 
-                                            class="form-control"/>
-                                <ValidationMessage For="@(() => _model.Password)" />
-                            </Controls>
-                        </InputField>
-                        <button class="btn btn-primary">
-                            Войти
-                        </button>
+                    <InputField Title="Пароль">
+                        <Controls>
+                            <InputText @bind-Value="_model.Password"
+                                        type="password" 
+                                        class="form-control"/>
+                            <ValidationMessage For="@(() => _model.Password)" />
+                        </Controls>
+                    </InputField>
+                    <button class="btn btn-primary">
+                        Войти
+                    </button>
                         
-                        <NavLink class="btn btn-secondary" href="registration">
-                            Регистрация
-                        </NavLink>
+                    <NavLink class="btn btn-secondary" href="registration">
+                        Регистрация
+                    </NavLink>
                         
-                        @if (!string.IsNullOrEmpty(_error))
-                        {
-                            <div class="alert alert-danger mt-3 mb-0">@_error</div>
-                        }
-                    </EditForm>
-                </div>
-            }
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0">@_error</div>
+                    }
+                </EditForm>
+            </div>
         }
     </div>
 </div>
+
+@code
+{
+    private GenerateUserTokenHttpBody _model = new GenerateUserTokenHttpBody();
+    private bool _loading = true;
+    private string _error;
+    private bool _serverAvailable = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
+        _loading = false;
+    }
+
+    private async void HandleValidSubmit()
+    {
+        try
+        {
+            await AuthService.Login(_model);
+            NavigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+}

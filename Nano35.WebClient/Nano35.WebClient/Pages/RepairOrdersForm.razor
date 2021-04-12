@@ -26,7 +26,7 @@
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(_ => NewClient())
+                    <RadzenButton Click=@(_ => OpenCreateClient())
                                   Text="Добавить"
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
@@ -46,6 +46,9 @@
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
+                    <RadzenButton Click=@(_ => OpenCreateArticle())
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
         </InputField>
@@ -58,18 +61,18 @@
             </Controls>
         </InputField>
 
-        <InputField Title="Состояние*">
+        <InputField Title="Внешний вид*">
             <Controls>
                 <RadzenTextBox style="width: 100%;"
-                               Placeholder="Опишите состояние устройства"
+                               Placeholder="Опишите внешний вид устройства"
                                @bind-Value="Model.Condition"/>
             </Controls>
         </InputField>
 
-        <InputField Title="Неисправность">
+        <InputField Title="Неисправность со слов клиента">
             <Controls>
                 <RadzenTextBox Style="width: 100%;"
-                               Placeholder="Опишите неисправность"
+                               Placeholder="Опишите неисправность со слов клиента"
                                @bind-Value="Model.Trouble"/>
             </Controls>
         </InputField>
@@ -127,9 +130,22 @@
         await ModalInstance.CloseAsync();
     }
     
-    private void NewClient()
+    private async Task OpenCreateClient()
     {
-        Modal.Show<CreateClient>($"Новый клиент");
+        var modal = Modal.Show<ClientsCreate>($"Новый клиент");
+        await modal.Result;
+        _isLoaded = false;
+        _clients = await LoadClients();
+        _isLoaded = true;
+    }
+    
+    private async Task OpenCreateArticle()
+    {
+        var modal = Modal.Show<ArticlesCreate>($"Новое устройство");
+        await modal.Result;
+        _isLoaded = false;
+        _articles = await LoadArticles();
+        _isLoaded = true;
     }
    
     private async Task<List<ClientViewModel>> LoadClients() => 

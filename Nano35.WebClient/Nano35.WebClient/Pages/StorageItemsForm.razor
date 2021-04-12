@@ -77,11 +77,37 @@
         </Controls>
     </InputField>
     
-                
-    <div class="input-group mb-3">
-        <label class="input-group-text" for="inputGroupFile01">Фотографии: </label>
-        <input type="file" class="form-control" id="inputGroupFile01">
-    </div>
+    <InputFile OnChange="@OnInputFileChange" multiple />
+
+    @if (files.Count > 0)
+    {
+        <div class="card">
+            <div class="card-body">
+                <ul>
+                    @foreach (var file in files)
+                    {
+                        <li>
+                            File: @file.Name
+                            <br>
+                            @if (FileUpload(uploadResults, file.Name, out var result))
+                            {
+                                <span>
+                                    Stored File Name: @result.StoredFileName
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    There was an error uploading the file
+                                    (Error: @result.ErrorCode).
+                                </span>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
             
     @if (!string.IsNullOrEmpty(Error))
     {
@@ -105,6 +131,10 @@
     private bool _isLoaded;
     private List<ArticleViewModel> _articles = new List<ArticleViewModel>();
     private List<StorageItemConditionViewModel> _conditions = new List<StorageItemConditionViewModel>();
+    private IList<File> files = new List<File>();
+    private IList<UploadResult> uploadResults = new List<UploadResult>();
+    private int maxAllowedFiles = 3;
+    private bool shouldRender;
 
     protected override async Task OnInitializedAsync()
     {
@@ -122,8 +152,91 @@
 
     private async Task OpenCreateArticle()
     {
-        var moviesModal = Modal.Show<ArticleCreate>("Новое наименование");
+        var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование");
         await moviesModal.Result;
         _articles = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    }
+    
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        shouldRender = false;
+        long maxFileSize = 1024 * 1024 * 15;
+        var upload = false;
+
+        using var content = new MultipartFormDataContent();
+
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            if (uploadResults.SingleOrDefault(
+                f => f.FileName == file.Name) is null)
+            {
+                var fileContent = new StreamContent(file.OpenReadStream());
+
+                files.Add(
+                    new File()
+                    {
+                        Name = file.Name,
+                    });
+
+                if (file.Size < maxFileSize)
+                {
+                    content.Add(
+                        content: fileContent,
+                        name: "\"files\"",
+                        fileName: file.Name);
+
+                    upload = true;
+                }
+                else
+                {
+                    uploadResults.Add(
+                        new UploadResult()
+                        {
+                            FileName = file.Name,
+                            ErrorCode = 6,
+                            Uploaded = false,
+                        });
+                }
+            }
+        }
+
+        if (upload)
+        {
+            var response = await HttpClient.PostAsync($"http://localhost:5006/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
+
+            var newUploadResults = await response.Content
+                .ReadFromJsonAsync<IList<UploadResult>>();
+
+            uploadResults = uploadResults.Concat(newUploadResults).ToList();
+        }
+
+        shouldRender = true;
+    }
+
+    private static bool FileUpload(IList<UploadResult> uploadResults,
+        string fileName, out UploadResult result)
+    {
+        result = uploadResults.SingleOrDefault(f => f.FileName == fileName);
+
+        if (result is null)
+        {
+            result = new UploadResult();
+            result.ErrorCode = 5;
+        }
+
+        return result.Uploaded;
+    }
+
+    private class File
+    {
+        public string Name { get; set; }
+    }
+
+    public class UploadResult
+    {
+        public int ErrorCode { get; set; }
+        public string StoredFileName { get; set; }
+        public string FileName { get; set; }
+        public bool Uploaded { get; set; }
     }
 }

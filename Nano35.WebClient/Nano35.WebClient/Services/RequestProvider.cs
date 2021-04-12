@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace Nano35.WebClient.Services
 {
+    
     public abstract class RequestProvider<TReq, TSRes>
     {
         protected readonly HttpClient HttpClient;

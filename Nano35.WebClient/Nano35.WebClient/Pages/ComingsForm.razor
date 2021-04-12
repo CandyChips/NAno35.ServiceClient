@@ -155,21 +155,19 @@ else
         _isLoaded = true;
     }
     
-    private async Task<List<ClientViewModel>> LoadClients() => 
-        (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    private async Task<List<ClientViewModel>> LoadClients() => (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private async Task<List<UnitViewModel>> LoadUnits() =>
-        (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    private async Task<List<UnitViewModel>> LoadUnits() => (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
     
     private async Task AddDetail()
     {
-        var modal = Modal.Show<AddComingDetailForm>($"Новая позиция к оприходованию");
+        var modal = Modal.Show<ComingsCreateDetailForm>($"Новая позиция к оприходованию");
         _details.Add((CreateComingDetailViewModel)(await modal.Result).Data);
         await ModalInstance.CloseAsync();
     }
     
     private void NewClient()
     {
-        Modal.Show<CreateClient>($"Новый клиент");
+        Modal.Show<ClientsCreate>($"Новый клиент");
     }
 }

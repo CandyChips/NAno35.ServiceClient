@@ -1,0 +1,36 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<UnitsForm FormSubmitted="OnSubmit"
+           Model="_model" 
+           Error="@Error"/>
+
+@code
+{
+    private CreateUnitHttpBody _model;
+    private string Error { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateUnitHttpBody
+        {
+            Id = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+    }
+    
+    private async Task OnSubmit()
+    {
+        try
+        {
+            await new CreateUnitRequest(RequestManager, HttpClient, _model).Send();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+}

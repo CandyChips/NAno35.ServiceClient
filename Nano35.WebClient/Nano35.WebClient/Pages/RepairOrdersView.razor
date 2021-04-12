@@ -86,8 +86,8 @@ else
     
     private async Task NewOrder()
     {
-        Modal.Show<RepairOrdersCreate>("Новый наряд");
-        
+        var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
+        await modal.Result;
         _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersBody() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
 
     }

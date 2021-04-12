@@ -132,9 +132,13 @@ else
             _isLoaded = true;
         }
 
-    private void OpenAddClient()
+    private async Task OpenAddClient()
     {
-        var moviesModal = Modal.Show<CreateClient>("Новый клиент");
+        var moviesModal = Modal.Show<ClientsCreate>("Новый клиент");
+        await moviesModal.Result;
+        _isLoaded = false;
+        _clients = await LoadClients();
+        _isLoaded = true;
     }
     
     private async Task OpenAddDetail()

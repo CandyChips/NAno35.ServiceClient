@@ -1,7 +1,23 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance-view"
-
+@inject ISessionProvider SessionProvider   
+@inject IRequestManager RequestManager     
+@inject NavigationManager NavigationManager
 
 <h2>Организация</h2>
+
+@code
+{
+        
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await SessionProvider.IsCurrentSessionIdExist())
+            NavigationManager.NavigateTo("/instances");
+        if(!await RequestManager.HealthCheck(RequestManager.InstanceServer))
+            NavigationManager.NavigateTo("/instances");
+    }
+    
+}

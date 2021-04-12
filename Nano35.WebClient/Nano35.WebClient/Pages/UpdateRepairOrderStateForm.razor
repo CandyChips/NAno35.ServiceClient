@@ -49,15 +49,18 @@ else
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid RepairOrderId { get; set; }
-    
     private bool _isLoaded;
-    private CreateRepairOrderStateBody _model = new CreateRepairOrderStateBody();
-
+    private CreateRepairOrderStateBody _model;
     private List<Tuple<int, string>> StateTypes { get; set; } = new List<Tuple<int, string>>();
+    
     protected override async Task OnInitializedAsync()
     {
-        _model.NewId = Guid.NewGuid();
-        _model.RepairOrderId = RepairOrderId;
+        _model = new CreateRepairOrderStateBody
+        {
+            NewId = Guid.NewGuid(),
+            RepairOrderId = RepairOrderId
+        };
+        
         StateTypes.Add(new Tuple<int, string>(0, "Новый"));
         StateTypes.Add(new Tuple<int, string>(1, "В работе"));
         StateTypes.Add(new Tuple<int, string>(2, "Завершен"));

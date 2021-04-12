@@ -65,6 +65,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public CreateUnitHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
@@ -73,12 +75,12 @@
         
     protected override async Task OnInitializedAsync()
     {
-        var request = new GetAllUnitTypesHttpQuery();
-        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).Data.ToList();
     }
 
     private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
     }
 }

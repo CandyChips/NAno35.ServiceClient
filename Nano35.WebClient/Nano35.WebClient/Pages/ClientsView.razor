@@ -30,18 +30,11 @@ else
     {          
         <RadzenHeading Text="Клиентская база"/>
         
-        <RadzenButton Click=@(_ => { _isNewClientDisplay = true; }) 
+        <RadzenButton Click=@(_ => OpenCreateClient()) 
                       Text="Создать"
                       Style="margin: 1rem 0;"
                       ButtonStyle="ButtonStyle.Primary"/>
-        
-        <Modal Title="Новое подразделение" 
-               IsDisplay="@_isNewClientDisplay">
-            <Form>
-                <CreateClient/>  
-            </Form>
-        </Modal>
-        
+
         <RadzenGrid Data="@_data"
                     EmptyText="Добавте оприходуемые товары..."
                     TItem="ClientViewModel">
@@ -56,7 +49,7 @@ else
                                   Property="Phone"
                                   Title="Телефон" />
                 <RadzenGridColumn TItem="ClientViewModel"
-                                  Property="Price" 
+                                  Property="Selle" 
                                   Title="Цена" />
                 <RadzenGridColumn TItem="ClientViewModel"
                                   Property="ClientType" 
@@ -70,12 +63,12 @@ else
                                   TextAlign="TextAlign.Center" 
                                   Width="70px">
                     <Template Context="item">
-                        <RadzenButton
+                       <RadzenButton
                             ButtonStyle="ButtonStyle.Danger"
-                            Icon="close"
-                            Size="ButtonSize.Small" 
-                            Click="@(_ => { })">
-                        </RadzenButton>
+                           Icon="close"
+                           Size="ButtonSize.Small" 
+                           Click="@(_ => { })">
+                       </RadzenButton>
                     </Template>
                 </RadzenGridColumn>
             </Columns>
@@ -85,21 +78,29 @@ else
 
 @code
 {
-    private bool _isNewClientDisplay;
-    private bool _serverAvailable;
+    
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }     
     private bool _loading = true;
+    private bool _serverAvailable;
     private IEnumerable<ClientViewModel> _data;
-    protected override async Task OnInitializedAsync()
-    {
+    
+     protected override async Task OnInitializedAsync()
+     {
         _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
         if(!_serverAvailable)
             NavigationManager.NavigateTo("/instances");
         if (!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
-
-        var request = new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()};
-        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, request).Send()).Data;
+         
+        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
         _loading = false;
     }
-    
+
+    private async Task OpenCreateClient()
+    {
+        var modal = Modal.Show<CreateClient>("Новый клиент");
+        await modal.Result;
+        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+    }
 }

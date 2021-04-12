@@ -1,5 +1,6 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
 
 <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -94,11 +95,11 @@
         _types = (await WorkerService.GetAllWorkerRoles()).Data.ToList();
     }
 
-    private void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         _model.NewId = Guid.NewGuid();
         _model.InstanceId = InstanceService.GetCurrentInstance().Id;
-        WorkerService.CreateWorker(_model);
-        OnHideModalNewWorker.InvokeAsync();
+        await new CreateWorkerRequest(RequestManager, HttpClient, _model).Send();
+        await OnHideModalNewWorker.InvokeAsync();
     }
 }

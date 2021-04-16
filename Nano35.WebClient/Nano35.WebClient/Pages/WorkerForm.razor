@@ -24,7 +24,8 @@
     <InputField Title="Номер телефона*">
         <Controls>
             <InputText @bind-Value="_model.Phone" 
-                        class="form-control"/>
+                        class="form-control"
+                        MaxLenght="3"/>
             <ValidationMessage For="@(() => _model.Phone)" />
         </Controls>
     </InputField>
@@ -55,14 +56,16 @@
     
     <InputField Title="Должность*">
         <Controls>
-            <InputSelect @bind-Value="_model.RoleId" class="custom-select">
-                <option selected disabled>Choose...</option>
-                @foreach (var item in _types)
-                {
-                    <option value="@item.Id">@item.Name </option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => _model.RoleId)"/>
+            <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = $"{a.Name}"}))
+                            TextProperty="Name"
+                            ValueProperty="Id"
+                            TValue="Guid"
+                            @bind-Value="_model.RoleId"
+                            Style="width: 100%;"
+                            Placeholder="Выберите должность..."
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                            FilterOperator="StringFilterOperator.Contains"
+                            AllowFiltering="true"/>
         </Controls>
     </InputField>
     
@@ -83,6 +86,8 @@
     [Inject] private IWorkerService WorkerService { get; set; }
     [Inject] private IInstanceService InstanceService { get; set; }
     [Parameter] public EventCallback OnHideModalNewWorker { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
 
     private List<WorkersRoleViewModel> _types = new List<WorkersRoleViewModel>();
     private CreateWorkerHttpBody _model = new CreateWorkerHttpBody();
@@ -101,5 +106,6 @@
         _model.InstanceId = InstanceService.GetCurrentInstance().Id;
         await new CreateWorkerRequest(RequestManager, HttpClient, _model).Send();
         await OnHideModalNewWorker.InvokeAsync();
+        await ModalInstance.CloseAsync(ModalResult.Ok(""));
     }
 }

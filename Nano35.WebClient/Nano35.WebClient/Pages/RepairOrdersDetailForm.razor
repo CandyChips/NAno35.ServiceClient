@@ -36,18 +36,10 @@ else
                 <div>Серийный номер/IMEI: </div>
                 <b>@_model.Serial</b>
                 
-                @if (_model.Performer == string.Empty)
-                {
-                    <div>Исполнитель: </div>
-                    <b>@_model.Performer</b>
-                }
-                else
-                {
-                    <RadzenButton Click=@(_ => BecomeWorker())
+                <RadzenButton Click=@(_ => BecomeWorker())
                               Text="Стать исполнителем"
                               Style="width: 100%"
                               ButtonStyle="ButtonStyle.Primary"/>
-                }
             </RadzenFieldset>
             <RadzenFieldset Text="Состояние"
                             Style="width: 70%;">
@@ -135,6 +127,6 @@ else
 
     private async Task BecomeWorker()
     {
-        var resp = (await new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, new SetCurrentUserAsPerformerOfRepairOrderQuery() {NewId = Guid.NewGuid(), RepairOrderId = _model.Id}).Send());
+        await (new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient,new SetCurrentUserAsPerformerOfRepairOrderQuery() { RepairOrderId = _model.Id})).Send();
     }
 }

@@ -12,9 +12,12 @@
 
 @if (_loading)
 {
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
+    <div class="col-md-6 offset-md-3 mt-5">
+        <div class="card">
+            <h4 class="card-header">Загрузка</h4>
+            <div class="card-body">
+                ...
+            </div>
         </div>
     </div>
 }
@@ -49,23 +52,21 @@ else
 
 @code
 {
-    private bool _loading = true;
     private IEnumerable<UnitViewModel> _data;
+    private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
         _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
         _loading = false;
     }
     
     private async Task NewUnit()
     {
-        var modal = Modal.Show<UnitsCreate>("Новое подразделение");
+        var modal = Modal.Show<CreateUnit>("Новое подразделение");
         await modal.Result;
-        _loading = true;
         _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
-        _loading = false;
     }
 }

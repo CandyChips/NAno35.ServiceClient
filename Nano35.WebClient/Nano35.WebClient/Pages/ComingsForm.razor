@@ -20,12 +20,13 @@
     <InputField Title="Поставщик*">
         <Controls>
             <div style="display: flex; width: 100%;">
-                <RadzenDropDown Data=@(_clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                <RadzenDropDown Data=@(_clients.Select(a => new {a.Id, Name = $"{a.Name} - {a.Phone}"}))
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
                                 @bind-Value="Model.ClientId"
                                 Style="width: 100%;"
+                                Disabled="@(!_clients.Any())"
                                 Placeholder="Выберите поставщика..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
@@ -40,11 +41,12 @@
     
     <InputField Title="Подразделение*">
         <Controls>
-            <RadzenDropDown Data=@(_units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
+            <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
                             TextProperty="Name" 
                             ValueProperty="Id"
                             TValue="Guid" 
                             @bind-Value="Model.UnitId"
+                            Disabled="@(!_units.Any())"
                             Style="width: 100%;"
                             Placeholder="Выберите целевое подразделение..."
                             FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
@@ -137,7 +139,14 @@ else
     private async void Create()
     {
         Model.Details = _details.Select(a => 
-            new CreateComingDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            new CreateComingDetailViewModel()
+            {
+                NewId = a.NewId, 
+                Count = a.Count, 
+                Price = a.Price,
+                PlaceOnStorage = a.PlaceOnStorage, 
+                StorageItemId = a.StorageItemId
+            }).ToList();
         await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync();
     }

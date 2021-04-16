@@ -31,14 +31,14 @@ else
                   ButtonStyle="ButtonStyle.Primary"/>
         
     <RadzenGrid Data="@_data"
-                EmptyText="Добавте оприходуемые товары..."
+                EmptyText="Добавте подразделения организации..."
                 TItem="UnitViewModel">
         <Columns>
             <RadzenGridColumn TItem="UnitViewModel"
                               Property="Name" 
                               Title="Название" />
             <RadzenGridColumn TItem="UnitViewModel" 
-                              Property="Adress" 
+                              Property="Address" 
                               Title="Адресс" />
             <RadzenGridColumn TItem="UnitViewModel"
                               Property="Phone"
@@ -65,7 +65,7 @@ else
     
     private async Task NewUnit()
     {
-        var modal = Modal.Show<CreateUnit>("Новое подразделение");
+        var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
         _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
     }

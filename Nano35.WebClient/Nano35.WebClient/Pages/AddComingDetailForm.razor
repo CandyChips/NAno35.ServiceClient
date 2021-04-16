@@ -87,7 +87,7 @@
 
     private async Task OpenCreateStorageItem()
     {
-        var moviesModal = Modal.Show<StorageItemCreate>("Новая позиция к списанию");
+        var moviesModal = Modal.Show<StorageItemsCreate>("Новая позиция к списанию");
         await moviesModal.Result;
         await GetAllStorageItems();
     }

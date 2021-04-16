@@ -4,61 +4,70 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@_model" 
-          OnValidSubmit="HandleValidSubmit">
 @if (_isLoaded)
 {
-    <DataAnnotationsValidator/>
-    
-    <InputField Title="Товар">
-        <Controls>
-            <div style="display: flex; width: 100%">
-                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="_model.StorageItemId"
-                                Style="width: 100%;"
-                                Placeholder="..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-                <RadzenButton Click=@(_ => OpenCreateStorageItem())
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            </div>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Ячейка на складе">
-        <Controls>
-            <SelectComingDetailPlaceOnStorage 
-                @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Количество">
-        <Controls>
-            <RadzenNumeric style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="_model.Count"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Цена за еденицу">
-        <Controls>
-            <RadzenNumeric style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="_model.Price"/>
-        </Controls>
-    </InputField>
+    <EditForm Model="@_model" 
+              OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator/>
+        
+        <InputField Title="Товар">
+            <Controls>
+                <div style="display: flex; width: 100%">
+                    <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="_model.StorageItemId"
+                                    Style="width: 100%;"
+                                    Disabled="@(!StorageItems.Any())"
+                                    Placeholder="..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(_ => OpenCreateStorageItem())
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                </div>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Ячейка на складе">
+            <Controls>
+                <SelectComingDetailPlaceOnStorage 
+                    @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Количество">
+            <Controls>
+                <RadzenNumeric style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Count"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Цена за еденицу">
+            <Controls>
+                <RadzenNumeric style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Price"/>
+            </Controls>
+        </InputField>
 
-    <RadzenButton type="submit"
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    </EditForm>
 }
-</EditForm>
+else
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
 
 @code
 {

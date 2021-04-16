@@ -30,7 +30,8 @@ else
                 FilterMode="FilterMode.Advanced" 
                 AllowPaging="true"
                 PageSize="10"
-                AllowSorting="true" 
+                AllowSorting="true"
+                EmptyText="Нет оприходований."
                 RowExpand=@(args => { Console.WriteLine(args.ToString()); })
                 RowCollapse=@(args => { Console.WriteLine(args.ToString()); })
                 Data="@_data"

@@ -11,8 +11,8 @@
 
 @code
 {
-    private CreateArticleHttpBody _model;
-    private string Error { get; set; }
+    private CreateArticleHttpBody _model = new CreateArticleHttpBody();
+    private string Error { get; set; } = "";
     
     private async Task Submit()
     {
@@ -28,9 +28,11 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateArticleHttpBody();
-        _model.NewId = Guid.NewGuid();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _model.Specs = new List<SpecHttpContext>();
+        _model = new CreateArticleHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            Specs = new List<SpecHttpContext>()
+        };
     }
 }

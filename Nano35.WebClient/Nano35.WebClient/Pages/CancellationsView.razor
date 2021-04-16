@@ -68,10 +68,7 @@ else
         _data = (await (new GetAllCancellationsRequest(
             RequestManager, 
             HttpClient, 
-            new GetAllCancellationsHttpQuery() 
-                {UnitId = await SessionProvider.GetCurrentUnitId(), 
-                    InstanceId = await SessionProvider.GetCurrentInstanceId(),
-                }))
+            new GetAllCancellationsHttpQuery() { UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId() }))
             .Send())
             .Data;
         _loading = false;

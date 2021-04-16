@@ -35,11 +35,7 @@ namespace Nano35.WebClient.Services
 
         public async Task SetInstanceById(Guid id)
         {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetInstanceById?Id={id}");
-            if (response.IsSuccessStatusCode)
-            {
-                Instance = (await response.Content.ReadFromJsonAsync<GetInstanceByIdSuccessHttpResponse>())?.Data;
-            }
+            Instance = (await new GetInstanceByIdRequest(_requestManager, _httpClient, new GetInstanceByIdHttpQuery() {Id = id}).Send()).Data;
         }
 
         public async Task<bool> IsInstanceExist()

@@ -48,7 +48,7 @@ else
     
     <InputField Title="Подразделение*">
         <Controls>
-            <RadzenDropDown Data=@(_units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Adress}"}))
+            <RadzenDropDown Data=@(_units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Address}"}))
                             TextProperty="Name" 
                             ValueProperty="Id"
                             TValue="Guid" 

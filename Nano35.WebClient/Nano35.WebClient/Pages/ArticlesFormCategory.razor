@@ -4,131 +4,115 @@
 @inject IRequestManager RequestManager
 @inject HttpClient HttpClient
 
-<div style="width: 100%;">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            @foreach (var t in _selectedCategories)
-            {
-                <li class="breadcrumb-item active">
-                    <span>
-                        @t.Name
-                    </span>
-                </li>
-            }
-        </ol>
-    </nav>
-    <RadzenTabs>
-        <Tabs>
-            <RadzenTabsItem Text="Добавить">
-                <RadzenDropDown Data="@(_categories)"
-                                style="width: 100%;"
-                                @bind-Value="_selectedCategory"
-                                Change="@(_ => OnAddCategory(_selectedCategory))"
-                                TValue="ArticleCategoryViewModel"
-                                AllowClear="true"
-                                Placeholder=@(_selectedCategories.Any() ? $"Выберите подкатегорию к {_selectedCategories.Last().Name}" : "Выберите категорию" )
-                                TextProperty="Name"
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-            </RadzenTabsItem>
-            <RadzenTabsItem Text="Создать">
-                <div style="display: flex;">
-                    <RadzenTextBox Change=@(args => _name = args.ToString())
-                                   style="width: 100%;"
-                                   Placeholder=@(_selectedCategories.Any() ? $"Введите название новой подкатегории к {_selectedCategories.Last().Name}" : "Введите название новой категории" ) />
-                    <RadzenButton Click="@(_ => OnCreateCategory())"
-                                  Text="Добавить"
-                                  ButtonStyle="ButtonStyle.Secondary" />
-                </div>
-            </RadzenTabsItem>
-        </Tabs>
-    </RadzenTabs>
-</div>
+@if (!_isLoading)
+{
+    <div style="width: 100%;">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                @foreach (var t in _selectedCategories)
+                {
+                    <li class="breadcrumb-item active">
+                        <span>
+                            @t.Name
+                        </span>
+                    </li>
+                }
+            </ol>
+        </nav>
+        <RadzenTabs>
+            <Tabs>
+                <RadzenTabsItem Text="Добавить">
+                    <div style="display: flex;">
+                        <RadzenDropDown Data="@(_categories)"
+                                        style="width: 100%;"
+                                        @bind-Value="_selectedCategory"
+                                        Change="@(_ => OnAddCategory(_selectedCategory))"
+                                        TValue="ArticleCategoryViewModel"
+                                        AllowClear="true"
+                                        Disabled="@(!_categories.Any())"
+                                        Placeholder=@(_selectedCategories.Any() ? $"Выберите подкатегорию к {_selectedCategories.Last().Name}" : "Выберите категорию")
+                                        TextProperty="Name"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        FilterOperator="StringFilterOperator.Contains"
+                                        AllowFiltering="true"/>
+                    </div>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Создать">
+                    <div style="display: flex;">
+                        <RadzenTextBox Change=@(args => _name = args.ToString())
+                                       style="width: 100%;"
+                                       Placeholder=@(_selectedCategories.Any() ? $"Введите название новой подкатегории к {_selectedCategories.Last().Name}" : "Введите название новой категории" ) />
+                        <RadzenButton Click="@(_ => OnCreateCategory())"
+                                      Text="Добавить"
+                                      ButtonStyle="ButtonStyle.Secondary" />
+                    </div>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </div>
+}
 
 @code
 {
-        private Guid _value;
-        [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
-        [Parameter] public Guid Value { get => _value; set { if (_value == value ) return; _value = value; ValueChanged.InvokeAsync(value); } }
+    private Guid _value;
+    [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
+    [Parameter] public Guid Value { get => _value; set { if (_value == value ) return; _value = value; ValueChanged.InvokeAsync(value); } }
+    
+    private List<ArticleCategoryViewModel> _categories = new List<ArticleCategoryViewModel>();
+    private List<ArticleCategoryViewModel> _selectedCategories = new List<ArticleCategoryViewModel>();
+    private ArticleCategoryViewModel _selectedCategory;
+    private string _name = string.Empty;
+    private bool _isLoading = true;
+    
+    protected override async Task OnInitializedAsync()
+    {            
+        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = Guid.Empty};
+
+        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
         
-        private List<ArticleCategoryViewModel> _categories = new List<ArticleCategoryViewModel>();
-        private List<ArticleCategoryViewModel> _selectedCategories = new List<ArticleCategoryViewModel>();
-        private ArticleCategoryViewModel _selectedCategory;
-        private string _name = string.Empty;
-        private bool _isLoading = true;
-        
-        protected override async Task OnInitializedAsync()
-        {            
-            var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = Guid.Empty};
+        _isLoading = false;
+    }
 
-            _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-            
-            _isLoading = false;
-        }
+    private async Task OnAddCategory(ArticleCategoryViewModel selected)
+    {
+        _isLoading = true;
+        _selectedCategory = null;
+        _categories.Clear();
+        _selectedCategories.Add(selected);
+        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = selected.Id };
+        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        Value = _selectedCategories.Last().Id;
+        _isLoading = false;
+    }
 
-        private async Task OnAddCategory(ArticleCategoryViewModel selected)
+    private async Task OnCreateCategory()
+    {
+        _isLoading = true;
+        _categories.Clear();
+        var body = new CreateCategoryHttpBody()
         {
-            _isLoading = true;
-            
-            _selectedCategory = null;
-            
-            _categories.Clear();
-            
-            _selectedCategories.Add(selected);
+            Name = _name,
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            NewId = Guid.NewGuid(),
+            ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
+        };
+        _ = await new CreateCategoryRequest(RequestManager, HttpClient, body).Send();
+        _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
+        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
+        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        Value = _selectedCategories.Last().Id;
+        _isLoading = false;
+    }
 
-            var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = selected.Id };
-
-            _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-            
-            Value = _selectedCategories.Last().Id;
-            
-            _isLoading = false;
-        }
-
-        private async Task OnCreateCategory()
-        {
-            _isLoading = true;
-            
-            _categories.Clear();
-            
-            var body = new CreateCategoryHttpBody()
-            {
-                Name = _name,
-                InstanceId = await SessionProvider.GetCurrentInstanceId(),
-                NewId = Guid.NewGuid(),
-                ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
-            };
-
-            _ = await new CreateCategoryRequest(RequestManager, HttpClient, body).Send();
-
-            _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
-
-            var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-
-            _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-
-            Value = _selectedCategories.Last().Id;
-            
-            _isLoading = false;
-        }
-
-        private async Task OnRemoveSelectedCategory(int index)
-        {
-            _isLoading = true;
-            
-            _categories.Clear();
-            
-            _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-
-            var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-
-            _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-
-            _isLoading = false;
-            
-            Value = _selectedCategories.Last().Id;
-            
-            StateHasChanged();
-        }
+    private async Task OnRemoveSelectedCategory(int index)
+    {
+        _isLoading = true;
+        _categories.Clear();
+        _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
+        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
+        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _isLoading = false;
+        Value = _selectedCategories.Last().Id;
+        StateHasChanged();
+    }
 }

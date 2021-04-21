@@ -43,6 +43,9 @@ else
                               ButtonStyle="ButtonStyle.Secondary"/>
             </div>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.ClientId)" />
+        </Validation>
     </InputField>
     
     
@@ -59,6 +62,9 @@ else
                             FilterOperator="StringFilterOperator.Contains"
                             AllowFiltering="true"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.UnitId)" />
+        </Validation>
     </InputField>
 
     <InputField Title="Продаваемые товары">

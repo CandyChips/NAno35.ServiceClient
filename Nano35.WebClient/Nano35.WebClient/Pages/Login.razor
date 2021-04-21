@@ -26,8 +26,10 @@
                         <Controls>
                             <InputText @bind-Value="_model.Login" 
                                         class="form-control"/>
-                            <ValidationMessage For="@(() => _model.Login)" />
                         </Controls>
+                        <Validation>
+                            <ValidationMessage For="@(() => _model.Login)" />
+                        </Validation>
                     </InputField>
     
                     <InputField Title="Пароль">
@@ -35,8 +37,10 @@
                             <InputText @bind-Value="_model.Password"
                                         type="password" 
                                         class="form-control"/>
-                            <ValidationMessage For="@(() => _model.Password)" />
                         </Controls>
+                        <Validation>
+                            <ValidationMessage For="@(() => _model.Password)" />
+                        </Validation>
                     </InputField>
                     <button class="btn btn-primary">
                         Войти

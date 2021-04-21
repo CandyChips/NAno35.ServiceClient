@@ -17,7 +17,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetComingDetailsByIdSuccessHttpResponse> Send()
         {
-            var url = $"{RequestManager.LocalStorageServer}/Warehouse/GetComingDetails?ComingId={Request.Id}";
+            var url = $"{RequestManager.LocalStorageServer}/Comings/ComingDetails?ComingId={Request.Id}";
             var response = await HttpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {

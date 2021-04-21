@@ -30,6 +30,9 @@ else
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.TypeId)" />
+            </Validation>
         </InputField>
         <InputField Title="Комментарий">
             <Controls>
@@ -37,6 +40,9 @@ else
                                Placeholder="..."
                                @bind-Value="@_model.Comment"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Comment)" />
+            </Validation>
         </InputField>
         <RadzenButton type="submit"
                       Text="Создать"

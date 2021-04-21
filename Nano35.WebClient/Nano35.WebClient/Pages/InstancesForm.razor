@@ -16,6 +16,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Name"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Name)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Эл почта">
@@ -24,6 +27,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Email"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Email)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Номер телефона">
@@ -32,6 +38,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Phone"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Phone)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Название организации">
@@ -40,6 +49,9 @@
                            Placeholder="..."
                            @bind-Value="Model.RealName"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.RealName)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Описание">
@@ -48,6 +60,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Info"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Info)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Регион">
@@ -60,6 +75,9 @@
                             style="width: 100%"
                             Placeholder="..."/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.RegionId)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Тип">
@@ -72,6 +90,9 @@
                             style="width: 100%"
                             Placeholder="..."/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.TypeId)" />
+        </Validation>
     </InputField>
     
     @if (!string.IsNullOrEmpty(Error))

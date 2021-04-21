@@ -12,7 +12,7 @@
 
 @code
 {
-    private CreateComingHttpBody _model = new CreateComingHttpBody
+    private CreateMoveHttpBody _model = new CreateMoveHttpBody
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
@@ -23,7 +23,7 @@
     {
         try
         {
-            await new CreateComingRequest(RequestManager, HttpClient, _model).Send();
+            await new CreateMoveRequest(RequestManager, HttpClient, _model).Send();
         }
         catch (Exception e)
         {
@@ -33,7 +33,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateComingHttpBody
+        _model = new CreateMoveHttpBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId()

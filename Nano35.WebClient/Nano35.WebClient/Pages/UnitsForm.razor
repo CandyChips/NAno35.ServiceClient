@@ -14,6 +14,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Name"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Name)" />
+        </Validation>
     </InputField>
 
     <InputField Title="Адресс*">
@@ -22,6 +25,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Address"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Address)" />
+        </Validation>
     </InputField>
 
     <InputField Title="Формат работы">
@@ -30,6 +36,9 @@
                            Placeholder="..."
                            @bind-Value="Model.WorkingFormat"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.WorkingFormat)" />
+        </Validation>
     </InputField>
 
     <InputField Title="Номер телефона*">
@@ -38,6 +47,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Phone"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Phone)" />
+        </Validation>
     </InputField>
 
     <InputField Title="Тип подразделения*">
@@ -50,6 +62,9 @@
                             style="width: 100%"
                             Placeholder="Выберите статус клиента..."/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.UnitTypeId)" />
+        </Validation>
     </InputField>
                 
     @if (!string.IsNullOrEmpty(Error))

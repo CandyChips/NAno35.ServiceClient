@@ -19,15 +19,22 @@ else
         <DataAnnotationsValidator />
         
         <RadzenFieldset Text="Категория">    
-                <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
+            <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
+            <Validation>
+                     <ValidationMessage For="@(() => Model.CategoryId)" />
+            </Validation>
         </RadzenFieldset>
         
+
         <InputField Title="Бренд">
             <Controls>
                 <RadzenTextBox Style="width: 100%;" 
                                Placeholder="..."
                                @bind-Value="Model.Brand"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Brand)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Модель">
@@ -36,6 +43,9 @@ else
                                Placeholder="..."
                                @bind-Value="Model.Model"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Model)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Описание">
@@ -44,12 +54,18 @@ else
                                Placeholder="..."
                                @bind-Value="Model.Info"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Info)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Харрактеристики">
             <Controls>
                 <ArticlesFormSpecification @bind-Value="Model.Specs"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Specs)" />
+            </Validation>
         </InputField>
         <ul class="list-group">
             @foreach (var item in Model.Specs)

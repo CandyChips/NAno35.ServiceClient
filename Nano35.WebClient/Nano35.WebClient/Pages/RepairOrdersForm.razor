@@ -51,6 +51,9 @@
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.DeviceId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Серийный номер*">
@@ -59,6 +62,9 @@
                                Placeholder="Введите серийный номер"
                                @bind-Value="Model.Serial"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Serial)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Внешний вид*">
@@ -67,6 +73,9 @@
                                Placeholder="Опишите внешний вид устройства"
                                @bind-Value="Model.Condition"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Condition)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Неисправность со слов клиента">
@@ -75,6 +84,9 @@
                                Placeholder="Опишите неисправность со слов клиента"
                                @bind-Value="Model.Trouble"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Trouble)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Комплектация">
@@ -83,6 +95,9 @@
                                Placeholder="Опишите Комплектацию"
                                @bind-Value="Model.Complication"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Complication)" />
+            </Validation>
         </InputField>
     }
     else

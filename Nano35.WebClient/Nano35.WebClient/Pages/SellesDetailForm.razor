@@ -28,23 +28,29 @@
                                 Change="@GetAllPlacesOfStorageItem"/>
 
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.StorageItemId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Ячейка на складе">
-                    <Controls>
-                        <RadzenDropDown Data=@(Warehouse
-                                                 .Select(a => 
-                                                     new {Name = a.Name}))
-                                        TextProperty="Name"
-                                        ValueProperty="Name"
-                                        TValue="string"
-                                        @bind-Value="_model.PlaceOnStorage"
-                                        Style="width: 100%;"
-                                        Placeholder="..."
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.Contains"
-                                        AllowFiltering="true"/>
+            <Controls>
+                <RadzenDropDown Data=@(Warehouse
+                                         .Select(a => 
+                                             new {Name = a.Name}))
+                                TextProperty="Name"
+                                ValueProperty="Name"
+                                TValue="string"
+                                @bind-Value="_model.PlaceOnStorage"
+                                Style="width: 100%;"
+                                Placeholder="..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Количество">
@@ -53,6 +59,9 @@
                                Placeholder="..."
                                @bind-Value="_model.Count"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Count)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Цена">
@@ -61,6 +70,9 @@
                                Placeholder="..."
                                @bind-Value="_model.Price"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Price)" />
+            </Validation>
         </InputField>
 
         <RadzenButton type="submit"
@@ -100,7 +112,6 @@
             {
                 StorageItemId = _model.StorageItemId,
                 UnitContainsStorageItemId = unitId
-                    
             })
             .Send())
             .Contains

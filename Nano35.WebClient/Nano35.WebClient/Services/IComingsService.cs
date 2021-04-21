@@ -27,7 +27,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetAllComingsSuccessHttpResponse> GetAllComings(Guid instanceId)
         {
-            var response = await _httpClient.GetAsync($"http://localhost:5003/Warehouse/GetAllComings?InstanceId={instanceId}");
+            var response = await _httpClient.GetAsync($"{_requestManager.LocalStorageServer}/Comings?InstanceId={instanceId}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllComingsSuccessHttpResponse>());

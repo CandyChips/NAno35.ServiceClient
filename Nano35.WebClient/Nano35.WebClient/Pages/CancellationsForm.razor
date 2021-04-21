@@ -18,6 +18,9 @@
                                Placeholder="Введите уникальный номер списания..."
                                @bind-Value="Model.Number"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Number)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Подразделение*">
@@ -32,8 +35,12 @@
                                 Placeholder="Выберите целевое подразделение..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
+                                AllowFiltering="true"
+                                Change="SetUnitId"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.UnitId)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Комментарий">
@@ -42,6 +49,9 @@
                                Placeholder="Введите коментарий к списанию..."
                                @bind-Value="Model.Comment"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Comment)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Списываемые товары">
@@ -78,6 +88,9 @@
                               ButtonStyle="ButtonStyle.Secondary"
                               style="width: 100%"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Details)" />
+            </Validation>
         </InputField>
     }
     else
@@ -106,16 +119,7 @@
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    [Parameter] public Guid UnitId
-    {
-        get => Model.UnitId;
-        set
-        {
-            if (Model.UnitId == value ) return;
-            Model.UnitId = value;
-            SessionProvider.SetCurrentUnitId(UnitId);
-        }
-    }
+    [Parameter] public Guid UnitId { get; set; }
     private bool _isLoaded;
     private List<UnitViewModel> _units = new List<UnitViewModel>();
     private List<CreateCancellationDetailViewModel> _details = new List<CreateCancellationDetailViewModel>();
@@ -155,4 +159,9 @@
     
     private async Task<List<UnitViewModel>> LoadUnits() =>
         (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+
+    private void SetUnitId()
+    {
+        SessionProvider.SetCurrentUnitId(Model.UnitId);
+    }
 }

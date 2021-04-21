@@ -27,7 +27,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetAllInstancesSuccessHttpResponse> GetAllInstances()
         {
-            var response = await _httpClient.GetAsync($"http://192.168.100.210:30002/Instances/GetAllCurrentInstances");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}Instances/GetAllCurrentInstances");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllInstancesSuccessHttpResponse>());
@@ -37,7 +37,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetAllRegionsSuccessHttpResponse> GetAllRegions()
         {
-            var response = await _httpClient.GetAsync($"http://192.168.100.210:30002/Instances/GetAllRegions");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetAllRegions");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllRegionsSuccessHttpResponse>());
@@ -47,7 +47,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetAllInstanceTypesSuccessHttpResponse> GetAllTypes()
         {
-            var response = await _httpClient.GetAsync($"http://192.168.100.210:30002/Instances/GetAllInstanceTypes");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetAllInstanceTypes");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllInstanceTypesSuccessHttpResponse>());

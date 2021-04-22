@@ -9,4 +9,6 @@
   &lt;PhysicalFolder Path="C:\Users\user\.nuget\packages\nano35.httpcontext\1.1.3" Loaded="True" /&gt;&#xD;
   &lt;PhysicalFolder Path="C:\Users\user\.nuget\packages\nano35.httpcontext\1.1.6" Loaded="True" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\user\.nuget\packages\netcore.encrypt\2.0.9\lib\netstandard2.0\NETCore.Encrypt.dll" /&gt;&#xD;
-&lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">C:\Program Files\dotnet\sdk\6.0.100-preview.2.21155.3\MSBuild.dll</s:String>
+	</wpf:ResourceDictionary>

@@ -5,12 +5,16 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-<ArticlesForm FormSubmitted="Submit"
-              Model="@_model"
-              Error="@Error"/>
+<div style="width: 40rem;">
+    <ArticlesForm FormSubmitted="Submit"
+                  Model="@_model"
+                  Error="@Error"
+                  IsExpandedView="@IsExpandedView"/>
+</div>
 
 @code
 {
+    [Parameter] public bool IsExpandedView { get; set; } = true;
     private CreateArticleHttpBody _model = new CreateArticleHttpBody();
     private string Error { get; set; } = "";
     

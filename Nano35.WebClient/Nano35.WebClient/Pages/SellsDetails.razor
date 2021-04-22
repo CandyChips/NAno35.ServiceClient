@@ -1,0 +1,48 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Blazored.FluentValidation
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<div style="margin-top:20px">Номер оприходования:</div>
+<b>@Selle.Number</b>
+<div style="margin-top:20px">Дата:</div>
+<b>@Selle.Date</b>
+<div style="margin-top:20px">Целевое подразделение:</div>
+<b>@Selle.Unit</b>
+<div style="margin-top:20px">Поставщик:</div>
+<b>@Selle.Client</b>
+
+<RadzenFieldset Text="Оприходуемые товары"
+                Style="width: 60rem">
+    <RadzenGrid Data="@Details"
+                EmptyText="Добавте оприходуемые товары..."
+                TItem="SelleDetailViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="SelleDetailViewModel"
+                              Property="StorageItem" 
+                              Title="Товар" />
+            <RadzenGridColumn TItem="SelleDetailViewModel" 
+                              Property="PlaceOnStorage" 
+                              Title="Место на складе" />
+            <RadzenGridColumn TItem="SelleDetailViewModel"
+                              Property="Count"
+                              Title="Количество" />
+            <RadzenGridColumn TItem="SelleDetailViewModel"
+                              Property="Price" 
+                              Title="Цена" />
+        </Columns>
+    </RadzenGrid>
+</RadzenFieldset>
+
+@code
+{
+    [Parameter] public SelleViewModel Selle { get; set; }
+    private List<SelleDetailViewModel> Details { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+    }
+}

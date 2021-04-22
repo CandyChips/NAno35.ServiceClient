@@ -32,20 +32,8 @@ else
                 PageSize="10"
                 AllowSorting="true"
                 EmptyText="Нет оприходований."
-                RowExpand=@(args => { Console.WriteLine(args.ToString()); })
-                RowCollapse=@(args => { Console.WriteLine(args.ToString()); })
                 Data="@_data"
                 TItem="ComingViewModel">
-        <Template Context="item">
-            <div>
-                <div>
-                    @item.Cash руб.
-                </div>
-                <div>
-                    @item.Cash руб.
-                </div>
-            </div>
-        </Template>
         <Columns>
             <RadzenGridColumn TItem="ComingViewModel" 
                               Property="Number"
@@ -79,6 +67,18 @@ else
                     @item.Cash руб.
                 </Template>
             </RadzenGridColumn>
+            <RadzenGridColumn TItem="ComingViewModel" 
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => OpenComing(item)) 
+                                  Text="Информация"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 
@@ -103,10 +103,12 @@ else
         _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
     }
 
-    private void OpenComing(ComingViewModel coming)
+    private async Task OpenComing(ComingViewModel coming)
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(ComingsDetails.Coming), coming);
-        Modal.Show<ComingsDetails>($"Оприходование", parameters);
+        var modal = Modal.Show<ComingsDetails>($"Оприходование", parameters);
+        await modal.Result;
+        _data = (await ComingsService.GetAllComings(await SessionProvider.GetCurrentInstanceId())).Data;
     }
 }

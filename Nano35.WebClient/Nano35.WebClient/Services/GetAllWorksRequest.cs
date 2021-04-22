@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllWorksSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.LocalRepairOrdersServer}/Work/GetAllWorks?InstanceId={Request.InstanceId}");
+            var response = await HttpClient.GetAsync($"{RequestManager.LocalRepairOrdersServer}/Works?InstanceId={Request.InstanceId}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllWorksSuccessHttpResponse>());

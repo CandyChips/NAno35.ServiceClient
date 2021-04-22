@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<CreateWorkSuccessResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalRepairOrdersServer}/Work/CreateWork", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalRepairOrdersServer}/Works", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateWorkSuccessResponse>());

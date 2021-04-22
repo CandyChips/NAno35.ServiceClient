@@ -37,18 +37,37 @@ else
         <Columns>
             <RadzenGridColumn TItem="CancellationViewModel"
                               Property="Number" 
+                              Filterable="false"
+                              Sortable="false"
                               Title="Номер" />
             <RadzenGridColumn TItem="CancellationViewModel" 
                               Property="Date" 
+                              Filterable="false"
+                              Sortable="false"
                               Title="Дата" />
             <RadzenGridColumn TItem="CancellationViewModel" 
                               Property="Unit" 
+                              Filterable="false"
+                              Sortable="false"
                               Title="Подразделение" />
             <RadzenGridColumn TItem="CancellationViewModel"
-                                          Filterable="false"
-                                          Title="Дата">
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Дата">
                 <Template Context="item">
                     @item.Date.ToString("dd-MM-yyyy")
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="CancellationViewModel" 
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => OpenCancellation(item)) 
+                                  Text="Информация"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -65,28 +84,26 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await (new GetAllCancellationsRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllCancellationsHttpQuery() { UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId() }))
-            .Send())
-            .Data;
+        _loading = true;
+        _data = await GetAllCancellations();
         _loading = false;
     }
+    
+    private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
+        (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() { UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
 
     private async void NewCancellation()
     {
         Modal.Show<CancellationsCreate>("Новое списание");
         
-        _data = (await (new GetAllCancellationsRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllCancellationsHttpQuery() 
-            {UnitId = await SessionProvider.GetCurrentUnitId(), 
-                InstanceId = await SessionProvider.GetCurrentInstanceId(),
-            }))
-            .Send())
-            .Data;
-    }
+        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId(), })).Send()).Data;}
 
+
+    private async Task OpenCancellation(CancellationViewModel coming)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(CancellationsDetails.Cancellation), coming);
+        var modal = Modal.Show<CancellationsDetails>($"Списание", parameters);
+        await modal.Result;
+        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId(), })).Send()).Data;}
 }

@@ -38,25 +38,29 @@ else
             </Controls>
         </InputField>
         
-        <InputField Title="Описание">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Info"/>
-            </Controls>
-        </InputField>
+        @if (IsExpandedView)
+        {
+            <InputField Title="Описание">
+                <Controls>
+                    <RadzenTextBox Style="width: 100%;" 
+                                   Placeholder="..."
+                                   @bind-Value="Model.Info"/>
+                </Controls>
+            </InputField>
         
-        <InputField Title="Харрактеристики">
-            <Controls>
-                <ArticlesFormSpecification @bind-Value="Model.Specs"/>
-            </Controls>
-        </InputField>
-        <ul class="list-group">
-            @foreach (var item in Model.Specs)
-            {
-                <li class="list-group-item">@item.Key : @item.Value</li>
-            }
-        </ul>
+            <InputField Title="Харрактеристики">
+                <Controls>
+                    <ArticlesFormSpecification @bind-Value="Model.Specs"/>
+                </Controls>
+            </InputField>
+            <ul class="list-group">
+                @foreach (var item in Model.Specs)
+                {
+                    <li class="list-group-item">@item.Key : @item.Value</li>
+                }
+            </ul>
+        
+        }
         
         @if (!string.IsNullOrEmpty(Error))
         {
@@ -72,9 +76,12 @@ else
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public CreateArticleHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
+    [Parameter] public bool IsExpandedView { get; set; }
     private bool _loaded;
     
     protected override async Task OnInitializedAsync()
@@ -87,5 +94,6 @@ else
     private async void HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
     }
 }

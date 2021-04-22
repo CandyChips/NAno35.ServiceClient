@@ -25,30 +25,10 @@ else
         </Controls>
     </InputField>
     
-    <InputField Title="Клиент*">
-        <Controls>
-            <div style="display: flex; width: 100%;">
-                <RadzenDropDown Data=@(_clients.Select(a => new {Id = a.Id, Name = $"{a.Name} - {a.Phone}"}))
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="Model.ClientId"
-                                Style="width: 100%;"
-                                Placeholder="Выберите клиента..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-                <RadzenButton Click=@(_ => OpenAddClient())
-                              Text="Добавить"
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            </div>
-        </Controls>
-    </InputField>
-    
     
     <InputField Title="Подразделение*">
         <Controls>
-            <RadzenDropDown Data=@(_units.Select(a => new { Id = a.Id, Name = $"{a.Name} - {a.Address}"}))
+            <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}"}))
                             TextProperty="Name" 
                             ValueProperty="Id"
                             TValue="Guid" 

@@ -71,7 +71,7 @@ else
 
     private async Task HandleValidSubmit()
     {
-        var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrder/CreateRepairOrderState", _model);
+        var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrder/RepairOrderState", _model);
         if (response.IsSuccessStatusCode)
             await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
         else

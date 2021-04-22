@@ -196,9 +196,9 @@ else
                 if (file.Size < maxFileSize)
                 {
                     content.Add(
-                        content: fileContent,
-                        name: "\"files\"",
-                        fileName: file.Name);
+                        fileContent,
+                        "\"files\"",
+                        file.Name);
 
                     upload = true;
                 }

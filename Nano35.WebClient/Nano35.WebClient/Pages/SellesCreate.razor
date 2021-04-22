@@ -5,20 +5,53 @@
 @inject ISessionProvider SessionProvider
 
 <div style="width: 40rem;">
-    <SellesForm FormSubmitted="SendCreateSelleRequest"
-                Model="_model" 
-                Error="@Error"/>
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Продажа со склада">
+                <SellesForm FormSubmitted="SendCreateSelleRequest"
+                            Model="_model"
+                            Error="@Error"/>
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Прочий приход">
+                <EditForm Model="@model" OnValidSubmit="@(_ => {})">
+                    <DataAnnotationsValidator />
+                    <InputField Title="Наименование">
+                        <Controls>
+                            <RadzenTextBox Style="width: 100%;" 
+                                           Placeholder="Укажите наименование прочего прихода"
+                                           @bind-Value="model.Name"/>
+                        </Controls>
+                    </InputField>
+                                
+                    <InputField Title="Сумма">
+                        <Controls>
+                            <RadzenNumeric Style="width: 100%;" 
+                                           Placeholder="Укажите сумму прочего прихода"
+                                           @bind-Value="model.Price"/>
+                        </Controls>
+                    </InputField>
+    
+                    <RadzenButton type="submit"
+                                  Text="Провести"
+                                  ButtonStyle="ButtonStyle.Primary"
+                                  Style="width: 100%" />
+                </EditForm>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
 </div>
 
 @code
 {
-    private CreateSelleHttpBody _model = new CreateSelleHttpBody
+    private class FreeSalle
     {
-        NewId = Guid.NewGuid(),
-        InstanceId = Guid.Empty
-    };
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+
+    private FreeSalle model = new FreeSalle();
+    private CreateSelleHttpBody _model = new CreateSelleHttpBody { NewId = Guid.NewGuid(), InstanceId = Guid.Empty };
     private string Error { get; set; }
-    
     private async Task SendCreateSelleRequest()
     {
         try

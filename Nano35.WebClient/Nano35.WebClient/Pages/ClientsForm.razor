@@ -4,76 +4,90 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model" 
+@if (_loaded)
+{
+    <EditForm Model="@Model" 
           OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    
-    <InputField Title="Имя клиента">
-        <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Name"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Эл почта">
-        <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Email"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Номер телефона">
-        <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Phone"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Скидка">
-        <Controls>
-            <RadzenNumeric Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Selle"/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Статус клиента">
-        <Controls>
-            <RadzenDropDown Data=@(_state.Select(a => new {Id = a.Id, Name = a.Name}))
-                            TextProperty="Name"
-                            ValueProperty="Id"
-                            TValue="Guid"
-                            @bind-Value="Model.ClientStateId"
-                            style="width: 100%"
-                            Placeholder="Выберите статус клиента..."/>
-        </Controls>
-    </InputField>
-    
-    <InputField Title="Тип клиента">
-        <Controls>
-            <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = a.Name}))
-                            TextProperty="Name"
-                            ValueProperty="Id"
-                            TValue="Guid"
-                            @bind-Value="Model.ClientTypeId"
-                            style="width: 100%"
-                            Placeholder="Выберите тип клиента..."/>
-        </Controls>
-    </InputField>
-    
-    @if (!string.IsNullOrEmpty(Error))
-    {
-        <div class="alert alert-danger mt-3 mb-0">@Error</div>
-    }
-    
-    <RadzenButton type="submit"
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
-</EditForm>
+        <DataAnnotationsValidator />
+        
+        <InputField Title="Статус клиента">
+            <Controls>
+                <RadzenDropDown Data=@(_state.Select(a => new {a.Id, a.Name}))
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="Model.ClientStateId"
+                                style="width: 100%"
+                                Placeholder="Выберите статус клиента..."/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Тип клиента">
+            <Controls>
+                <RadzenDropDown Data=@(_types.Select(a => new {a.Id, a.Name}))
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="Model.ClientTypeId"
+                                style="width: 100%"
+                                Placeholder="Выберите тип клиента..."/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="@(Model.ClientStateId != Guid.Empty && 
+                             Model.ClientStateId == _state.First().Id ?
+                               "Название организации" : 
+                               "Имя клиента")">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="Model.Name"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Эл почта">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="Model.Email"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Номер телефона">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="Model.Phone"/>
+            </Controls>
+        </InputField>
+        
+        <InputField Title="Скидка">
+            <Controls>
+                <RadzenNumeric Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="Model.Selle"/>
+            </Controls>
+        </InputField>
+        
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">@Error</div>
+        }
+        
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    </EditForm>
+}
+else
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
 
 @code
 {
@@ -82,14 +96,24 @@
     [Parameter] public CreateClientHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
+    [Parameter] public Guid TypeId { get; set; }
 
     private List<ClientTypeViewModel> _types = new List<ClientTypeViewModel>();
     private List<ClientStateViewModel> _state = new List<ClientStateViewModel>();
+    private bool _loaded;
 
     protected override async Task OnInitializedAsync()
     {
+        if (TypeId != Guid.Empty)
+        {
+            Model.ClientTypeId = TypeId;
+            Console.WriteLine(@$"Model.ClientTypeId = {Model.ClientTypeId}");
+            StateHasChanged();
+        }
+        _loaded = false;
         _state = (await (new GetAllClientStatesRequest(RequestManager, HttpClient, new GetAllClientStatesHttpQuery())).Send()).Data.ToList();
         _types = (await (new GetAllClientTypesRequest(RequestManager, HttpClient, new GetAllClientTypesHttpQuery()).Send())).Data.ToList();
+        _loaded = true;
     }
 
     private async Task HandleValidSubmit()

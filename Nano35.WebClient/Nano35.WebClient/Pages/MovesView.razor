@@ -35,10 +35,30 @@ else
                 Data="@_data"
                 TItem="MoveViewModel">
         <Columns>
-            <RadzenGridColumn TItem="MoveViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="Client" Title="Клиент" />
+            <RadzenGridColumn TItem="MoveViewModel" 
+                              Property="Number" 
+                              Title="Номер" />
+            <RadzenGridColumn TItem="MoveViewModel" 
+                              Property="Date" 
+                              Title="Дата" />
+            <RadzenGridColumn TItem="MoveViewModel" 
+                              Property="Unit"
+                              Title="Подразделение" />
+            <RadzenGridColumn TItem="MoveViewModel" 
+                              Property="Client" 
+                              Title="Клиент" />
+            <RadzenGridColumn TItem="MoveViewModel" 
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => { }) 
+                                  Text="Информация"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }

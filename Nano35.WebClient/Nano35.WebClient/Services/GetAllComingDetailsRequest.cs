@@ -6,6 +6,26 @@ using Nano35.HttpContext.storage;
 
 namespace Nano35.WebClient.Services
 {
+    public class GetAllCancellationDetails : 
+        RequestProvider<GetAllCancellationDetailsHttpQuery, GetAllCancellationDetailsSuccessHttpResponse>
+    {
+        public GetAllCancellationDetails(IRequestManager requestManager, HttpClient httpClient, GetAllCancellationDetailsHttpQuery request) : 
+            base(requestManager, httpClient, request)
+        {
+            
+        }
+
+        public override async Task<GetAllCancellationDetailsSuccessHttpResponse> Send()
+        {
+            var url = $"{RequestManager.LocalStorageServer}/Cancellations/{Request.CancellationId}/Details";
+            var response = await HttpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                return (await response.Content.ReadFromJsonAsync<GetAllCancellationDetailsSuccessHttpResponse>());
+            }
+            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
+        }
+    }
     public class GetAllComingDetailsRequest : 
         RequestProvider<GetComingDetailsByIdHttpQuery, GetComingDetailsByIdSuccessHttpResponse>
     {
@@ -17,7 +37,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetComingDetailsByIdSuccessHttpResponse> Send()
         {
-            var url = $"{RequestManager.LocalStorageServer}/Warehouse/GetComingDetails?ComingId={Request.Id}";
+            var url = $"{RequestManager.LocalStorageServer}/Comings/{Request.Id}/Details";
             var response = await HttpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {

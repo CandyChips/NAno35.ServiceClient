@@ -171,11 +171,14 @@ else
     private async Task AddDetail()
     {
         var modal = Modal.Show<ComingsCreateDetailForm>($"Новая позиция к оприходованию");
-        _details.Add((CreateComingDetailViewModel)(await modal.Result).Data);
+        var result = await modal.Result;
+        if(!result.Cancelled)
+            _details.Add((CreateComingDetailViewModel)(result).Data);
     }
     
     private void NewClient()
     {
         Modal.Show<ClientsCreate>($"Новый клиент");
     }
+        
 }

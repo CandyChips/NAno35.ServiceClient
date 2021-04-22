@@ -40,6 +40,18 @@ else
             <RadzenGridColumn TItem="SelleViewModel" Property="Unit" Title="Подразделение" />
             <RadzenGridColumn TItem="SelleViewModel" Property="Client" Title="Клиент" />
             <RadzenGridColumn TItem="SelleViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="SelleViewModel" 
+                              Filterable="false"
+                              Sortable="false"
+                              Width="130px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => { }) 
+                                  Text="Информация"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }

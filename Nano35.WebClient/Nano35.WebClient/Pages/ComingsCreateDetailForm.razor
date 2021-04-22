@@ -103,4 +103,9 @@ else
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
         (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
+
+    public  class CreateComingDetailViewModelExpanded : CreateComingDetailViewModel
+    {
+        public string Name { get; set; }
+    }
 }

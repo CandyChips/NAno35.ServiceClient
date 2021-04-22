@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.instance
+@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @page "/instance/clients"
@@ -63,7 +64,7 @@ else
                     <RadzenButton ButtonStyle="ButtonStyle.Danger"
                                   Icon="close"
                                   Size="ButtonSize.Small"
-                                  Click="@(_ => { })">
+                                  Click="@(_ => {})">
                     </RadzenButton>
                 </Template>
             </RadzenGridColumn>
@@ -94,6 +95,15 @@ else
     private async Task OpenCreateClient()
     {
         var modal = Modal.Show<ClientsCreate>("Новый клиент");
+        await modal.Result;
+        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+    }
+
+    private async Task OpenComingDetails(ComingViewModel entity)
+    {
+        var param = new ModalParameters();
+        param.Add(nameof(ComingsDetails.Coming), entity);
+        var modal = Modal.Show<ComingsDetails>("Оприходование", param);
         await modal.Result;
         _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
     }

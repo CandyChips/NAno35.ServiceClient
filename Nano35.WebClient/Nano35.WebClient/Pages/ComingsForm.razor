@@ -36,6 +36,9 @@
                               ButtonStyle="ButtonStyle.Secondary"/>
             </div>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.ClientId)" />
+        </Validation>
     </InputField>
     
     
@@ -53,6 +56,9 @@
                             FilterOperator="StringFilterOperator.Contains"
                             AllowFiltering="true"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.UnitId)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Комментарий">
@@ -61,6 +67,9 @@
                            Placeholder="Введите коментарий к оприходованию..."
                            @bind-Value="Model.Comment"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Comment)" />
+        </Validation>
     </InputField>
 
     <RadzenFieldset Text="Оприходуемые товары">           

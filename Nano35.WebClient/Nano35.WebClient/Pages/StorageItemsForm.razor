@@ -37,6 +37,9 @@ else
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.ArticleId)" />
+            </Validation>
         </InputField>
 
         <InputField Title="Состояние*">
@@ -53,6 +56,9 @@ else
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.ConditionId)" />
+            </Validation>
         </InputField>
                     
         <InputField Title="Комментарий">
@@ -61,6 +67,9 @@ else
                                Placeholder="Укажите комментарий к товару"
                                @bind-Value="Model.Comment"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Comment)" />
+            </Validation>
         </InputField>
                     
         <InputField Title="Скрытый комментарий">
@@ -69,6 +78,9 @@ else
                                Placeholder="Укажите скрытый комментарий к товару"
                                @bind-Value="Model.HiddenComment"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.HiddenComment)" />
+            </Validation>
         </InputField>
                     
         <InputField Title="Закупочная цена">
@@ -77,6 +89,9 @@ else
                                Placeholder="0"
                                @bind-Value="Model.RetailPrice"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.RetailPrice)" />
+            </Validation>
         </InputField>
                     
         <InputField Title="Цена продажи">
@@ -85,6 +100,9 @@ else
                                Placeholder="0"
                                @bind-Value="Model.PurchasePrice"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.PurchasePrice)" />
+            </Validation>
         </InputField>
                     
         <InputField Title="Изображения">

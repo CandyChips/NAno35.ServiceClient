@@ -28,6 +28,9 @@
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.StorageItemId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Ячейка на складе">
@@ -35,6 +38,9 @@
                 <SelectComingDetailPlaceOnStorage
                     @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Количество">
@@ -43,6 +49,9 @@
                                Placeholder="..."
                                @bind-Value="_model.Count"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Count)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Цена за еденицу">
@@ -51,6 +60,9 @@
                                Placeholder="..."
                                @bind-Value="_model.Price"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Price)" />
+            </Validation>
         </InputField>
 
         <RadzenButton type="submit"

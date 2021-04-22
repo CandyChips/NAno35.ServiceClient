@@ -16,6 +16,9 @@
                         <InputText @bind-Value="_model.Name" class="form-control" />
                         <ValidationMessage For="@(() => _model.Name)" />
                     </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.Name)" />
+                    </Validation>
                 </InputField>
 
                 <InputField Title="Номер телефона">
@@ -23,6 +26,9 @@
                         <InputText @bind-Value="_model.Phone" class="form-control" />
                         <ValidationMessage For="@(() => _model.Phone)" />
                     </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.Phone)" />
+                    </Validation>
                 </InputField>
 
                 <InputField Title="Электронная почта">
@@ -30,6 +36,9 @@
                         <InputText @bind-Value="_model.Email" class="form-control" />
                         <ValidationMessage For="@(() => _model.Email)" />
                     </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.Email)" />
+                    </Validation>
                 </InputField>
 
                 <InputField Title="Пароль">
@@ -37,6 +46,9 @@
                         <InputText @bind-Value="_model.Password" class="form-control" />
                         <ValidationMessage For="@(() => _model.Password)" />
                     </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.Password)" />
+                    </Validation>
                 </InputField>
 
                 <InputField Title="Подтверждение пароля">
@@ -44,6 +56,9 @@
                         <InputText @bind-Value="_model.PasswordConfirm" class="form-control" />
                         <ValidationMessage For="@(() => _model.PasswordConfirm)" />
                     </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.PasswordConfirm)" />
+                    </Validation>
                 </InputField>
                 
                 <button class="btn btn-primary">

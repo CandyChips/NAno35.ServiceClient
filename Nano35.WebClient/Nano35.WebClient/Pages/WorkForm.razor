@@ -15,6 +15,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Name"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Name)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Цена">
@@ -24,6 +27,9 @@
                            Placeholder="..."
                            @bind-Value="Model.Price"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Price)" />
+        </Validation>
     </InputField>
 
     @if (!string.IsNullOrEmpty(Error))

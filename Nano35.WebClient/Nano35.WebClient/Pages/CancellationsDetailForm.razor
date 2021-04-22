@@ -26,6 +26,9 @@
                                 AllowFiltering="true"
                                 Change="@GetAllPlacesOfStorageItem"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.StorageItemId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Ячейка на складе">
@@ -43,6 +46,9 @@
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
+            </Validation>
         </InputField>
         <InputField Title="Количество">
             <Controls>
@@ -50,6 +56,9 @@
                                Placeholder="..."
                                @bind-Value="_model.Count"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Count)" />
+            </Validation>
         </InputField>
 
         <RadzenButton type="submit"
@@ -89,7 +98,6 @@
                 {
                     StorageItemId = _model.StorageItemId,
                     UnitContainsStorageItemId = unitId
-                    
                 })
                 .Send())
                 .Contains

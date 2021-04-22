@@ -9,16 +9,20 @@
         <Controls>
             <InputText @bind-Value="_model.Name" 
                         class="form-control"/>
-            <ValidationMessage For="@(() => _model.Name)" />
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.Name)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Эл почта">
         <Controls>
             <InputText @bind-Value="_model.Email" 
                         class="form-control"/>
-            <ValidationMessage For="@(() => _model.Email)" />
         </Controls>
+        <Validation>
+                    <ValidationMessage For="@(() => _model.Email)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Номер телефона*">
@@ -26,32 +30,40 @@
             <InputText @bind-Value="_model.Phone" 
                         class="form-control"
                         MaxLenght="3"/>
-            <ValidationMessage For="@(() => _model.Phone)" />
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.Phone)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Пароль*">
         <Controls>
             <InputText @bind-Value="_model.Password" 
                         class="form-control"/>
-            <ValidationMessage For="@(() => _model.Password)" />
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.Password)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Подтверждение пароля*">
         <Controls>
             <InputText @bind-Value="_model.PasswordConfirm" 
                         class="form-control"/>
-            <ValidationMessage For="@(() => _model.PasswordConfirm)" />
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.PasswordConfirm)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Примечание">
         <Controls>
             <InputText @bind-Value="_model.Comment" 
                         class="form-control"/>
-            <ValidationMessage For="@(() => _model.Comment)" />
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.Comment)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Должность*">
@@ -67,6 +79,9 @@
                             FilterOperator="StringFilterOperator.Contains"
                             AllowFiltering="true"/>
         </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => _model.RoleId)" />
+        </Validation>
     </InputField>
     
     @if (!string.IsNullOrEmpty(_error))

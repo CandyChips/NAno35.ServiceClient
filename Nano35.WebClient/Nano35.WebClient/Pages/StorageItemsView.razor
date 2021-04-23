@@ -29,20 +29,9 @@ else
                 AllowSorting="true" 
                 Data="@_data"
                 TItem="StorageItemOnInstanceViewModel">
-        <Template Context="item">
-            <div>
-                <div>
-                    @item.Item.RetailPrice руб.
-                </div>
-                <div>
-                    @item.Item.RetailPrice руб.
-                </div>
-            </div>
-        </Template>
         <Columns>
             <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
                               Property="Item.Name"
-                              Filterable="false"
                               Sortable="false"
                               Title="Изделие"/>
             <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
@@ -77,11 +66,11 @@ else
                               Bubble="false"
                               Sortable="false"
                               Filterable="false"
-                              Width="200px"
+                              Width="250px"
                               TextAlign="TextAlign.Center">
                 <Template Context="item">
                     <RadzenButton
-                        ButtonStyle="ButtonStyle.Info"
+                        ButtonStyle="ButtonStyle.Primary"
                         Text="Фото"
                         Size="ButtonSize.Small"
                         Click="@(_ => { })"/>
@@ -91,7 +80,7 @@ else
                         Size="ButtonSize.Small"
                         Click="@(_ => Sell())"/>
                     <RadzenButton
-                        ButtonStyle="ButtonStyle.Secondary"
+                        ButtonStyle="ButtonStyle.Primary"
                         Text="Списать"
                         Size="ButtonSize.Small"
                         Click="@(_ => Cancellate())"/>

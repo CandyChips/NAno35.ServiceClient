@@ -35,11 +35,26 @@ else
                 Data=@(_data)
                 TItem="SelleViewModel">
         <Columns>
-            <RadzenGridColumn TItem="SelleViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="SelleViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="SelleViewModel" Property="Unit" Title="Подразделение" />
-            <RadzenGridColumn TItem="SelleViewModel" Property="Client" Title="Клиент" />
-            <RadzenGridColumn TItem="SelleViewModel" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="SelleViewModel"
+                              Property="Number" 
+                              Title="Номер" />
+            <RadzenGridColumn TItem="SelleViewModel"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Дата">
+                <Template Context="item">
+                    @item.Date.ToString("dd-MM-yyyy hh:mm")
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="SelleViewModel" 
+                              Property="Unit" 
+                              Title="Подразделение" />
+            <RadzenGridColumn TItem="SelleViewModel"
+                              Property="Client" 
+                              Title="Клиент" />
+            <RadzenGridColumn TItem="SelleViewModel"
+                              Property="Cash"
+                              Title="Цена" />
             <RadzenGridColumn TItem="SelleViewModel" 
                               Filterable="false"
                               Sortable="false"

@@ -139,7 +139,7 @@
     private async void Create()
     {
         Model.Details = _details.Select(a => 
-            new CreateMoveDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, FromPlaceOnStorage = a.FromPlaceOnStorage, ToPlaceOnStorage = a.ToPlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            new CreateMoveDetailViewModel() { NewId = a.NewId, Count = a.Count, FromPlaceOnStorage = a.FromPlaceOnStorage, ToPlaceOnStorage = a.ToPlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
         await FormSubmitted.InvokeAsync();
     }
 

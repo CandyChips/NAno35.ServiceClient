@@ -25,7 +25,7 @@ namespace Nano35.WebClient.Services
         
         public async Task<GetAllUnitsSuccessHttpResponse> GetAllUnit(Guid id)
         {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Units/GetAllUnits?InstanceId={id}");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Units?InstanceId={id}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllUnitsSuccessHttpResponse>());

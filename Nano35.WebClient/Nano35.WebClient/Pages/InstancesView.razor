@@ -42,13 +42,12 @@ else
                                   Context="order"
                                   Bubble="false"
                                   TextAlign="TextAlign.Center" 
-                                  Width="70px">
+                                  Width="200px">
                     <Template Context="item">
                         <RadzenButton
-                            ButtonStyle="ButtonStyle.Danger"
-                            Icon="close"
-                            Size="ButtonSize.Small" 
+                            ButtonStyle="ButtonStyle.Secondary"
                             Click="@(_ => OpenOrg(item.Id))">
+                            Войти
                         </RadzenButton>
                     </Template>
                 </RadzenGridColumn>

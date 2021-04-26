@@ -35,8 +35,7 @@
                                 Placeholder="Выберите целевое подразделение..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"
-                                Change="SetUnitId"/>
+                                AllowFiltering="true"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => Model.UnitId)" />
@@ -128,6 +127,7 @@
     {
         _isLoaded = false;
         _units = await LoadUnits();
+        Model.UnitId = await SessionProvider.GetCurrentUnitId();
         _isLoaded = true;
     }
 
@@ -154,14 +154,8 @@
         Model.Details = _details.Select(a => 
             new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
         await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
     }
     
     private async Task<List<UnitViewModel>> LoadUnits() =>
         (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
-
-    private void SetUnitId()
-    {
-        SessionProvider.SetCurrentUnitId(Model.UnitId);
-    }
 }

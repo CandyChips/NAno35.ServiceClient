@@ -1,46 +1,165 @@
-﻿@using Nano35.HttpContext.storage
-@using Nano35.WebClient.Services
-@using Nano35.HttpContext.instance
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
+<EditForm Model="@(_model)"
+          OnValidSubmit="HandleValidSubmit">
+    @if (_isLoaded)
+    {
+        <DataAnnotationsValidator/>
+        
+        <InputField Title="Товар">
+            <Controls>
+                <RadzenDropDown Data=@(StorageItems
+                                         .Select(a => 
+                                             new {Id = a.Id, 
+                                                 Name = $"{a.Article + " " + a.Condition}"}))
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="_model.StorageItemId"
+                                Style="width: 100%;"
+                                Placeholder="..."
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"
+                                Change="@GetAllPlacesOfStorageItem"/>
 
-<RadzenFieldset Text="Оприходуемые товары"
-                Style="width: 60rem">
-    <RadzenGrid Data="@_details"
-                EmptyText="Добавте оприходуемые товары..."
-                TItem="ComingDetailViewModel">
-        <Columns>
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="StorageItem" 
-                              Title="Товар" />
-            <RadzenGridColumn TItem="ComingDetailViewModel" 
-                              Property="PlaceOnStorage" 
-                              Title="Место на складе" />
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="Count"
-                              Title="Количество" />
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="Price" 
-                              Title="Цена" />
-        </Columns>
-    </RadzenGrid>
-</RadzenFieldset>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.StorageItemId)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Ячейка на складе отправителя">
+            <Controls>
+                <RadzenDropDown Data=@(FromPlaceOnStorage
+                                         .Select(a => 
+                                             new {Name = a.Name}))
+                                TextProperty="Name"
+                                ValueProperty="Name"
+                                TValue="string"
+                                @bind-Value="_model.FromPlaceOnStorage"
+                                Style="width: 100%;"
+                                Placeholder="Выберите ячейку"
+                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                FilterOperator="StringFilterOperator.Contains"
+                                AllowFiltering="true"
+                                Change="PlaceOnStorageChanged"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.FromPlaceOnStorage)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Ячейка на складе получателя">
+            <Controls>
+                <RadzenAutoComplete style="display: flex; width: 100%"
+                                    Empt
+                                    Data="@ToPlaceOnStorage"
+                                    TextProperty="Name"
+                                    Placeholder="Выберите ячейку или введите новую"
+                                    FilterOperator="StringFilterOperator.StartsWith"
+                                    @bind-Value="_model.ToPlaceOnStorage"
+                                    FilterDelay="1"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Количество">
+                    <Controls>
+                        <RadzenNumeric Style="width: 100%;" 
+                                       Placeholder="@(_maxItems.ToString())"
+                                       @bind-Value="_model.Count"
+                                       Max="_maxItems"/>
+                    </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.Count)" />
+                    </Validation>
+                </InputField>
+
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    }
+</EditForm>
 
 @code
 {
-    [Parameter] public ComingViewModel Coming { get; set; }
-    private List<ComingDetailViewModel> _details = new List<ComingDetailViewModel>();
-    
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public Guid ToUnitId { get; set; }
+    [Parameter] public Guid FromUnitId { get; set; }
+
+    private CreateMoveDetailViewModel _model;
+    private List<StorageItemViewModel> StorageItems { get; set; } = new List<StorageItemViewModel>();
+    private List<PlaceWithStorageItemOnUnit> FromPlaceOnStorage { get; set; } = new List<PlaceWithStorageItemOnUnit>();
+    private List<PlaceWithStorageItemOnUnit> ToPlaceOnStorage { get; set; } = new List<PlaceWithStorageItemOnUnit>();
+    private bool _isLoaded;
+    private int _maxItems;
+
     protected override async Task OnInitializedAsync()
     {
-        _details = (await (new GetAllComingDetailsRequest(
+        _model = new CreateMoveDetailViewModel()
+        {
+            NewId = Guid.NewGuid(),
+            Count = 1,
+        };
+        StorageItems = await GetAllStorageItems();
+        _isLoaded = true;
+    }
+
+    private async Task GetAllPlacesOfStorageItem()
+    {
+        FromPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(
             RequestManager, 
             HttpClient, 
-            new GetComingDetailsByIdHttpQuery() 
-            {Id = Coming.Id}))
+            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
+            {
+                StorageItemId = _model.StorageItemId,
+                UnitContainsStorageItemId = FromUnitId
+            })
             .Send())
-            .Data;
+            .Contains
+            .ToList();
+        
+        ToPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(
+            RequestManager, 
+            HttpClient, 
+            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
+            {
+                StorageItemId = _model.StorageItemId,
+                UnitContainsStorageItemId = ToUnitId
+            })
+            .Send())
+            .Contains
+            .ToList();
+    }
+    
+    private void HandleValidSubmit() 
+    {
+        ModalInstance.CloseAsync(ModalResult.Ok(_model));
+    }
+    
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
+        (await new GetAllStorageItemsRequest(
+            RequestManager, 
+            HttpClient, 
+            new GetAllStorageItemsQuery()
+            {
+                InstanceId = await SessionProvider.GetCurrentInstanceId()
+            })
+            .Send())
+            .Data
+            .ToList();
+
+    private void PlaceOnStorageChanged()
+    {
+        _maxItems = FromPlaceOnStorage.FirstOrDefault(a=> a.Name == _model.FromPlaceOnStorage).Count;
+
     }
 }

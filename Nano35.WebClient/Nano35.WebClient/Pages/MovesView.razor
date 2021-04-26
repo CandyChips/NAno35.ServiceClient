@@ -42,17 +42,17 @@ else
                               Property="Date" 
                               Title="Дата" />
             <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="Unit"
-                              Title="Подразделение" />
+                              Property="ToUnit"
+                              Title="Подразделение получатель" />
             <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="Client" 
-                              Title="Клиент" />
+                              Property="FromUnit" 
+                              Title="Подразделение отправитель" />
             <RadzenGridColumn TItem="MoveViewModel" 
                               Filterable="false"
                               Sortable="false"
                               Width="130px">
                 <Template Context="item">
-                    <RadzenButton Click=@(_ => { }) 
+                    <RadzenButton Click=@(_ => OpenMove(item)) 
                                   Text="Информация"
                                   Size="ButtonSize.Small"
                                   Style="margin: 1rem 0;"
@@ -75,9 +75,21 @@ else
         _loading = false;
     }
 
-    private void NewCancellation()
+    private async Task NewCancellation()
     {
-        Modal.Show<MovesCreate>("Новое списание");
+        var modal = Modal.Show<MovesCreate>("Новое списание");
+        if (!modal.Result.IsCanceled)
+        {
+            _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+        }
     }
-    
+
+    private async Task OpenMove(MoveViewModel value)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(MovesDetails.Move), value);
+        var modal = Modal.Show<MovesDetails>($"Перемещение", parameters);
+        await modal.Result;
+        _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+    }
 }

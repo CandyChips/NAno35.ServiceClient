@@ -109,6 +109,7 @@ else
             _isLoaded = false;
             _clients = await LoadClients();
             _units = await LoadUnits();
+            Model.UnitId = await SessionProvider.GetCurrentUnitId();
             _isLoaded = true;
         }
 

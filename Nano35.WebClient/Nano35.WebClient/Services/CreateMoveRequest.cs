@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<CreateMoveSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Moves/Move", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Moves", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateMoveSuccessHttpResponse>());

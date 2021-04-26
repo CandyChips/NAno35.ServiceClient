@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano35.WebClient", "Nano35.WebClient\Nano35.WebClient.csproj", "{4865E9B7-CBC2-43DB-BBC2-6B930956CDEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nano35.WebClient", "Nano35.WebClient\Nano35.WebClient.csproj", "{5D935313-67FF-44E5-A82F-E942B4B8D594}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4865E9B7-CBC2-43DB-BBC2-6B930956CDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4865E9B7-CBC2-43DB-BBC2-6B930956CDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4865E9B7-CBC2-43DB-BBC2-6B930956CDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4865E9B7-CBC2-43DB-BBC2-6B930956CDEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

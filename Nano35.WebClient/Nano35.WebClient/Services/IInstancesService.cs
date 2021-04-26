@@ -9,8 +9,6 @@ namespace Nano35.WebClient.Services
     public interface IInstancesService
     {
         Task<GetAllInstancesSuccessHttpResponse> GetAllInstances();
-        Task<GetAllRegionsSuccessHttpResponse> GetAllRegions();
-        Task<GetAllInstanceTypesSuccessHttpResponse> GetAllTypes();
     }
     
     public class InstancesService :
@@ -27,7 +25,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetAllInstancesSuccessHttpResponse> GetAllInstances()
         {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}Instances/GetAllCurrentInstances");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetAllCurrentInstances");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllInstancesSuccessHttpResponse>());

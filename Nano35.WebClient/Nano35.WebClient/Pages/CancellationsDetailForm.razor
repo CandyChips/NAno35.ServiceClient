@@ -44,7 +44,8 @@
                                 Placeholder="..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
+                                AllowFiltering="true"
+                                Change="@PlaceOnStorageChanged"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
@@ -53,8 +54,9 @@
         <InputField Title="Количество">
             <Controls>
                 <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Count"/>
+                               Placeholder="@(_maxItems.ToString())"
+                               @bind-Value="_model.Count"
+                               Max="_maxItems"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Count)" />
@@ -76,6 +78,7 @@
     private List<StorageItemViewModel> StorageItems { get; set; } = new List<StorageItemViewModel>();
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new List<PlaceWithStorageItemOnUnit>();
     private bool _isLoaded;
+    private int _maxItems;
 
     protected override async Task OnInitializedAsync()
     {
@@ -90,14 +93,13 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        var unitId = await SessionProvider.GetCurrentUnitId();
         Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
                 RequestManager, 
                 HttpClient, 
                 new GetAllPlacesOfStorageItemOnUnitHttpQuery()
                 {
                     StorageItemId = _model.StorageItemId,
-                    UnitContainsStorageItemId = unitId
+                    UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
                 })
                 .Send())
                 .Contains
@@ -121,4 +123,8 @@
             .Data
             .ToList();
 
+    private void PlaceOnStorageChanged()
+    {
+        _maxItems = Warehouse.FirstOrDefault(a=> a.Name == _model.PlaceOnStorage).Count;
+    }
 }

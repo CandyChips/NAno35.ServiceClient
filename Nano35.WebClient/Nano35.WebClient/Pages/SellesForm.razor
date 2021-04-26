@@ -107,8 +107,9 @@ else
     protected override async Task OnInitializedAsync()
         {
             _isLoaded = false;
-            _clients = await LoadClients();
+            //_clients = await LoadClients();
             _units = await LoadUnits();
+            Model.UnitId = await SessionProvider.GetCurrentUnitId();
             _isLoaded = true;
         }
 
@@ -117,7 +118,7 @@ else
         var moviesModal = Modal.Show<ClientsCreate>("Новый клиент");
         await moviesModal.Result;
         _isLoaded = false;
-        _clients = await LoadClients();
+        //_clients = await LoadClients();
         _isLoaded = true;
     }
     
@@ -147,8 +148,8 @@ else
             await ModalInstance.CloseAsync();
         }
     
-    private async Task<List<ClientViewModel>> LoadClients() => 
-        (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    //private async Task<List<ClientViewModel>> LoadClients() => 
+    //    (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
     private async Task<List<UnitViewModel>> LoadUnits() =>
         (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();

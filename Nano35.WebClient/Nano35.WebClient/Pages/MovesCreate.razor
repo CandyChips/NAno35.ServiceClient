@@ -12,6 +12,9 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    
     private CreateMoveHttpBody _model = new CreateMoveHttpBody
     {
         NewId = Guid.NewGuid(),
@@ -24,6 +27,7 @@
         try
         {
             await new CreateMoveRequest(RequestManager, HttpClient, _model).Send();
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
         {

@@ -78,10 +78,11 @@ else
     private async Task NewCancellation()
     {
         var modal = Modal.Show<MovesCreate>("Новое списание");
-        if (!modal.Result.IsCanceled)
-        {
-            _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
-        }
+        //if (!modal.Result.IsCanceled)
+        //{
+        //    Console.WriteLine("213123");
+        //    _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
+        //}
     }
 
     private async Task OpenMove(MoveViewModel value)

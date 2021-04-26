@@ -18,7 +18,8 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetInstanceByIdSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/Instances/GetInstanceById?Id={Request.Id}");
+            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/Instances/{Request.Id}");
+            
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetInstanceByIdSuccessHttpResponse>());

@@ -112,8 +112,8 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<InstanceTypeViewModel> _types = new List<InstanceTypeViewModel>();
-    private List<RegionViewModel> _regions = new List<RegionViewModel>();
+    private List<InstanceTypeViewModel> _types = new();
+    private List<RegionViewModel> _regions = new();
     
     protected override async Task OnInitializedAsync()
     {

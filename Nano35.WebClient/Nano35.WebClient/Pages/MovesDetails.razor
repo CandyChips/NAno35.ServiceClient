@@ -6,14 +6,23 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<div style="margin-top:20px">Номер оприходования:</div>
-<b>@Move.Number</b>
-<div style="margin-top:20px">Дата:</div>
-<b>@Move.Date</b>
-<div style="margin-top:20px">Подразделение отправитель:</div>
-<b>@Move.FromUnit</b>
-<div style="margin-top:20px">Подразделение получатель:</div>
-<b>@Move.ToUnit</b>
+<RadzenFieldset Text="Оприходование"
+            Style="width: 100%;">
+    <ul class="list-group">
+        <li class="list-group-item" role="alert">
+            <b>Номер оприходования: @Move.Number</b>
+        </li>
+        <li class="list-group-item" role="alert">
+            <b>Дата: @Move.Date</b>
+        </li>
+        <li class="list-group-item " role="alert">
+            <b>Подразделение отправитель: @Move.FromUnit</b>
+        </li>
+        <li class="list-group-item " role="alert">
+            <b>Подразделение получатель: @Move.ToUnit</b>
+        </li>
+    </ul>
+</RadzenFieldset>
 
 <RadzenFieldset Text="Оприходуемые товары"
                 Style="width: 60rem">
@@ -33,6 +42,15 @@
             <RadzenGridColumn TItem="MoveDetailViewModel"
                               Property="Count" 
                               Title="Количество" />
+            <RadzenGridColumn TItem="MoveDetailViewModel"
+                              Bubble="false"
+                              Sortable="false"
+                              Filterable="false"
+                              TextAlign="TextAlign.Center">
+                <Template Context="item">
+                    <a href="http://192.168.100.210:30006/StorageItems/Ticket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 </RadzenFieldset>

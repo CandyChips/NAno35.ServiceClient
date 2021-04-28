@@ -99,9 +99,9 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
-    private List<ClientViewModel> _clients = new List<ClientViewModel>();
-    private List<UnitViewModel> _units = new List<UnitViewModel>();
-    private List<CreateSelleDetailViewModel> _details = new List<CreateSelleDetailViewModel>();
+    private List<ClientViewModel> _clients = new();
+    private List<UnitViewModel> _units = new();
+    private List<CreateSelleDetailViewModel> _details = new();
     private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()

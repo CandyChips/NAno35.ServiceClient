@@ -92,7 +92,7 @@ else
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateComingDetailViewModel _model;
     private List<StorageItemViewModel> StorageItems { get; set; }
-    private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new List<PlaceWithStorageItemOnUnit>();
+    private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()

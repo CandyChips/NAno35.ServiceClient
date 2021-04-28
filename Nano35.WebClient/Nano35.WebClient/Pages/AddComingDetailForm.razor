@@ -76,9 +76,9 @@
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    private CreateComingDetailViewModel _model = new CreateComingDetailViewModel();
-    private List<StorageItemViewModel> _storageItems = new List<StorageItemViewModel>();
-    private List<PlaceWithStorageItemOnInstance> _places = new List<PlaceWithStorageItemOnInstance>();
+    private CreateComingDetailViewModel _model = new();
+    private List<StorageItemViewModel> _storageItems = new();
+    private List<PlaceWithStorageItemOnInstance> _places = new();
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()

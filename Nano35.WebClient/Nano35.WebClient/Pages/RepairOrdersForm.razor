@@ -153,8 +153,8 @@
     BlazoredModalInstance ModalInstance { get; set; }
 
     private bool _isLoaded;
-    private List<ClientViewModel> _clients = new List<ClientViewModel>();
-    private List<ArticleViewModel> _articles = new List<ArticleViewModel>();
+    private List<ClientViewModel> _clients = new();
+    private List<ArticleViewModel> _articles = new();
 
     protected override async Task OnInitializedAsync()
     {

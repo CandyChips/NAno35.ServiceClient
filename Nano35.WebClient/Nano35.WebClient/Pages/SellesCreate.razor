@@ -49,8 +49,8 @@
         public double Price { get; set; }
     }
 
-    private FreeSalle model = new FreeSalle();
-    private CreateSelleHttpBody _model = new CreateSelleHttpBody { NewId = Guid.NewGuid(), InstanceId = Guid.Empty };
+    private FreeSalle model = new();
+    private CreateSelleHttpBody _model = new() { NewId = Guid.NewGuid(), InstanceId = Guid.Empty };
     private string Error { get; set; }
     private async Task SendCreateSelleRequest()
     {

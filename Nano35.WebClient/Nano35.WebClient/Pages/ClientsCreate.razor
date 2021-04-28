@@ -14,7 +14,7 @@
 @code
 {
     [Parameter] public Guid TypeId { get; set; } = Guid.Empty;
-    private CreateClientHttpBody _model = new CreateClientHttpBody
+    private CreateClientHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty

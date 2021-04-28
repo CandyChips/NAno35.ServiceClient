@@ -15,7 +15,7 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
-    private CreateMoveHttpBody _model = new CreateMoveHttpBody
+    private CreateMoveHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty

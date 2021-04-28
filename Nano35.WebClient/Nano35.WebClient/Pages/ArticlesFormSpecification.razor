@@ -15,7 +15,7 @@
 
 @code
 {
-    private List<SpecHttpContext> _value = new List<SpecHttpContext>();
+    private List<SpecHttpContext> _value = new();
     [Parameter] public EventCallback<List<SpecHttpContext>> ValueChanged { get; set; }
     [Parameter] public List<SpecHttpContext> Value
     {
@@ -28,7 +28,7 @@
         }
     }
     
-    private SpecHttpContext _model = new SpecHttpContext();
+    private SpecHttpContext _model = new();
 
     private void AddSpec()
     {

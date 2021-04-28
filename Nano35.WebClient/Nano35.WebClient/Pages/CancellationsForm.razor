@@ -120,8 +120,8 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid UnitId { get; set; }
     private bool _isLoaded;
-    private List<UnitViewModel> _units = new List<UnitViewModel>();
-    private List<CreateCancellationDetailViewModel> _details = new List<CreateCancellationDetailViewModel>();
+    private List<UnitViewModel> _units = new();
+    private List<CreateCancellationDetailViewModel> _details = new();
     
     protected override async Task OnInitializedAsync()
     {

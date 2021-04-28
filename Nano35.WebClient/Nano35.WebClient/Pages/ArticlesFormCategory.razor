@@ -58,8 +58,8 @@
     [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
     [Parameter] public Guid Value { get => _value; set { if (_value == value ) return; _value = value; ValueChanged.InvokeAsync(value); } }
     
-    private List<ArticleCategoryViewModel> _categories = new List<ArticleCategoryViewModel>();
-    private List<ArticleCategoryViewModel> _selectedCategories = new List<ArticleCategoryViewModel>();
+    private List<ArticleCategoryViewModel> _categories = new();
+    private List<ArticleCategoryViewModel> _selectedCategories = new();
     private ArticleCategoryViewModel _selectedCategory;
     private string _name = string.Empty;
     private bool _isLoading = true;

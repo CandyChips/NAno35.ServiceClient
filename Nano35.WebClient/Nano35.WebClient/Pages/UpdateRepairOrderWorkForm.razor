@@ -62,8 +62,8 @@ else
     [Parameter] public Guid RepairOrderId { get; set; }
     
     private bool _isLoaded;
-    private CreateRepairOrderWorkBody _model = new CreateRepairOrderWorkBody();
-    private List<WorkViewModel>  _works = new List<WorkViewModel>();
+    private CreateRepairOrderWorkBody _model = new();
+    private List<WorkViewModel>  _works = new();
 
     protected override async Task OnInitializedAsync()
     {

@@ -37,10 +37,17 @@ else
             }
             else
             {
-                foreach (var image in item.Item.Images)
-                {
-                    <img src="http://192.168.100.124:5000/StorageItems/@image" alt="альтернативный текст" />
-                }
+                <RadzenSteps>
+                    <Steps>
+                    @foreach (var image in item.Item.Images.Select((value, i) => new { i, value }))
+                    {
+                        
+                        <RadzenStepsItem>
+                            <img src="http://192.168.100.124:5000/StorageItems/@image.value" alt="Не удалось загрузить изображение" />
+                        </RadzenStepsItem>
+                    }
+                    </Steps>
+                </RadzenSteps>
             }
         </Template>
         <Columns>
@@ -83,21 +90,7 @@ else
                               Width="250px"
                               TextAlign="TextAlign.Center">
                 <Template Context="item">
-                    <RadzenButton
-                        ButtonStyle="ButtonStyle.Primary"
-                        Text="Фото"
-                        Size="ButtonSize.Small"
-                        Click="@(_ => { })"/>
-                    <RadzenButton
-                        ButtonStyle="ButtonStyle.Primary"
-                        Text="Продать"
-                        Size="ButtonSize.Small"
-                        Click="@(_ => Sell())"/>
-                    <RadzenButton
-                        ButtonStyle="ButtonStyle.Primary"
-                        Text="Списать"
-                        Size="ButtonSize.Small"
-                        Click="@(_ => Cancellate())"/>
+                    <a href="http://192.168.100.210:30006/StorageItems/Ticket?storageItemId=@item.Item.Id" target="_blank">Этикетка</a>
                 </Template>
             </RadzenGridColumn>
         </Columns>

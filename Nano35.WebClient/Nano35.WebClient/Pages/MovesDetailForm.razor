@@ -96,9 +96,9 @@
     [Parameter] public Guid FromUnitId { get; set; }
 
     private CreateMoveDetailViewModel _model;
-    private List<StorageItemViewModel> StorageItems { get; set; } = new List<StorageItemViewModel>();
-    private List<PlaceWithStorageItemOnUnit> FromPlaceOnStorage { get; set; } = new List<PlaceWithStorageItemOnUnit>();
-    private List<PlaceWithStorageItemOnUnit> ToPlaceOnStorage { get; set; } = new List<PlaceWithStorageItemOnUnit>();
+    private List<StorageItemViewModel> StorageItems { get; set; } = new();
+    private List<PlaceWithStorageItemOnUnit> FromPlaceOnStorage { get; set; } = new();
+    private List<PlaceWithStorageItemOnUnit> ToPlaceOnStorage { get; set; } = new();
     private bool _isLoaded;
     private int _maxItems;
 

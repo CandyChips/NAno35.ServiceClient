@@ -162,8 +162,8 @@ else
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     private bool _loaded;
-    private List<ArticleViewModel> _articles = new List<ArticleViewModel>();
-    private List<StorageItemConditionViewModel> _conditions = new List<StorageItemConditionViewModel>();
+    private List<ArticleViewModel> _articles = new();
+    private List<StorageItemConditionViewModel> _conditions = new();
     private IList<File> _files = new List<File>();
     private IList<UploadResult> _uploadResults = new List<UploadResult>();
     private int _maxAllowedFiles = 3;

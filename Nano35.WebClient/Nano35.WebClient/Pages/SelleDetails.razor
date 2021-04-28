@@ -1,39 +1,47 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@using Blazored.FluentValidation
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<div style="margin-top:20px">Номер оприходования:</div>
-<b>@Cancellation.Number</b>
-<div style="margin-top:20px">Дата:</div>
-<b>@Cancellation.Date</b>
-<div style="margin-top:20px">Целевое подразделение:</div>
-<b>@Cancellation.Unit</b>
-<div style="margin-top:20px">Поставщик:</div>
-<b>@Cancellation.Client</b>
+<RadzenFieldset Text="Информация"
+            Style="width: 100%;">
+    <ul class="list-group">
+        <li class="list-group-item" role="alert">
+            <b>Номер оприходования: @Selle.Number</b>
+        </li>
+        <li class="list-group-item" role="alert">
+            <b>Дата: @Selle.Date</b>
+        </li>
+        <li class="list-group-item " role="alert">
+            <b>Целевое подразделение: @Selle.Unit</b>
+        </li>
+        <li class="list-group-item " role="alert">
+            <b>Поставщик: @Selle.Client</b>
+        </li>
+    </ul>
+</RadzenFieldset>
 
 <RadzenFieldset Text="Оприходуемые товары"
                 Style="width: 60rem">
-    <RadzenGrid Data="@Details"
+    <RadzenGrid Data="@(Details)"
                 EmptyText="Добавте оприходуемые товары..."
-                TItem="CancellationDetailViewModel">
+                TItem="SelleDetailViewModel">
         <Columns>
-            <RadzenGridColumn TItem="CancellationDetailViewModel"
+            <RadzenGridColumn TItem="SelleDetailViewModel"
                               Property="StorageItem" 
                               Title="Товар" />
-            <RadzenGridColumn TItem="CancellationDetailViewModel" 
+            <RadzenGridColumn TItem="SelleDetailViewModel" 
                               Property="PlaceOnStorage" 
                               Title="Место на складе" />
-            <RadzenGridColumn TItem="CancellationDetailViewModel"
+            <RadzenGridColumn TItem="SelleDetailViewModel"
                               Property="Count"
                               Title="Количество" />
-            <RadzenGridColumn TItem="CancellationDetailViewModel"
+            <RadzenGridColumn TItem="SelleDetailViewModel"
                               Property="Price" 
                               Title="Цена" />
-            <RadzenGridColumn TItem="CancellationDetailViewModel"
+            <RadzenGridColumn TItem="SelleDetailViewModel"
                               Bubble="false"
                               Sortable="false"
                               Filterable="false"
@@ -49,12 +57,10 @@
 
 @code
 {
-    [Parameter] public CancellationViewModel Cancellation { get; set; }
-    private List<CancellationDetailViewModel> Details { get; set; }
+    [Parameter] public SelleViewModel Selle { get; set; }
+    private List<SelleDetailViewModel> Details { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        var request = new GetAllCancellationDetailsHttpQuery() {CancellationId = Cancellation.Id};
-        Details = (await new GetAllCancellationDetails(RequestManager, HttpClient, request).Send()).Data;
     }
 }

@@ -89,8 +89,8 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     private CreateSelleDetailViewModel _model;
-    private List<StorageItemViewModel> StorageItems { get; set; } = new List<StorageItemViewModel>();
-    private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new List<PlaceWithStorageItemOnUnit>();
+    private List<StorageItemViewModel> StorageItems { get; set; } = new();
+    private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
     private int _maxItems;
 

@@ -94,14 +94,14 @@
                 <RadzenGridColumn TItem="CreateComingDetailViewModel"
                                   Context="order"
                                   Bubble="false"
-                                  TextAlign="TextAlign.Center" 
-                                  Width="70px">
+                                  TextAlign="TextAlign.Center">
                     <Template Context="item">
                         <RadzenButton
                             ButtonStyle="ButtonStyle.Danger"
                             Icon="close"
                             Size="ButtonSize.Small">
                         </RadzenButton>
+                        <a href="http://192.168.100.210:30006/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
                     </Template>
                 </RadzenGridColumn>
             </Columns>
@@ -139,9 +139,9 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
-    private List<ClientViewModel> _clients = new List<ClientViewModel>();
-    private List<UnitViewModel> _units = new List<UnitViewModel>();
-    private List<CreateComingDetailViewModel> _details = new List<CreateComingDetailViewModel>();
+    private List<ClientViewModel> _clients = new();
+    private List<UnitViewModel> _units = new();
+    private List<CreateComingDetailViewModel> _details = new();
     
     private bool _isLoaded;
 

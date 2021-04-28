@@ -70,18 +70,19 @@ else
             <RadzenGridColumn TItem="ComingViewModel" 
                               Filterable="false"
                               Sortable="false"
-                              Width="130px">
+                              TextAlign="TextAlign.Center">
                 <Template Context="item">
                     <RadzenButton Click=@(_ => OpenComing(item)) 
                                   Text="Информация"
                                   Size="ButtonSize.Small"
                                   Style="margin: 1rem 0;"
                                   ButtonStyle="ButtonStyle.Primary"/>
+                    <a href="http://192.168.100.210:30006/StorageItems/GenerateComingDocument?comingId=@item.Id.ToString()" target="_blank">Документ</a>
                 </Template>
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-
+    
 }
 
 @code

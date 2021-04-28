@@ -86,7 +86,7 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private List<UnitTypeViewModel> _types = new List<UnitTypeViewModel>();
+    private List<UnitTypeViewModel> _types = new();
         
     protected override async Task OnInitializedAsync()
     {

@@ -98,8 +98,8 @@ else
     [Parameter] public string Error { get; set; }
     [Parameter] public Guid TypeId { get; set; }
 
-    private List<ClientTypeViewModel> _types = new List<ClientTypeViewModel>();
-    private List<ClientStateViewModel> _state = new List<ClientStateViewModel>();
+    private List<ClientTypeViewModel> _types = new();
+    private List<ClientStateViewModel> _state = new();
     private bool _loaded;
 
     protected override async Task OnInitializedAsync()

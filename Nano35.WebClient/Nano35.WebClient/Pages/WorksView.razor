@@ -2,14 +2,96 @@
 @layout InstanceLayout
 @page "/instance/works"
 @using Microsoft.AspNetCore.Authorization
+@using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Services
 @inject IRequestManager RequestManager
 @inject IComingsService ComingsService
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
-<h3>Works</h3>
+@if (_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <RadzenHeading Text="Мои активные заказы на ремонт"/>
+    
+    <RadzenButton Click=@(_ => NewOrder()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+    
+    <RadzenGrid AllowFiltering="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterMode="FilterMode.Advanced"
+                EmptyText="Нет оприходований."
+                AllowPaging="true"
+                PageSize="10"
+                AllowSorting="true"
+                Data="@_data"
+                TItem="RepairOrderViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Property="LastState.Comment"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Статус"/>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Property="Client"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Клиент"/>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Property="Device"
+                              Filterable="false"
+                              Sortable="false"
+                              Title="Изделие"/>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Bubble="false"
+                              Filterable="false"
+                              Sortable="false"
+                              TextAlign="TextAlign.Center" 
+                              Width="200px">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => DetailsOpen(item.Id))
+                                  Text="Информация"
+                                  ButtonStyle="ButtonStyle.Info"/>
+                </Template>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+}
 
 @code {
+    private bool _isLoaded = true;
+    private List<RepairOrderViewModel> _data;
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
     
+    protected override async Task OnInitializedAsync()
+    {
+        _data = (await new GetAllMyRepairOrdersRequest(RequestManager, HttpClient, new GetAllMyRepairOrdersBody()).Send()).Data;
+        _isLoaded = false;
+    }
+
+    private async Task DetailsOpen(Guid id)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(RepairOrdersDetailForm.Id), id);
+        Modal.Show<RepairOrdersDetailForm>($"Заказ наряд", parameters);
+    }
+    
+    private async Task NewOrder()
+    {
+        var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
+        await modal.Result;
+        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersBody() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+
+    }
+
 }

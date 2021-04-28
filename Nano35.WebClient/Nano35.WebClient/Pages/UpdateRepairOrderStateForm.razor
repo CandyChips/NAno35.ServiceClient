@@ -57,7 +57,7 @@ else
     [Parameter] public Guid RepairOrderId { get; set; }
     private bool _isLoaded;
     private CreateRepairOrderStateBody _model;
-    private List<Tuple<int, string>> StateTypes { get; set; } = new List<Tuple<int, string>>();
+    private List<Tuple<int, string>> StateTypes { get; set; } = new();
     
     protected override async Task OnInitializedAsync()
     {
@@ -77,7 +77,7 @@ else
 
     private async Task HandleValidSubmit()
     {
-        var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrder/RepairOrderState", _model);
+        var response = await HttpClient.PostAsJsonAsync($"http://localhost:5004/RepairOrders/State", _model);
         if (response.IsSuccessStatusCode)
             await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
         else

@@ -104,8 +104,8 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
 
-    private List<WorkersRoleViewModel> _types = new List<WorkersRoleViewModel>();
-    private CreateWorkerHttpBody _model = new CreateWorkerHttpBody();
+    private List<WorkersRoleViewModel> _types = new();
+    private CreateWorkerHttpBody _model = new();
     private string _error = "";
     private bool _serverAvailable = false;
 

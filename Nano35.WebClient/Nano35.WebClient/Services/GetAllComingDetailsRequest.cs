@@ -6,26 +6,6 @@ using Nano35.HttpContext.storage;
 
 namespace Nano35.WebClient.Services
 {
-    public class GetAllCancellationDetails : 
-        RequestProvider<GetAllCancellationDetailsHttpQuery, GetAllCancellationDetailsSuccessHttpResponse>
-    {
-        public GetAllCancellationDetails(IRequestManager requestManager, HttpClient httpClient, GetAllCancellationDetailsHttpQuery request) : 
-            base(requestManager, httpClient, request)
-        {
-            
-        }
-
-        public override async Task<GetAllCancellationDetailsSuccessHttpResponse> Send()
-        {
-            var url = $"{RequestManager.LocalStorageServer}/Cancellations/{Request.CancellationId}/Details";
-            var response = await HttpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                return (await response.Content.ReadFromJsonAsync<GetAllCancellationDetailsSuccessHttpResponse>());
-            }
-            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
-        }
-    }
     public class GetAllComingDetailsRequest : 
         RequestProvider<GetComingDetailsByIdHttpQuery, GetComingDetailsByIdSuccessHttpResponse>
     {
@@ -42,27 +22,6 @@ namespace Nano35.WebClient.Services
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetComingDetailsByIdSuccessHttpResponse>());
-            }
-            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
-        }
-    }
-    
-    public class GetAllMoveDetailsRequest : 
-        RequestProvider<GetAllMoveDetailsHttpQuery, GetAllMoveDetailsSuccessHttpResponse>
-    {
-        public GetAllMoveDetailsRequest(IRequestManager requestManager, HttpClient httpClient, GetAllMoveDetailsHttpQuery request) : 
-            base(requestManager, httpClient, request)
-        {
-            
-        }
-
-        public override async Task<GetAllMoveDetailsSuccessHttpResponse> Send()
-        {
-            var url = $"{RequestManager.LocalStorageServer}/Moves/{Request.MoveId}/Details";
-            var response = await HttpClient.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                return (await response.Content.ReadFromJsonAsync<GetAllMoveDetailsSuccessHttpResponse>());
             }
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }

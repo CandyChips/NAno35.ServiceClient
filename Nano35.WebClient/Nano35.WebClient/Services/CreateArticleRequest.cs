@@ -12,7 +12,6 @@ namespace Nano35.WebClient.Services
         public CreateArticleRequest(IRequestManager requestManager, HttpClient httpClient, CreateArticleHttpBody request) : 
             base(requestManager, httpClient, request)
         {  }
-
         public override async Task<CreateArticleSuccessHttpResponse> Send()
         {
             var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Articles", Request);

@@ -27,11 +27,11 @@ namespace Nano35.WebClient.Services
         {
             _httpClient = httpClient;
         }
-        public string IdentityServer => $"http://192.168.100.210:30001";
-        public string InstanceServer => "http://192.168.100.210:30002";
-        public string StorageServer => "http://192.168.100.210:30003";
-        public string RepairOrdersServer => "http://192.168.100.210:30004";
-        public string FileServer => "http://192.168.100.210:30005";
+        public string IdentityServer => $"http://192.168.100.125:30001";
+        public string InstanceServer => "http://192.168.100.125:30002";
+        public string StorageServer => "http://192.168.100.125:30003";
+        public string RepairOrdersServer => "http://192.168.100.125:30004";
+        public string FileServer => "http://192.168.100.125:30005";
         public string LocalIdentityServer => "http://localhost:5001";
         public string LocalInstanceServer => "http://localhost:5002";
         public string LocalStorageServer => "http://localhost:5003";
@@ -45,25 +45,4 @@ namespace Nano35.WebClient.Services
             return result.IsSuccessStatusCode;
         }
     }
-
-    //public class LocalRequestManager :
-    //    IRequestManager
-    //{
-    //    private readonly HttpClient _httpClient;
-    //    public LocalRequestManager(
-    //        HttpClient httpClient)
-    //    {
-    //        _httpClient = httpClient;
-    //    }
-    //    public string IdentityServer => "http://localhost:5001";
-    //    public string InstanceServer => "http://localhost:5002";
-    //    public string StorageServer => "http://localhost:5003";
-    //    public string RepairOrdersServer => "http://localhost:5004";
-    //    public string FileServer => "http://localhost:5005";
-    //    public async Task<bool> HealthCheck(string serverUrl)
-    //    {
-    //        var result = await _httpClient.GetAsync($"{serverUrl}/health");
-    //        return result.IsSuccessStatusCode;
-    //    }
-    //}
 }

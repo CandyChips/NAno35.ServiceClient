@@ -10,7 +10,7 @@ namespace Nano35.WebClient.Services
     {
         Task<GetAllWorkersSuccessHttpResponse> GetAllWorkers(Guid id);
         Task<GetAllWorkerRolesSuccessHttpResponse> GetAllWorkerRoles();
-        Task<CreateWorkerSuccessHttpResponse> Send(CreateUnitHttpBody request);
+        Task<CreateWorkerSuccessHttpResponse> Send(CreateWorkerHttpBody request);
     }
 
     public class WorkerService : IWorkerService
@@ -26,7 +26,7 @@ namespace Nano35.WebClient.Services
         
         public async Task<GetAllWorkersSuccessHttpResponse> GetAllWorkers(Guid id)
         {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Workers/GetAllWorkers?InstanceId={id}");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Workers?InstanceId={id}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllWorkersSuccessHttpResponse>());
@@ -36,7 +36,7 @@ namespace Nano35.WebClient.Services
         
         public async Task<GetAllWorkerRolesSuccessHttpResponse> GetAllWorkerRoles()
         {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Workers/GetAllWorkerRoles");
+            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/WorkersRoles");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllWorkerRolesSuccessHttpResponse>());
@@ -44,9 +44,9 @@ namespace Nano35.WebClient.Services
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }
 
-        public async Task<CreateWorkerSuccessHttpResponse> Send(CreateUnitHttpBody request)
+        public async Task<CreateWorkerSuccessHttpResponse> Send(CreateWorkerHttpBody request)
         {
-            var response = await _httpClient.PostAsJsonAsync($"{_requestManager.InstanceServer}/Workers/CreateWorker", request);
+            var response = await _httpClient.PostAsJsonAsync($"{_requestManager.InstanceServer}/Workers", request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateWorkerSuccessHttpResponse>());

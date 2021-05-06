@@ -6,8 +6,8 @@
 @inject NavigationManager NavigationManager;
 @inject IRequestManager RequestManager;
 @inject IInstanceService InstanceService;
-@inject IUnitService UnitService;
 @inject ISessionProvider SessionProvider;
+@inject HttpClient HttpClient
 @page "/instance/units"
 
 @if (_loading)
@@ -59,7 +59,11 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
+        _data = (await new GetAllUnitsRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+            .Send()).Data;
         _loading = false;
     }
     
@@ -67,6 +71,10 @@ else
     {
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
-        _data = (await UnitService.GetAllUnit(InstanceService.GetCurrentInstance().Id)).Data;
+        _data = (await new GetAllUnitsRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+            .Send()).Data;
     }
 }

@@ -32,25 +32,5 @@ namespace Nano35.WebClient.Services
             }
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }
-
-        public async Task<GetAllRegionsSuccessHttpResponse> GetAllRegions()
-        {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetAllRegions");
-            if (response.IsSuccessStatusCode)
-            {
-                return (await response.Content.ReadFromJsonAsync<GetAllRegionsSuccessHttpResponse>());
-            }
-            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
-        }
-
-        public async Task<GetAllInstanceTypesSuccessHttpResponse> GetAllTypes()
-        {
-            var response = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Instances/GetAllInstanceTypes");
-            if (response.IsSuccessStatusCode)
-            {
-                return (await response.Content.ReadFromJsonAsync<GetAllInstanceTypesSuccessHttpResponse>());
-            }
-            throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
-        }
     }
 }

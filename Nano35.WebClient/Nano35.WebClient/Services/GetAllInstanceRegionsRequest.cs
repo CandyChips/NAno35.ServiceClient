@@ -17,7 +17,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllRegionsSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/Instances/GetAllRegions");
+            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/InstancesRegions");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllRegionsSuccessHttpResponse>());

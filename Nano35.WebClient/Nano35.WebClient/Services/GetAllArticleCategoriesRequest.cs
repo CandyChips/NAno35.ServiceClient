@@ -17,7 +17,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllArticleCategoriesSuccessHttpResponse> Send()
         {
-            var url = $"{RequestManager.LocalStorageServer}/Categories?InstanceId={Request.InstanceId}";
+            var url = $"{RequestManager.LocalStorageServer}/ArticleCategoriesInstanceId={Request.InstanceId}";
             if (Request.ParentId != Guid.Empty)
             {
                 url += $"&ParentId={Request.ParentId}";

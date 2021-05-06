@@ -18,7 +18,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllUnitTypesSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/Units/GetAllUnitTypes");
+            var response = await HttpClient.GetAsync($"{RequestManager.InstanceServer}/UnitsTypes");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllUnitTypesSuccessHttpResponse>());

@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<CreateCategorySuccessHttpResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Categories", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Category", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateCategorySuccessHttpResponse>());

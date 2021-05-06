@@ -60,7 +60,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<GetUserByIdSuccessHttpResponse> GetCurrentUser()
         {
-            var result = await _httpClient.GetAsync($"{_requestManager.IdentityServer}/Identity/GetUserFromToken");
+            var result = await _httpClient.GetAsync($"{_requestManager.IdentityServer}/Identity/FromToken");
             if (result.IsSuccessStatusCode)
             {
                 return await result.Content.ReadFromJsonAsync<GetUserByIdSuccessHttpResponse>();

@@ -100,13 +100,14 @@ else
         _model = new CreateComingDetailViewModel()
         {
             NewId = Guid.NewGuid(),
-            Count = 1
+            Count = 1,
+            
         };
         StorageItems = await GetAllStorageItems();
         _isLoaded = true;
     }
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
@@ -121,7 +122,7 @@ else
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
         (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private async void StorageItemChanged()
+    private async Task StorageItemChanged()
     {
         Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
             RequestManager, 

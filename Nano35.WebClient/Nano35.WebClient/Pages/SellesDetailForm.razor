@@ -55,21 +55,23 @@
         </InputField>
         
         <InputField Title="Количество">
-                    <Controls>
-                        <RadzenNumeric Style="width: 100%;" 
-                                       Placeholder="@(_maxItems.ToString())"
-                                       @bind-Value="_model.Count"
-                                       Max="_maxItems"/>
-                    </Controls>
-                    <Validation>
-                        <ValidationMessage For="@(() => _model.Count)" />
-                    </Validation>
-                </InputField>
+            <Controls>
+                <RadzenNumeric Style="width: 100%;" 
+                               Placeholder="@(_maxItems.ToString())"
+                               @bind-Value="_model.Count"
+                               Max="@_maxItems"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Count)" />
+            </Validation>
+        </InputField>
         
         <InputField Title="Цена">
             <Controls>
                 <RadzenNumeric style="width: 100%;"
                                Placeholder="..."
+                               TValue="double"
+                               ShowUpDown="false"
                                @bind-Value="_model.Price"/>
             </Controls>
             <Validation>
@@ -88,7 +90,7 @@
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
-    private CreateSelleDetailViewModel _model;
+    private CreateSelleDetailViewModel _model = new CreateSelleDetailViewModel(){NewId = Guid.NewGuid(), Count = 1,};
     private List<StorageItemViewModel> StorageItems { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
@@ -96,11 +98,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateSelleDetailViewModel()
-        {
-            NewId = Guid.NewGuid(),
-            Count = 1,
-        };
         StorageItems = await GetAllStorageItems();
         _isLoaded = true;
     }

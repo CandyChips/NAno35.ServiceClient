@@ -4,7 +4,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@_model" OnSubmit="HandleValidSubmit">
+<EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
     @if (_isLoaded)
     {
         <DataAnnotationsValidator/>
@@ -56,6 +56,7 @@
                 <RadzenNumeric Style="width: 100%;" 
                                Placeholder="@(_maxItems.ToString())"
                                @bind-Value="_model.Count"
+                               ShowUpDown="false"
                                Max="_maxItems"/>
             </Controls>
             <Validation>

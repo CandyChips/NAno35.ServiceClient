@@ -75,7 +75,8 @@
                         <RadzenNumeric Style="width: 100%;" 
                                        Placeholder="@(_maxItems.ToString())"
                                        @bind-Value="_model.Count"
-                                       Max="_maxItems"/>
+                                       ShowUpDown="false"
+                                       Max="@_maxItems"/>
                     </Controls>
                     <Validation>
                         <ValidationMessage For="@(() => _model.Count)" />
@@ -95,7 +96,7 @@
     [Parameter] public Guid ToUnitId { get; set; }
     [Parameter] public Guid FromUnitId { get; set; }
 
-    private CreateMoveDetailViewModel _model;
+    private CreateMoveDetailViewModel _model = new CreateMoveDetailViewModel() {NewId = Guid.NewGuid(), Count = 1,};
     private List<StorageItemViewModel> StorageItems { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> FromPlaceOnStorage { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> ToPlaceOnStorage { get; set; } = new();
@@ -104,11 +105,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateMoveDetailViewModel()
-        {
-            NewId = Guid.NewGuid(),
-            Count = 1,
-        };
         StorageItems = await GetAllStorageItems();
         _isLoaded = true;
     }
@@ -160,6 +156,6 @@
     private void PlaceOnStorageChanged()
     {
         _maxItems = FromPlaceOnStorage.FirstOrDefault(a=> a.Name == _model.FromPlaceOnStorage).Count;
-
+        Console.WriteLine("12312313");
     }
 }

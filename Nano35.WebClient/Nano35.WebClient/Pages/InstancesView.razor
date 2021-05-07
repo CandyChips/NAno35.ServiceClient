@@ -5,9 +5,9 @@
 @page "/instances"
 @inject NavigationManager NavigationManager
 @inject IRequestManager RequestManager
-@inject IInstancesService InstancesService 
 @inject IInstanceService InstanceService 
 @inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
 
 <AuthorizeView>
 @if (_loading)
@@ -66,7 +66,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        _data = (await InstancesService.GetAllInstances()).Data;
+        _data = (await (new GetAllInstancesRequest(RequestManager, HttpClient, new GetAllInstancesHttpQuery() {})).Send()).Data;
         _loading = false;
     }
     
@@ -75,7 +75,7 @@ else
         var modal = Modal.Show<InstancesCreate>("Новая организация");
         await modal.Result;
         _loading = true;
-        _data = (await InstancesService.GetAllInstances()).Data;
+        _data = (await (new GetAllInstancesRequest(RequestManager, HttpClient, new GetAllInstancesHttpQuery() {})).Send()).Data;
         _loading = false;
     }
 

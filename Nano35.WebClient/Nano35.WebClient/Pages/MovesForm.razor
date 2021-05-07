@@ -7,7 +7,6 @@
 
 <EditForm Model="@Model"
           OnValidSubmit="Create">
-    <FluentValidationValidator/>
     <ValidationSummary/>
     
     @if (!_isLoaded)
@@ -130,7 +129,14 @@
 
     private async void Create()
     {
-        Model.Details = _details.Select(a =>  new CreateMoveDetailViewModel() { NewId = a.NewId, Count = a.Count, FromPlaceOnStorage = a.FromPlaceOnStorage, ToPlaceOnStorage = a.ToPlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+        Model.Details = _details.Select(a =>  new CreateMoveDetailViewModel()
+        {
+            NewId = a.NewId, 
+            Count = a.Count, 
+            FromPlaceOnStorage = a.FromPlaceOnStorage, 
+            ToPlaceOnStorage = a.ToPlaceOnStorage, 
+            StorageItemId = a.StorageItemId
+        }).ToList();
         await FormSubmitted.InvokeAsync();
     }
 
@@ -143,12 +149,13 @@
     {
         _isLoaded = false;
         Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        Model.FromUnitId = await SessionProvider.GetCurrentUnitId();
         _units = await LoadUnits();
         _isLoaded = true;
     }
     
     private async Task<List<UnitViewModel>> LoadUnits() =>
-        (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units.ToList();
     
     private async Task AddDetail()
     {
@@ -156,9 +163,10 @@
         param.Add("FromUnitId", Model.FromUnitId);
         param.Add("ToUnitId", Model.ToUnitId);
         var modal = Modal.Show<MovesDetailForm>($"Новая позиция к перемещению",param);
-        if (!modal.Result.IsCanceled)
+        var result = await modal.Result;
+        if (result.Data is CreateMoveDetailViewModel success)
         {
-            _details.Add((CreateMoveDetailViewModel) (await modal.Result).Data);
+            _details.Add(success);
         }
     }
 }

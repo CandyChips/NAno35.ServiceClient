@@ -74,7 +74,7 @@ else
             RequestManager,
             HttpClient, 
             new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Data;
+            .Send()).Workers;
         _loading = false;
     }
     
@@ -86,7 +86,7 @@ else
                 RequestManager,
                 HttpClient, 
                 new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-                .Send()).Data;
+                .Send()).Workers;
         
     }
 }

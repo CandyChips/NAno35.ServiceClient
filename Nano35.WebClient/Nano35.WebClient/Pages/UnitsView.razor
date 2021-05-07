@@ -30,21 +30,35 @@ else
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
         
-    <RadzenGrid Data="@_data"
+    <RadzenGrid AllowFiltering="true"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterMode="FilterMode.Advanced"
                 EmptyText="Добавте подразделения организации..."
+                AllowPaging="true"
+                PageSize="10"
+                AllowSorting="true"
+                Data="@_data"
                 TItem="UnitViewModel">
         <Columns>
             <RadzenGridColumn TItem="UnitViewModel"
-                              Property="Name" 
+                              Property="Name"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Название" />
             <RadzenGridColumn TItem="UnitViewModel" 
-                              Property="Address" 
+                              Property="Address"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Адресс" />
             <RadzenGridColumn TItem="UnitViewModel"
                               Property="Phone"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Телефон" />
             <RadzenGridColumn TItem="UnitViewModel"
-                              Property="WorkingFormat" 
+                              Property="WorkingFormat"
+                              Filterable="false"
+                              Sortable="false"
                               Title="Формат работы" />
         </Columns>
     </RadzenGrid>
@@ -52,19 +66,16 @@ else
 
 @code
 {
-    private IEnumerable<UnitViewModel> _data;
-    private bool _loading = true;
-    [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private List<UnitViewModel> _data = new List<UnitViewModel>();
+    private bool _loading = true;
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new GetAllUnitsRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Data;
+        _data = (List<UnitViewModel>) (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units;
         _loading = false;
+        Console.WriteLine(_data.Count());
     }
     
     private async Task NewUnit()
@@ -75,6 +86,6 @@ else
             RequestManager,
             HttpClient, 
             new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Data;
+            .Send()).Units as List<UnitViewModel>;
     }
 }

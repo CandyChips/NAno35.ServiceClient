@@ -98,7 +98,6 @@
 @code
 {
     [Inject] private IRequestManager RequestManager { get; set; }
-    [Inject] private IWorkerService WorkerService { get; set; }
     [Inject] private IInstanceService InstanceService { get; set; }
     [Parameter] public EventCallback OnHideModalNewWorker { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
@@ -112,7 +111,7 @@
     protected override async Task OnInitializedAsync()
     {
         _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
-        _types = (await WorkerService.GetAllWorkerRoles()).Data.ToList();
+        _types = (await new GetAllWorkersRolesRequest(RequestManager, HttpClient, new GetAllWorkerRolesHttpQuery()).Send()).Data.ToList();
     }
 
     private async Task HandleValidSubmit()

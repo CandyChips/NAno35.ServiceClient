@@ -176,7 +176,7 @@ else
     
     private async Task<List<ClientViewModel>> LoadClients() => (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
 
-    private async Task<List<UnitViewModel>> LoadUnits() => (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+    private async Task<List<UnitViewModel>> LoadUnits() => (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units.ToList();
     
     private async Task AddDetail()
     {

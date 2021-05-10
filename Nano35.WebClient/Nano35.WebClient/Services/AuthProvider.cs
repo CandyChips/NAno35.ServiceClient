@@ -34,11 +34,8 @@ namespace Nano35.WebClient.Services
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var token = await _localStorage.GetItemAsync<string>("authToken");
-            if(token == null)
-                return _anonymous;        
-            
+            if(token == null) return _anonymous;        
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
-            
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), "jwtAuthType")));
         }
 
@@ -55,11 +52,7 @@ namespace Nano35.WebClient.Services
             NotifyAuthenticationStateChanged(authState);
         }
     }
-
-    public class GetUserByIdErrorResultContract : GetUserByIdErrorHttpResponse //<- after remove contracts from project
-    {
-        public string Message { get; set; }
-    }
+    
     public static class JwtParser
     {
         public static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)

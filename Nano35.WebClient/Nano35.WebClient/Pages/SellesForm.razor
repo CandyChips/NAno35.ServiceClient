@@ -100,7 +100,6 @@
         _isLoaded = false;
         _units = await LoadUnits();
         Model.UnitId = await SessionProvider.GetCurrentUnitId();
-        Model.Number = "";
         _isLoaded = true;
     }
 

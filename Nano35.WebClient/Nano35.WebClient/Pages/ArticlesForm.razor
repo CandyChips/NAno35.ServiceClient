@@ -20,17 +20,12 @@ else
         
         <RadzenFieldset Text="Категория">    
             <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
-            <Validation>
-                     <ValidationMessage For="@(() => Model.CategoryId)" />
-            </Validation>
+            <ValidationMessage For="@(() => Model.CategoryId)" />
         </RadzenFieldset>
         
-
         <InputField Title="Бренд">
             <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Brand"/>
+                <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Brand"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => Model.Brand)" />
@@ -39,34 +34,34 @@ else
         
         <InputField Title="Модель">
             <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Model"/>
+                <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Model"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => Model.Model)" />
             </Validation>
         </InputField>
         
-        <InputField Title="Описание">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Info"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Info)" />
-            </Validation>
-        </InputField>
+        @if (IsExpandedView)
+        {
+            <InputField Title="Описание">
+                <Controls>
+                    <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Info"/>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => Model.Info)" />
+                </Validation>
+            </InputField>
         
-        <InputField Title="Харрактеристики">
-            <Controls>
-                <ArticlesFormSpecification @bind-Value="Model.Specs"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Specs)" />
-            </Validation>
-        </InputField>
+            <InputField Title="Харрактеристики">
+                <Controls>
+                    <ArticlesFormSpecification @bind-Value="Model.Specs"/>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => Model.Specs)" />
+                </Validation>
+            </InputField>
+        }
+        
         <ul class="list-group">
             @foreach (var item in Model.Specs)
             {
@@ -79,15 +74,13 @@ else
             <div class="alert alert-danger mt-3 mb-0">@Error</div>
         }
         
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     </EditForm>
 }
 
 @code
 {
+    [Parameter] public bool IsExpandedView { get; set; } = true;
     [Parameter] public CreateArticleHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
@@ -96,7 +89,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         Model.Specs = new List<SpecHttpContext>();
-        _loaded = false;
         _loaded = true;
     }
 

@@ -1,0 +1,25 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.storage
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+@if (_isLoaded)
+{
+    <h3>Текущее: подразделение @(Unit.Name)</h3>
+    <h3>Аддресс: @(Unit.Address)</h3>
+    <h3>В кассе: @(Unit.Cashbox) @(Unit.Cashbox <= 0 ? "=(" : "")</h3>
+}
+
+@code {
+    private UnitViewModel Unit { get; set; }
+    private bool _isLoaded = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        Unit = (await new GetUnitByIdRequest(RequestManager, HttpClient, new GetUnitByIdHttpQuery() {Id = await SessionProvider.GetCurrentUnitId()}).Send()).Data;
+        _isLoaded = true;
+    }
+}

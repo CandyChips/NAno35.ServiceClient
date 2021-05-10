@@ -126,6 +126,6 @@
 
     private void PlaceOnStorageChanged()
     {
-        _maxItems = Warehouse.FirstOrDefault(a=> a.Name == _model.PlaceOnStorage).Count;
+        _maxItems = Warehouse.First(a=> a.Name == _model.PlaceOnStorage).Count;
     }
 }

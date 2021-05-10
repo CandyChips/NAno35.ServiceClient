@@ -7,16 +7,9 @@
 
 <EditForm Model="@(Model)" 
           OnSubmit="Create">
+        <DataAnnotationsValidator />
 @if (_isLoaded)
 {
-    <InputField Title="Номер оприходования*">
-        <Controls>
-            <RadzenTextBox style="width: 100%;" 
-                           Placeholder="Введите уникальный номер оприходования..."
-                           @bind-Value="Model.Number"/>
-        </Controls>
-    </InputField>
-    
     <InputField Title="Поставщик*">
         <Controls>
             <div style="display: flex; width: 100%;">
@@ -101,7 +94,7 @@
                             Icon="close"
                             Size="ButtonSize.Small">
                         </RadzenButton>
-                        <a href="http://192.168.100.210:30006/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
+                        <a href="http://192.168.100.124:5002/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
                     </Template>
                 </RadzenGridColumn>
             </Columns>
@@ -111,6 +104,7 @@
             ButtonStyle="ButtonStyle.Secondary"
             Style="width: 100%" />
     </RadzenFieldset>
+    <ValidationMessage For="@(() => Model.Details)" />
 }
 else
 {
@@ -124,7 +118,6 @@ else
 {
     <div class="alert alert-danger mt-3 mb-0">@Error</div>
 }
-    
     <RadzenButton type="submit"
                   Text="Создать"
                   ButtonStyle="ButtonStyle.Primary"
@@ -147,15 +140,6 @@ else
 
     private async void Create()
     {
-        Model.Details = _details.Select(a => 
-            new CreateComingDetailViewModel()
-            {
-                NewId = a.NewId, 
-                Count = a.Count, 
-                Price = a.Price,
-                PlaceOnStorage = a.PlaceOnStorage, 
-                StorageItemId = a.StorageItemId
-            }).ToList();
         await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync();
     }
@@ -170,7 +154,9 @@ else
         _isLoaded = false;
         _clients = await LoadClients();
         _units = await LoadUnits();
+        Model.NewId = Guid.NewGuid();
         Model.UnitId = await SessionProvider.GetCurrentUnitId();
+        Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
         _isLoaded = true;
     }
     
@@ -182,8 +168,13 @@ else
     {
         var modal = Modal.Show<ComingsCreateDetailForm>($"Новая позиция к оприходованию");
         var result = await modal.Result;
+        
         if(!result.Cancelled)
-            _details.Add((CreateComingDetailViewModel)(result).Data);
+        {
+            Model.Details ??= new List<CreateComingDetailViewModel>();
+            Model.Details.Add((CreateComingDetailViewModel) (result).Data);
+            _details.Add((CreateComingDetailViewModel) (result).Data);
+        };
     }
     
     private void NewClient()

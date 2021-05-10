@@ -19,17 +19,6 @@
     }
     else
     {
-        <InputField Title="Номер перемещения*">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="Введите уникальный номер перемещения..."
-                               @bind-Value="Model.Number"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Number)" />
-            </Validation>
-        </InputField>
-
         <InputField Title="Подразделение отправитель">
             <Controls>
                 <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}"}))

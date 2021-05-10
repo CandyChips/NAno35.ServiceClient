@@ -17,45 +17,43 @@
         }
         else
         {
-            <h4 class="card-header">Авторизация</h4>
-            <div class="card-body">
-                <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-                    <DataAnnotationsValidator />
-    
-                    <InputField Title="Номер телефона">
-                        <Controls>
-                            <InputText @bind-Value="_model.Login" 
-                                        class="form-control"/>
-                        </Controls>
-                        <Validation>
-                            <ValidationMessage For="@(() => _model.Login)" />
-                        </Validation>
-                    </InputField>
-    
-                    <InputField Title="Пароль">
-                        <Controls>
-                            <InputText @bind-Value="_model.Password"
-                                        type="password" 
-                                        class="form-control"/>
-                        </Controls>
-                        <Validation>
-                            <ValidationMessage For="@(() => _model.Password)" />
-                        </Validation>
-                    </InputField>
-                    <button class="btn btn-primary">
-                        Войти
-                    </button>
+            <RadzenPanel>
+                <ChildContent>
+                    <h1>Авторизация</h1>
+                    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+        
+                        <InputField Title="Номер телефона">
+                            <Controls>
+                                <InputText @bind-Value="_model.Login" 
+                                            class="form-control"/>
+                            </Controls>
+                            <Validation>
+                                <ValidationMessage For="@(() => _model.Login)" />
+                            </Validation>
+                        </InputField>
+        
+                        <InputField Title="Пароль">
+                            <Controls>
+                                <InputText @bind-Value="_model.Password"
+                                            type="password" 
+                                            class="form-control"/>
+                            </Controls>
+                            <Validation>
+                                <ValidationMessage For="@(() => _model.Password)" />
+                            </Validation>
+                        </InputField>
                         
-                    <NavLink class="btn btn-secondary" href="registration">
-                        Регистрация
-                    </NavLink>
-                        
-                    @if (!string.IsNullOrEmpty(_error))
-                    {
-                        <div class="alert alert-danger mt-3 mb-0">@_error</div>
-                    }
-                </EditForm>
-            </div>
+                        <button class="btn btn-primary">Войти</button>
+                        <NavLink class="btn btn-secondary" href="registration">Регистрация</NavLink>
+                            
+                        @if (!string.IsNullOrEmpty(_error))
+                        {
+                            <div class="alert alert-danger mt-3 mb-0">@_error</div>
+                        }
+                    </EditForm>
+                </ChildContent>
+            </RadzenPanel>
         }
     </div>
 </div>
@@ -65,11 +63,9 @@
     private GenerateUserTokenHttpBody _model = new();
     private bool _loading = true;
     private string _error;
-    private bool _serverAvailable = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
         _loading = false;
     }
 

@@ -20,6 +20,9 @@
                                 style="width: 100%"
                                 Placeholder="Выберите статус клиента..."/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.ClientStateId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Тип клиента">
@@ -32,17 +35,23 @@
                                 style="width: 100%"
                                 Placeholder="Выберите тип клиента..."/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.ClientTypeId)" />
+            </Validation>
         </InputField>
         
         <InputField Title="@(Model.ClientStateId != Guid.Empty && 
                              Model.ClientStateId == _state.First().Id ?
                                "Название организации" : 
-                               "Имя клиента")">
+                               "ФИО клиента")">
             <Controls>
                 <RadzenTextBox Style="width: 100%;" 
                                Placeholder="..."
                                @bind-Value="Model.Name"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Name)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Эл почта">
@@ -51,6 +60,9 @@
                                Placeholder="..."
                                @bind-Value="Model.Email"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Email)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Номер телефона">
@@ -59,6 +71,9 @@
                                Placeholder="..."
                                @bind-Value="Model.Phone"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Phone)" />
+            </Validation>
         </InputField>
         
         <InputField Title="Скидка">
@@ -67,6 +82,9 @@
                                Placeholder="..."
                                @bind-Value="Model.Selle"/>
             </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => Model.Selle)" />
+            </Validation>
         </InputField>
         
         @if (!string.IsNullOrEmpty(Error))

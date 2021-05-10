@@ -12,17 +12,6 @@
     <ValidationSummary/>
     @if (_isLoaded)
     {
-        <InputField Title="Номер списания*">
-            <Controls>
-                <RadzenTextBox style="width: 100%;"
-                               Placeholder="Введите уникальный номер списания..."
-                               @bind-Value="Model.Number"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Number)" />
-            </Validation>
-        </InputField>
-
         <InputField Title="Подразделение*">
             <Controls>
                 <RadzenDropDown Data=@(_units.Select(a =>

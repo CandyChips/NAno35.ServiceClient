@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
 
-<EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@_model" OnSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
     <InputField Title="Фио*">

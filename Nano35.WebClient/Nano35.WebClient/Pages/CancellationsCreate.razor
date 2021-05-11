@@ -12,6 +12,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateCancellationHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
@@ -25,6 +27,8 @@
         try
         {
             await new CreateCancellationRequest(RequestManager, HttpClient, _model).Send();
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
+
         }
         catch (Exception e)
         {

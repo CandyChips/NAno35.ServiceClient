@@ -59,7 +59,8 @@
                 <RadzenNumeric Style="width: 100%;" 
                                Placeholder="@(_maxItems.ToString())"
                                @bind-Value="_model.Count"
-                               Max="@_maxItems"/>
+                               Max="@_maxItems"
+                               Min="1"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Count)" />
@@ -88,6 +89,7 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     
     private CreateSelleDetailViewModel _model = new CreateSelleDetailViewModel(){NewId = Guid.NewGuid(), Count = 1,};
@@ -119,9 +121,9 @@
         _model.Price = Decimal.ToDouble(StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).RetailPrice);
     }
     
-    private void HandleValidSubmit() 
+    private async Task HandleValidSubmit() 
     {
-        ModalInstance.CloseAsync(ModalResult.Ok(_model));
+        await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
@@ -136,7 +138,7 @@
             .Data
             .ToList();
 
-    private void PlaceOnStorageChanged()
+    private async Task PlaceOnStorageChanged()
     {
         _maxItems = Warehouse.FirstOrDefault(a=> a.Name == _model.PlaceOnStorage).Count;
     }

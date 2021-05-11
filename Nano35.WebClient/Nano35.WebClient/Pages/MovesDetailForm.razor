@@ -54,21 +54,40 @@
             </Validation>
         </InputField>
         
-        <InputField Title="Ячейка на складе получателя">
-            <Controls>
-                <RadzenAutoComplete style="display: flex; width: 100%"
-                                    Empt
-                                    Data="@ToPlaceOnStorage"
-                                    TextProperty="Name"
-                                    Placeholder="Выберите ячейку или введите новую"
-                                    FilterOperator="StringFilterOperator.StartsWith"
-                                    @bind-Value="_model.ToPlaceOnStorage"
-                                    FilterDelay="1"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
-            </Validation>
-        </InputField>
+        @if(ToPlaceOnStorage.Any())
+                {
+                    <InputField Title="Ячейка на складе получателя">
+                    <Controls>
+                        <RadzenDropDown Data=@(ToPlaceOnStorage.Select(a => new { Name = a.Name}))
+                                        TextProperty="Name"
+                                        ValueProperty="Name"
+                                        TValue="string"
+                                        @bind-Value="_model.ToPlaceOnStorage"
+                                        Style="width: 100%;"
+                                        Disabled="@(!StorageItems.Any())"
+                                        Placeholder="Выберите из доступных ячеек"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        FilterOperator="StringFilterOperator.Contains"
+                                        AllowFiltering="true"/>
+                    </Controls>
+                    <Validation>
+                        <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
+                    </Validation>
+                </InputField>
+                }
+                else
+                {
+                    <InputField Title="Ячейка на складе получателя">
+                        <Controls>
+                            <RadzenTextBox style="display: flex; width: 100%"
+                                           @bind-Value="_model.ToPlaceOnStorage"
+                                           Placeholder="Введите название новой ячейки"/>
+                        </Controls>
+                        <Validation>
+                            <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
+                        </Validation>
+                    </InputField>
+                }
         
         <InputField Title="Количество">
                     <Controls>
@@ -136,9 +155,9 @@
             .ToList();
     }
     
-    private void HandleValidSubmit() 
+    private async Task HandleValidSubmit() 
     {
-        ModalInstance.CloseAsync(ModalResult.Ok(_model));
+        await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
@@ -153,7 +172,7 @@
             .Data
             .ToList();
 
-    private void PlaceOnStorageChanged()
+    private async Task PlaceOnStorageChanged()
     {
         _maxItems = FromPlaceOnStorage.FirstOrDefault(a=> a.Name == _model.FromPlaceOnStorage).Count;
         Console.WriteLine("12312313");

@@ -108,6 +108,7 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid UnitId { get; set; }
+    
     private bool _isLoaded;
     private List<UnitViewModel> _units = new();
     private List<CreateCancellationDetailViewModel> _details = new();
@@ -115,6 +116,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        Model.Comment = "";
         _units = await LoadUnits();
         Model.UnitId = await SessionProvider.GetCurrentUnitId();
         _isLoaded = true;
@@ -131,14 +133,14 @@
         }
     }
 
-    private void DeleteDetail(CreateCancellationDetailViewModel item)
+    private async Task DeleteDetail(CreateCancellationDetailViewModel item)
     {
         Console.WriteLine("Detail deleted");
         _details.Remove(item);
         StateHasChanged();
     }
 
-    private async void Create()
+    private async Task Create()
     {
         Model.Details = _details.Select(a => 
             new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();

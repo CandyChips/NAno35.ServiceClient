@@ -30,7 +30,7 @@
     
     private SpecHttpContext _model = new();
 
-    private void AddSpec()
+    private async Task AddSpec()
     {
         Value.Add(_model);
         _model = new SpecHttpContext();

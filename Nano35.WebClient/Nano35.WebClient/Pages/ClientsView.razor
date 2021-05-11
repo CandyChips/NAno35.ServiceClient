@@ -45,7 +45,7 @@ else
             
             <RadzenGridColumn TItem="ClientViewModel"
                               Property="Selle" 
-                              Title="Цена" />
+                              Title="Оборот" />
             
             <RadzenGridColumn TItem="ClientViewModel"
                               Property="ClientType" 
@@ -95,15 +95,6 @@ else
     private async Task OpenCreateClient()
     {
         var modal = Modal.Show<ClientsCreate>("Новый клиент");
-        await modal.Result;
-        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
-    }
-
-    private async Task OpenComingDetails(ComingViewModel entity)
-    {
-        var param = new ModalParameters();
-        param.Add(nameof(ComingsDetails.Coming), entity);
-        var modal = Modal.Show<ComingsDetails>("Оприходование", param);
         await modal.Result;
         _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
     }

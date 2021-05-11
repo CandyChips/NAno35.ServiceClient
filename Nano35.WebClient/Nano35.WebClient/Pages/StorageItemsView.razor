@@ -42,7 +42,7 @@ else
                     {
                         
                         <RadzenStepsItem>
-                            <img src="http://192.168.100.124:5000/StorageItems/@image.value" alt="Не удалось загрузить изображение" />
+                            <img src="http://192.168.100.124:5000/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="width: 100%"/>
                         </RadzenStepsItem>
                     }
                     </Steps>
@@ -113,12 +113,12 @@ else
         _loading = false;
     }
 
-    private void Cancellate()
+    private async Task Cancellate()
     {
         Modal.Show<CancellationsCreate>("Новое списание");
     }
 
-    private void Sell()
+    private async Task Sell()
     {
         Modal.Show<SellesCreate>("Новая продажа");
     }

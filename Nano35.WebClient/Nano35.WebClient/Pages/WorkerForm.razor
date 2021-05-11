@@ -106,11 +106,9 @@
     private List<WorkersRoleViewModel> _types = new();
     private CreateWorkerHttpBody _model = new();
     private string _error = "";
-    private bool _serverAvailable = false;
 
     protected override async Task OnInitializedAsync()
     {
-        _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
         _types = (await new GetAllWorkersRolesRequest(RequestManager, HttpClient, new GetAllWorkerRolesHttpQuery()).Send()).Data.ToList();
     }
 

@@ -82,8 +82,10 @@ else
         _loading = false;
     }
 
-    private void NewSelle()
+    private async Task NewSelle()
     {
-        Modal.Show<SellesCreate>("Новая продажа");
+        var modal = Modal.Show<SellesCreate>("Новая продажа");
+        await modal.Result;
+        _data = (await (new GetAllSellsRequest(RequestManager, HttpClient, new GetAllSellsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
     }
 }

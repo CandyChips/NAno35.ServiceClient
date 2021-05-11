@@ -138,13 +138,13 @@ else
     
     private bool _isLoaded;
 
-    private async void Create()
+    private async Task Create()
     {
         await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync();
     }
 
-    private void AddComingDetail(CreateComingDetailViewModel model)
+    private async Task AddComingDetail(CreateComingDetailViewModel model)
     {
         _details.Add(model);
     }
@@ -177,7 +177,7 @@ else
         };
     }
     
-    private void NewClient()
+    private async Task NewClient()
     {
         Modal.Show<ClientsCreate>($"Новый клиент");
     }

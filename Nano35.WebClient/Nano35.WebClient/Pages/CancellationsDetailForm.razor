@@ -57,7 +57,8 @@
                                Placeholder="@(_maxItems.ToString())"
                                @bind-Value="_model.Count"
                                ShowUpDown="false"
-                               Max="_maxItems"/>
+                               Max="@_maxItems"
+                               Min="1"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Count)" />
@@ -107,9 +108,9 @@
                 .ToList();
     }
     
-    private void HandleValidSubmit() 
+    private async Task HandleValidSubmit() 
     {
-        ModalInstance.CloseAsync(ModalResult.Ok(_model));
+        await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
@@ -124,7 +125,7 @@
             .Data
             .ToList();
 
-    private void PlaceOnStorageChanged()
+    private async Task PlaceOnStorageChanged()
     {
         _maxItems = Warehouse.First(a=> a.Name == _model.PlaceOnStorage).Count;
     }

@@ -121,7 +121,7 @@
         _regions = (await (new GetAllInstanceRegionsRequest(RequestManager, HttpClient, new GetAllRegionsHttpQuery()).Send())).Data.ToList();
     }
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
     }

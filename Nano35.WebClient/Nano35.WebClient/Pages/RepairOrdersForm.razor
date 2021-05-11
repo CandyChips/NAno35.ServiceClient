@@ -164,7 +164,7 @@
         _isLoaded = true;
     }
 
-    private async void Create()
+    private async Task Create()
     {
         Model.UnitId = await SessionProvider.GetCurrentUnitId();
         await FormSubmitted.InvokeAsync();

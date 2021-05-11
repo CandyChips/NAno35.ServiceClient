@@ -13,6 +13,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid TypeId { get; set; } = Guid.Empty;
     private CreateClientHttpBody _model = new()
     {
@@ -27,6 +29,7 @@
         try
         {
             await new CreateClientRequest(RequestManager, HttpClient, _model).Send();
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
         {

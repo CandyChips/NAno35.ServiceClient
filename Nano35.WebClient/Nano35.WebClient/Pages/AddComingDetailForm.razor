@@ -92,7 +92,7 @@
         _isLoaded = true;
     }
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }

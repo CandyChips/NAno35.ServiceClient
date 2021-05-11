@@ -75,11 +75,11 @@ else
                           Style="margin: 1rem 0;"
                           ButtonStyle="ButtonStyle.Primary"/>
             <RadzenGrid Data="@(_works)"
-                                EmptyText="Нет проведенных работ..."
-                                TItem="RepairOrderWorkViewModel">
+                        EmptyText="Нет проведенных работ..."
+                        TItem="RepairOrderWorkViewModel">
                 <Columns>
                     <RadzenGridColumn TItem="RepairOrderWorkViewModel" 
-                                      Property="Name" 
+                                      Property="WorkName" 
                                       Title="Наименование работы" />
                     <RadzenGridColumn TItem="RepairOrderWorkViewModel"
                                       Property="Price" 
@@ -116,6 +116,7 @@ else
         _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
         _works = _model.Works;
         _isLoaded = true;
+        Console.WriteLine(_works.FirstOrDefault().WorkName);
     }
 
     private async Task AddWork()
@@ -123,6 +124,7 @@ else
         var parameters = new ModalParameters();
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
+        await modal.Result;
         _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody() { Id = Id })).Send()).Data;
         _works = _model.Works;
     }

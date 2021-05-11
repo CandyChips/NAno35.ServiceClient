@@ -20,7 +20,7 @@ else
 {
     <RadzenHeading Text="Перемещения"/>
     
-    <RadzenButton Click=@(_ => NewCancellation()) 
+    <RadzenButton Click=@(_ => NewMove()) 
                   Text="Создать"
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
@@ -74,14 +74,11 @@ else
         _loading = false;
     }
 
-    private async Task NewCancellation()
+    private async Task NewMove()
     {
         var modal = Modal.Show<MovesCreate>("Новое списание");
-        //if (!modal.Result.IsCanceled)
-        //{
-        //    Console.WriteLine("213123");
-        //    _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
-        //}
+        await modal.Result;
+        _data = (await (new GetAllMovesRequest(RequestManager, HttpClient, new GetAllMovesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Data;
     }
 
     private async Task OpenMove(MoveViewModel value)

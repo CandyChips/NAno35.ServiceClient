@@ -116,7 +116,7 @@
     
     private bool _isLoaded;
 
-    private async void Create()
+    private async Task Create()
     {
         Model.Details = _details.Select(a =>  new CreateMoveDetailViewModel()
         {
@@ -129,7 +129,7 @@
         await FormSubmitted.InvokeAsync();
     }
 
-    private void AddMoveDetail(CreateMoveDetailViewModel model)
+    private async Task AddMoveDetail(CreateMoveDetailViewModel model)
     {
         _details.Add(model);
     }

@@ -91,10 +91,10 @@ else
     private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
         (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() { UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
 
-    private async void NewCancellation()
+    private async Task NewCancellation()
     {
-        Modal.Show<CancellationsCreate>("Новое списание");
-        
+        var modal = Modal.Show<CancellationsCreate>("Новое списание");
+        await modal.Result;
         _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId(), })).Send()).Data;}
 
 

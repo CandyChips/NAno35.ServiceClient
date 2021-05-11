@@ -85,15 +85,16 @@
 
 @code
 {
-    [Parameter] public CreateSelleHttpBody Model { get; set; }
-    [Parameter] public EventCallback FormSubmitted { get; set; }
-    [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-
-    private List<UnitViewModel> _units = new();
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public CreateSelleHttpBody Model { get; set; }
+    [Parameter] public string Error { get; set; }
+    
     private List<CreateSelleDetailViewModel> _details = new();
+    private List<UnitViewModel> _units = new();
     private bool _isLoaded;
+    private int Count;
     
     protected override async Task OnInitializedAsync()
     {
@@ -113,8 +114,8 @@
     
     private async Task OpenAddDetail()
     {
-        var moviesModal = Modal.Show<SellesDetailForm>("Новая деталь продажи");
-        var result = await moviesModal.Result;
+        var modal = Modal.Show<SellesDetailForm>("Новая деталь продажи");
+        var result = await modal.Result;
 
         if (result.Data is CreateSelleDetailViewModel success)
         {
@@ -122,14 +123,14 @@
         }
     }
     
-    private void DeleteDetail(CreateSelleDetailViewModel item)
+    private async Task DeleteDetail(CreateSelleDetailViewModel item)
     {
         Console.WriteLine("Detail deleted");
         _details.Remove(item);
         StateHasChanged();
     }
     
-    private async void Create()
+    private async Task Create()
         {
             Model.Details = _details.Select(a => 
                 new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();

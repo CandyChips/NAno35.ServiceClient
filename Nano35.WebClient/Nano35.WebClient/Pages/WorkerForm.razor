@@ -66,21 +66,20 @@
         </Validation>
     </InputField>
     
-    <InputField Title="Должность*">
+    <InputField Title="Должности*">
         <Controls>
-            <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = $"{a.Name}"}))
-                            TextProperty="Name"
-                            ValueProperty="Id"
-                            TValue="Guid"
-                            @bind-Value="_model.RoleId"
-                            Style="width: 100%;"
-                            Placeholder="Выберите должность..."
-                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                            FilterOperator="StringFilterOperator.Contains"
-                            AllowFiltering="true"/>
+            <RadzenCheckBoxList @bind-Value=@roles TValue="Guid" Orientation="Orientation.Horizontal">
+                <Items>
+                    <RadzenCheckBoxListItem Text="Администратор" Value=@Roles.Admin />
+                    <RadzenCheckBoxListItem Text="Кладовщик" Value=@Roles.Storage />
+                    <RadzenCheckBoxListItem Text="Менеджер" Value=@Roles.Manager />
+                    <RadzenCheckBoxListItem Text="Бухгалтер" Value=@Roles.Cashbox />
+                    <RadzenCheckBoxListItem Text="Мастер" Value=@Roles.Master />
+                </Items>
+            </RadzenCheckBoxList>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.RoleId)" />
+            <ValidationMessage For="@(() => _model.Roles)"/>
         </Validation>
     </InputField>
     
@@ -101,21 +100,19 @@
     [Inject] private IInstanceService InstanceService { get; set; }
     [Parameter] public EventCallback OnHideModalNewWorker { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-
-
-    private List<WorkersRoleViewModel> _types = new();
+    private IEnumerable<Guid> roles = new Guid[] {};
     private CreateWorkerHttpBody _model = new();
     private string _error = "";
 
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new GetAllWorkersRolesRequest(RequestManager, HttpClient, new GetAllWorkerRolesHttpQuery()).Send()).Data.ToList();
+        _model.NewId = Guid.NewGuid();
+        _model.InstanceId = InstanceService.GetCurrentInstance().Id;
     }
 
     private async Task HandleValidSubmit()
     {
-        _model.NewId = Guid.NewGuid();
-        _model.InstanceId = InstanceService.GetCurrentInstance().Id;
+        _model.Roles = roles.ToList();
         await new CreateWorkerRequest(RequestManager, HttpClient, _model).Send();
         await OnHideModalNewWorker.InvokeAsync();
         await ModalInstance.CloseAsync(ModalResult.Ok(""));

@@ -65,7 +65,7 @@
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
-                <RadzenButton Click=@(_ => OpenAddDetail())
+                <RadzenButton Click=@(_ => AddDetail())
                               Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"
                               style="width: 100%"/>
@@ -104,7 +104,7 @@
         _isLoaded = true;
     }
 
-    private async Task OpenAddClient()
+    private async Task AddClient()
     {
         var moviesModal = Modal.Show<ClientsCreate>("Новый клиент");
         await moviesModal.Result;
@@ -112,7 +112,7 @@
         _isLoaded = true;
     }
     
-    private async Task OpenAddDetail()
+    private async Task AddDetail()
     {
         var modal = Modal.Show<SellesDetailForm>("Новая деталь продажи");
         var result = await modal.Result;

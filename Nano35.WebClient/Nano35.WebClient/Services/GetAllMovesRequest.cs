@@ -20,7 +20,7 @@ namespace Nano35.WebClient.Services
         {
             var response =
                 await HttpClient.GetAsync(
-                    $"{RequestManager.LocalStorageServer}/Moves?InstanceId={Request.InstanceId}");
+                    $"{RequestManager.StorageServer}/Moves?InstanceId={Request.InstanceId}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllMovesSuccessHttpResponse>());

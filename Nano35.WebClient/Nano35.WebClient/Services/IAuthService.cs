@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Nano35.Contracts.Identity.Artifacts;
 
 namespace Nano35.WebClient.Services
 {
@@ -13,7 +14,7 @@ namespace Nano35.WebClient.Services
     {
         Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest);
         Task LogOut();
-        Task<GetUserByIdSuccessHttpResponse> GetCurrentUser();
+        Task<GetUserByIdResultContract> GetCurrentUser();
         Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model);
     }
 
@@ -42,8 +43,7 @@ namespace Nano35.WebClient.Services
         {
             var result = await _httpClient.PostAsJsonAsync($"{_requestManager.IdentityServer}/Identity/Authenticate", loginRequest);
             if (!result.IsSuccessStatusCode)
-                throw new Exception((await result.Content
-                    .ReadFromJsonAsync<GenerateUserTokenErrorHttpResponse>())?.Message);
+                throw new Exception(await result.Content.ReadAsStringAsync());
             var success = await result.Content
                 .ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
             await _localStorage.SetItemAsync("authToken", success?.Token);
@@ -58,15 +58,15 @@ namespace Nano35.WebClient.Services
             ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsLogout();
         }
 
-        public async Task<GetUserByIdSuccessHttpResponse> GetCurrentUser()
+        public async Task<GetUserByIdResultContract> GetCurrentUser()
         {
             var result = await _httpClient.GetAsync($"{_requestManager.IdentityServer}/Identity/FromToken");
-            if (result.IsSuccessStatusCode)
+            if (!result.IsSuccessStatusCode)
+                throw new Exception(await result.Content.ReadAsStringAsync());
+            else
             {
-                return await result.Content.ReadFromJsonAsync<GetUserByIdSuccessHttpResponse>();
+                return await result.Content.ReadFromJsonAsync<GetUserByIdResultContract>();
             }
-
-            throw new NotImplementedException();
         }
 
         public Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model)

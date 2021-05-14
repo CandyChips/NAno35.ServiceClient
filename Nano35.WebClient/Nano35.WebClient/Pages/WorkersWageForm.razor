@@ -1,0 +1,42 @@
+﻿@using Nano35.Contracts.Cashbox.Artifacts
+@using Nano35.HttpContext.Cashbox
+@using Nano35.WebClient.Services
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+
+<EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    @if (Model.CashOperations.Any())
+    {
+        @foreach (var item in Model.CashOperations)
+        {
+            
+        }
+    }
+    else
+    {
+        <h3>Нет записей</h3>   
+    }
+</EditForm>
+
+@code {
+    [Parameter] public CreateWageOperationHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private bool _isLoaded;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        
+        _isLoaded = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await FormSubmitted.InvokeAsync();
+    }
+}

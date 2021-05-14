@@ -56,6 +56,12 @@ else
                                   ButtonStyle="ButtonStyle.Info"
                                   Click="@(_ => { })">
                     </RadzenButton>
+                    <RadzenButton Text="Выплатить ЗП"
+                                  Size="ButtonSize.Small"
+                                  ButtonType="ButtonType.Button"
+                                  ButtonStyle="ButtonStyle.Info"
+                                  Click="@(_ => NewWage())">
+                    </RadzenButton>
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -82,11 +88,23 @@ else
     {
         var modal = Modal.Show<WorkerForm>("Новый Сотрудник");
         await modal.Result;
-            _data = (await new GetAllWorkersRequest(
-                RequestManager,
-                HttpClient, 
-                new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-                .Send()).Workers;
+        _data = (await new GetAllWorkersRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+            .Send()).Workers;
+        
+    }
+    
+    private async Task NewWage()
+    {
+        var modal = Modal.Show<WorkersWageCreate>("Выплата заработной платы");
+        await modal.Result;
+        _data = (await new GetAllWorkersRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
+            .Send()).Workers;
         
     }
 }

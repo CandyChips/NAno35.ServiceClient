@@ -1,4 +1,5 @@
 ﻿@using Nano35.WebClient.Services
+@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
@@ -7,9 +8,10 @@
 
 @if (_isLoaded)
 {
-    <h3>Текущее: подразделение @(Unit.Name)</h3>
+    <h3>Текущее подразделение: @(Unit.Name)</h3>
     <h3>Аддресс: @(Unit.Address)</h3>
-    <h3>В кассе: @(Unit.Cashbox) @(Unit.Cashbox <= 0 ? "=(" : "")</h3>
+    <h3>График работы: @(Unit.WorkingFormat)</h3>
+    <h3>В кассе: @(Unit.Cashbox) руб.</h3>
 }
 
 @code {

@@ -34,7 +34,7 @@ namespace Nano35.WebClient.Services
         public string FileServer => "http://192.168.100.125:30005";
         public string LocalIdentityServer => "http://localhost:5001";
         public string LocalInstanceServer => "http://localhost:5002";
-        public string LocalStorageServer => "http://localhost:5003";
+        public string LocalStorageServer => "http://192.168.100.125:30003";
         public string LocalRepairOrdersServer => "http://localhost:5004";
         public string LocalFileServer => "http://localhost:5005";
         

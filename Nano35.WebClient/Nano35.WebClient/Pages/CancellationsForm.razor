@@ -71,7 +71,7 @@
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
-                <RadzenButton Click=@(_ => OpenAddDetail())
+                <RadzenButton Click=@(_ => AddDetail())
                               Text="Добавить"
                               ButtonStyle="ButtonStyle.Secondary"
                               style="width: 100%"/>
@@ -122,7 +122,7 @@
         _isLoaded = true;
     }
 
-    private async Task OpenAddDetail()
+    private async Task AddDetail()
     {
         var moviesModal = Modal.Show<CancellationsDetailForm>("Новая позиция к списанию");
         var result = await moviesModal.Result;

@@ -6,7 +6,7 @@
 @inject ISessionProvider SessionProvider
 
 <EditForm Model="@(Model)" 
-          OnSubmit="Create">
+          OnValidSubmit="Create">
         <DataAnnotationsValidator />
 @if (_isLoaded)
 {
@@ -166,7 +166,7 @@ else
     
     private async Task AddDetail()
     {
-        var modal = Modal.Show<ComingsCreateDetailForm>($"Новая позиция к оприходованию");
+        var modal = Modal.Show<ComingsDetailForm>($"Новая позиция к оприходованию");
         var result = await modal.Result;
         
         if(!result.Cancelled)

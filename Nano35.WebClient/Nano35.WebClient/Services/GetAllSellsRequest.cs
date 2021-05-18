@@ -14,7 +14,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllSellsSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.GetAsync($"{RequestManager.LocalStorageServer}/Sells?InstanceId={Request.InstanceId}");
+            var response = await HttpClient.GetAsync($"{RequestManager.StorageServer}/Sells?InstanceId={Request.InstanceId}");
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<GetAllSellsSuccessHttpResponse>());

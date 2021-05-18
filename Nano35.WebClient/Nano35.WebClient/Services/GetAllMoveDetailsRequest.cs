@@ -17,7 +17,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllMoveDetailsSuccessHttpResponse> Send()
         {
-            var url = $"{RequestManager.LocalStorageServer}/Moves/{Request.MoveId}/Details";
+            var url = $"{RequestManager.StorageServer}/Moves/{Request.MoveId}/Details";
             var response = await HttpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {

@@ -17,7 +17,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<GetAllCancellationDetailsSuccessHttpResponse> Send()
         {
-            var url = $"{RequestManager.LocalStorageServer}/Cancellations/{Request.CancellationId}/Details";
+            var url = $"{RequestManager.StorageServer}/Cancellations/{Request.CancellationId}/Details";
             var response = await HttpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {

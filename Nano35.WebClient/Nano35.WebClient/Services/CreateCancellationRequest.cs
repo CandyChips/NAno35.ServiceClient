@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<CreateCancellationSuccessHttpResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.LocalStorageServer}/Cancellations", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.StorageServer}/Cancellations", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<CreateCancellationSuccessHttpResponse>());

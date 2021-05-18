@@ -88,23 +88,15 @@ else
     {
         var modal = Modal.Show<WorkerForm>("Новый Сотрудник");
         await modal.Result;
-        _data = (await new GetAllWorkersRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Workers;
+        _data = new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send().Result.Workers;
         
     }
     
     private async Task NewWage()
     {
-        var modal = Modal.Show<WorkersWageCreate>("Выплата заработной платы");
+        var currentUnit = (await new GetUnitByIdRequest(RequestManager, HttpClient, new GetUnitByIdHttpQuery() {Id = await SessionProvider.GetCurrentUnitId()}).Send()).Data.Name;
+        var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}");
         await modal.Result;
-        _data = (await new GetAllWorkersRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Workers;
-        
+        _data = new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send().Result.Workers;
     }
 }

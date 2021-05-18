@@ -7,6 +7,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nano35.Contracts.Identity.Artifacts;
+using Nano35.HttpContext.instance;
 
 namespace Nano35.WebClient.Services
 {
@@ -15,6 +16,7 @@ namespace Nano35.WebClient.Services
         Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest);
         Task LogOut();
         Task<GetUserByIdResultContract> GetCurrentUser();
+        Task<GetAllRolesByUserSuccessHttpResponse> GetCurrentRoles();
         Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model);
     }
 
@@ -42,13 +44,10 @@ namespace Nano35.WebClient.Services
         public async Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest)
         {
             var result = await _httpClient.PostAsJsonAsync($"{_requestManager.IdentityServer}/Identity/Authenticate", loginRequest);
-            if (!result.IsSuccessStatusCode)
-                throw new Exception(await result.Content.ReadAsStringAsync());
-            var success = await result.Content
-                .ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
+            if (!result.IsSuccessStatusCode) throw new Exception(await result.Content.ReadAsStringAsync());
+            var success = await result.Content.ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
             await _localStorage.SetItemAsync("authToken", success?.Token);
-            ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(
-                success?.Token);
+            ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(success?.Token);
             return success;
         }
 
@@ -66,6 +65,17 @@ namespace Nano35.WebClient.Services
             else
             {
                 return await result.Content.ReadFromJsonAsync<GetUserByIdResultContract>();
+            }
+        }
+
+        public async Task<GetAllRolesByUserSuccessHttpResponse> GetCurrentRoles()
+        {
+            var result = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Workers/Current/Roles");
+            if (!result.IsSuccessStatusCode)
+                throw new Exception(await result.Content.ReadAsStringAsync());
+            else
+            {
+                return await result.Content.ReadFromJsonAsync<GetAllRolesByUserSuccessHttpResponse>();
             }
         }
 

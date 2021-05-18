@@ -1,0 +1,63 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.Repair
+@using Nano35.WebClient.Helpers
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
+
+@if (_isLoaded)
+{
+    <EditForm Model="@Model" 
+              OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <InputField Title="Выбор исполнителя">
+            <Controls>
+                <RadzenDropDown Data=@(_workers.Select(a => new {a.Id, a.Name}))
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="Model.UserId"
+                                style="width: 100%"/>
+            </Controls>
+        </InputField>
+        <InputField Title="Зарплата">
+            <Controls>
+                <RadzenNumeric TValue="int" 
+                               @bind-Value="Model.Wage"
+                               style="width: 100%"/>
+            </Controls>
+        </InputField>
+            
+        <RadzenButton type="submit"
+                      Text="Установить исполнителя"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Size="ButtonSize.Small"
+                      Style="width: 100%" />
+    </EditForm>
+}
+@code
+{
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public SetUserAsPerformerOfRepairOrderQuery Model { get; set; } = new();
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+
+    private List<WorkerViewModel> _workers = new();
+    private bool _isLoaded = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        Model.NewId = Guid.NewGuid();
+        _workers = (await new GetAllWorkersRequest(RequestManager, HttpClient,new GetAllWorkersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), WorkersRoleId = RolesHelper.Master }).Send()).Workers.ToList();
+        _isLoaded = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await FormSubmitted.InvokeAsync(Model);
+        await ModalInstance.CloseAsync();
+    }
+}

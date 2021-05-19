@@ -57,7 +57,7 @@
 
     private async Task HandleValidSubmit()
     {
-        await FormSubmitted.InvokeAsync(Model);
+        await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync();
     }
 }

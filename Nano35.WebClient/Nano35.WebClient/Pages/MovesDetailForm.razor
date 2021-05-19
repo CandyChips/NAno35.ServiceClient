@@ -12,10 +12,7 @@
         
         <InputField Title="Товар">
             <Controls>
-                <RadzenDropDown Data=@(StorageItems
-                                         .Select(a => 
-                                             new {Id = a.Id, 
-                                                 Name = $"{a.Article + " " + a.Condition}"}))
+                <RadzenDropDown Data=@(StorageItems.Select(a => new { a.Id, Name = $"{a.Article + " " + a.Condition}" }))
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
@@ -115,7 +112,7 @@
     [Parameter] public Guid ToUnitId { get; set; }
     [Parameter] public Guid FromUnitId { get; set; }
 
-    private CreateMoveDetailViewModel _model = new CreateMoveDetailViewModel() {NewId = Guid.NewGuid(), Count = 1,};
+    private CreateMoveDetailViewModel _model = new() {NewId = Guid.NewGuid(), Count = 1,};
     private List<StorageItemViewModel> StorageItems { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> FromPlaceOnStorage { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> ToPlaceOnStorage { get; set; } = new();
@@ -130,29 +127,7 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        FromPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = _model.StorageItemId,
-                UnitContainsStorageItemId = FromUnitId
-            })
-            .Send())
-            .Contains
-            .ToList();
-        
-        ToPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = _model.StorageItemId,
-                UnitContainsStorageItemId = ToUnitId
-            })
-            .Send())
-            .Contains
-            .ToList();
+        FromPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(RequestManager, HttpClient, new GetAllPlacesOfStorageItemOnUnitHttpQuery(){StorageItemId = _model.StorageItemId, UnitContainsStorageItemId = FromUnitId}).Send()).Contains.ToList();ToPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(RequestManager, HttpClient, new GetAllPlacesOfStorageItemOnUnitHttpQuery(){StorageItemId = _model.StorageItemId, UnitContainsStorageItemId = ToUnitId}).Send()).Contains.ToList();
     }
     
     private async Task HandleValidSubmit() 

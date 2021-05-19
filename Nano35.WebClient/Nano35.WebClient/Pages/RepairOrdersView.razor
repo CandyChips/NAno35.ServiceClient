@@ -2,7 +2,9 @@
 @layout InstanceLayout
 @page "/instance/repairs"
 @using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Repair.Models
 @using Nano35.HttpContext.Repair
+@using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -36,10 +38,13 @@ else
                 TItem="RepairOrderViewModel">
         <Columns>
             <RadzenGridColumn TItem="RepairOrderViewModel"
-                              Property="LastState.Comment"
+                              Bubble="false"
                               Filterable="false"
-                              Sortable="false"
-                              Title="Статус"/>
+                              Sortable="false">
+                <Template Context="item">
+                    @RepairOrderStateTypesHelper.GetName(item.CurrentState) - @item.LastStateDate
+                </Template>
+            </RadzenGridColumn>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Client"
                               Filterable="false"

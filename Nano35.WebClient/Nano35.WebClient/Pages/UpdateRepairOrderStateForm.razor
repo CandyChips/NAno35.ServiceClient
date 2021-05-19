@@ -17,7 +17,7 @@ else
 {
     <EditForm Model="_model" OnSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
-        <InputField Title="Товар">
+        <InputField Title="Статус">
             <Controls>
                 <RadzenDropDown Data=@(StateTypes.Select(a => new {Id = a.Item1, Name = a.Item2}))
                                 TextProperty="Name"
@@ -34,16 +34,19 @@ else
                 <ValidationMessage For="@(() => _model.TypeId)" />
             </Validation>
         </InputField>
-        <InputField Title="Комментарий">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="@_model.Comment"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Comment)" />
-            </Validation>
-        </InputField>
+        @if(_model.TypeId != (int) RepairOrderStateType.Completed)
+        {
+            <InputField Title="Комментарий">
+                <Controls>
+                    <RadzenTextBox Style="width: 100%;" 
+                                   Placeholder="..."
+                                   @bind-Value="@_model.Comment"/>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => _model.Comment)" />
+                </Validation>
+            </InputField>
+        }
         <RadzenButton type="submit"
                       Text="Создать"
                       ButtonStyle="ButtonStyle.Primary"
@@ -53,6 +56,14 @@ else
 
 @code
 {
+    public enum RepairOrderStateType
+    {
+        InWork = 1,
+        Completed = 2,
+        Stopped = 3,
+        OnWait = 4
+    }
+    
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid RepairOrderId { get; set; }
     private bool _isLoaded;
@@ -67,7 +78,6 @@ else
             RepairOrderId = RepairOrderId
         };
         
-        StateTypes.Add(new Tuple<int, string>(0, "Новый"));
         StateTypes.Add(new Tuple<int, string>(1, "В работе"));
         StateTypes.Add(new Tuple<int, string>(2, "Завершен"));
         StateTypes.Add(new Tuple<int, string>(3, "Приостановлен"));
@@ -78,10 +88,8 @@ else
     private async Task HandleValidSubmit()
     {
         var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/State", _model);
-        if (response.IsSuccessStatusCode)
-            await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
-        else
-            throw new Exception((await response.Content.ReadFromJsonAsync<CreateRepairOrderStateErrorResponse>())?.Error);
+        if (response.IsSuccessStatusCode) await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
+        else throw new Exception((await response.Content.ReadFromJsonAsync<CreateRepairOrderStateErrorResponse>())?.Error);
         await ModalInstance.CloseAsync();
     }
 }

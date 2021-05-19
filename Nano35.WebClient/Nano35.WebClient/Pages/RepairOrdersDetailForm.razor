@@ -2,6 +2,9 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Helpers
 @using Nano35.HttpContext.instance
+@using System.Web.Mvc
+@using Nano35.Contracts.Repair.Artifacts
+@using Nano35.Contracts.Repair.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -17,9 +20,9 @@
 }
 else
 {
-    <div style="width: 60rem;">
-        @if (_model.States.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
-             !_model.States.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
+    <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
+        @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
+             !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
              (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin)))
         {
             <RadzenButton Click=@(_ => AddWork())
@@ -64,7 +67,8 @@ else
                             }
                             @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                             {
-                                <RepairOrdersSetPerformer FormSubmitted="SetPerformer"/>
+                                <RepairOrdersSetPerformer FormSubmitted="SetPerformer"
+                                                          Model="SetUserAsPerformerOfRepairOrderQuery"/>
                             }
                         }
                         else
@@ -77,12 +81,12 @@ else
             <RadzenFieldset Text="Состояние"
                             Style="width: 70%;">
                 <ul class="list-group">
-                    @foreach (var state in _model.States)
+                    @foreach (var state in _states)
                     {
                         <li class="list-group-item alert alert-primary" role="alert">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>
                     }
-                    @if (!(_model.States.Select(e => e.Type).Contains(2) ||
-                           _model.States.Select(e => e.Type).Contains(6)))
+                    @if (!(_states.Select(e => e.Type).Contains(2) ||
+                           _states.Select(e => e.Type).Contains(6)))
                     {
                         <li class="list-group-item">
                             <RadzenButton Click=@(_ => UpdateState(_model.Id))
@@ -96,8 +100,8 @@ else
         </div>
         <RadzenFieldset Text="Работы"
                         Style="width: 100%;">
-            @if (!(_model.States.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
-                   _model.States.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)))
+            @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)))
             {
                 <RadzenButton Click=@(_ => AddWork())
                               Text="Добавить работу"
@@ -131,18 +135,24 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid Id { get; set; }
 
-    private RepairOrderDetailsViewModel _model = new();
+    private RepairOrderViewModel _model = null;
+    private List<RepairOrdersStateViewModel> _states = new();
     private List<RepairOrderWorkViewModel> _works = new();
     private bool _isLoaded = false;
     private List<Guid> _roles = new();
-    
 
+    public async Task Update()
+    {        
+        _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpBody { Id = Id }).Send()).Data;
+        _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Statuses")).Data;
+        _works = (await new GetRequestProvider<GetAllRepairOrderWorksRequestContract, GetAllRepairOrderWorksResultContract>(HttpClient, new GetAllRepairOrderWorksRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works")).Data;
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
-        _works = _model.Works;
+        _isLoaded = false;
         _roles = (await AuthService.GetCurrentRoles()).Roles;
+        await Update();
         _isLoaded = true;
     }
 
@@ -152,8 +162,9 @@ else
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
         await modal.Result;
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
-        _works = _model.Works;
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
     }
     
     private async Task UpdateState(Guid modelId)
@@ -162,19 +173,26 @@ else
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
         await modal.Result;
-        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id })).Send()).Data;
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
     }
 
     private async Task BecomeWorker()
     {
         await new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, new SetCurrentUserAsPerformerOfRepairOrderQuery { RepairOrderId = _model.Id }).Send();
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;    
     }
 
-    private async Task SetPerformer(SetUserAsPerformerOfRepairOrderQuery Model)
+    private SetUserAsPerformerOfRepairOrderQuery SetUserAsPerformerOfRepairOrderQuery { get; set; } = new();
+    private async Task SetPerformer()
     {
-        await new SetUserAsPerformerOfRepairOrderQueryRequest(RequestManager, HttpClient, Model).Send();
-
-        
+        SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
+        await new SetUserAsPerformerOfRepairOrderQueryRequest(RequestManager, HttpClient, SetUserAsPerformerOfRepairOrderQuery).Send();
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
     }
 }

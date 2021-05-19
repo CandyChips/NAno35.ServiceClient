@@ -2,6 +2,7 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Helpers
 @using Nano35.HttpContext.instance
+@using Microsoft.AspNetCore.Components
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -131,7 +132,24 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid Id { get; set; }
 
-    private RepairOrderDetailsViewModel _model = new();
+    private RepairOrderDetailsViewModel _model = new RepairOrderDetailsViewModel(
+        Guid.Empty,
+        Guid.Empty,
+        Guid.Empty,
+        new DateTime(),
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        new List<RepairOrderWorkViewModel>(),
+        new List<RepairOrdersStateViewModel>(),
+        new List<UsesWithRepairOrderWork>()
+        );
     private List<RepairOrderWorkViewModel> _works = new();
     private bool _isLoaded = false;
     private List<Guid> _roles = new();
@@ -171,9 +189,9 @@ else
         _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
     }
 
-    private async Task SetPerformer(SetUserAsPerformerOfRepairOrderQuery Model)
+    private async Task SetPerformer()
     {
-        await new SetUserAsPerformerOfRepairOrderQueryRequest(RequestManager, HttpClient, Model).Send();
+        await new SetUserAsPerformerOfRepairOrderQueryRequest(RequestManager, HttpClient, new SetUserAsPerformerOfRepairOrderQuery(){}).Send();
 
         
     }

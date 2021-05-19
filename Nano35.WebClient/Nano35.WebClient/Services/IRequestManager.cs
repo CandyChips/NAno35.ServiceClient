@@ -28,13 +28,15 @@ namespace Nano35.WebClient.Services
             _httpClient = httpClient;
         }
         public string IdentityServer => $"http://192.168.100.125:30001";
-        public string InstanceServer => "http://192.168.100.125:30002";
-        public string StorageServer => "http://192.168.100.125:30003";
+        //public string InstanceServer => "http://192.168.100.125:30002";
+        public string InstanceServer => "http://localhost:5002";
+        //public string StorageServer => "http://192.168.100.125:30003";
+        public string StorageServer => "http://localhost:5003";
         public string RepairOrdersServer => "http://192.168.100.125:30004";
         public string FileServer => "http://192.168.100.125:30005";
         public string LocalIdentityServer => "http://localhost:5001";
         public string LocalInstanceServer => "http://localhost:5002";
-        public string LocalStorageServer => "http://192.168.100.125:30003";
+        public string LocalStorageServer => "http://localhost:5003";
         public string LocalRepairOrdersServer => "http://localhost:5004";
         public string LocalFileServer => "http://localhost:5005";
         

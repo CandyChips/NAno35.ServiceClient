@@ -89,8 +89,14 @@ else
                               Width="250px"
                               TextAlign="TextAlign.Center">
                 <Template Context="item">
+                    <RadzenButton Click=@(_ => OpenStorageItem(item)) 
+                                  Text="Изменить"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
                     <a href="http://192.168.100.210:30006/StorageItems/Ticket?storageItemId=@item.Item.Id" target="_blank">Этикетка</a>
                 </Template>
+                
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
@@ -113,13 +119,11 @@ else
         _loading = false;
     }
 
-    private async Task Cancellate()
+    private async Task OpenStorageItem(StorageItemOnInstanceViewModel value)
     {
-        Modal.Show<CancellationsCreate>("Новое списание");
-    }
-
-    private async Task Sell()
-    {
-        Modal.Show<SellesCreate>("Новая продажа");
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(StorageDetails.Item), value);
+        var modal = Modal.Show<StorageDetails>($"{value.Item.Name}", parameters);
+        await modal.Result;
     }
 }

@@ -64,6 +64,18 @@ else
                                           Filterable="false"
                                           Sortable="false"
                                           Title="Формат работы" />
+                        <RadzenGridColumn TItem="UnitViewModel"
+                                          Filterable="false"
+                                          Sortable="false"
+                                          Title="">
+                            <Template Context="item">
+                                <RadzenButton Click=@(_ => OpenUnit(item)) 
+                                              Text="Изменить"
+                                              Size="ButtonSize.Small"
+                                              Style="margin: 1rem 0;"
+                                              ButtonStyle="ButtonStyle.Primary"/>
+                            </Template>
+                        </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
             </RadzenTabsItem>
@@ -90,5 +102,13 @@ else
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
         _data = (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send()).Units as List<UnitViewModel>;
+    }
+
+    private async Task OpenUnit(UnitViewModel value)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(UnitDetails.Unit), value);
+        var modal = Modal.Show<UnitDetails>($"{value.Name}", parameters);
+        await modal.Result;
     }
 }

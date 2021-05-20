@@ -122,8 +122,8 @@ else
     private async Task OpenStorageItem(StorageItemOnInstanceViewModel value)
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(StorageDetails.Item), value);
-        var modal = Modal.Show<StorageDetails>($"{value.Item.Name}", parameters);
+        parameters.Add(nameof(StorageItemDetails.Item), value);
+        var modal = Modal.Show<StorageItemDetails>($"{value.Item.Name}", parameters);
         await modal.Result;
     }
 }

@@ -1,0 +1,309 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.Contracts.Storage.Models
+@using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
+@using Nano35.Contracts.Storage.Artifacts
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+
+@if (_loading)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-Secondary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <div style="width: 40rem;">
+        <RadzenFieldset Text="Информация"
+                    Style="width: 100%;">
+        <ul class="list-group" style="width: 100%" >
+            
+        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+            @if (NameEdit == null)
+            {
+                <b style="display: flex;  width: 85%; align-items: center">Фио Клинта: @Client.Name</b>
+                <RadzenButton Click="@(_ => NameEdit = new UpdateClientsNameHttpBody()
+                                     {
+                                         ClientId = Client.Id
+                                     })"
+                              Text="Изменить"
+                              Size="ButtonSize.Small"
+                              Style="margin: 1rem 0; float: right; display: flex "
+                              ButtonStyle="ButtonStyle.Secondary"/>
+            }
+            else
+            {
+                <b style="display: flex; align-items: center; width: 85%"> 
+                    <InputField Title="Фио Клинта:">
+                        <Controls>
+                            <RadzenTextBox style="display: flex;align-items: center"
+                                           @bind-Value="NameEdit.Name"
+                                           Placeholder="@Client.Name"/>
+                            </Controls>
+                        </InputField>
+                </b>
+                                
+                <div style="display: flex; align-items: center">
+                    <RadzenButton Click="@(_ => UpdateName())"
+                                                  Text="Обновить"
+                                                  Size="ButtonSize.Small"
+                                                  Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
+                                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => NameEdit = null)
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="close"
+                                  Style="height: 40px; width: 40px"
+                                  Size="ButtonSize.Small"/>
+                </div>
+            }
+        </li>
+        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+            @if (PhoneEdit == null)
+            {
+                <b style="display: flex;  width: 85%; align-items: center">Телефон клиента: @Client.Phone</b>
+                                                                            
+                <RadzenButton Click="@(_ => PhoneEdit = new UpdateClientsPhoneHttpBody()
+                                     {
+                                         ClientId = Client.Id
+                                     })"
+                              Text="Изменить"
+                              Size="ButtonSize.Small"
+                              Style="margin: 1rem 0; float: right; display: flex "
+                              ButtonStyle="ButtonStyle.Secondary"/>
+            }
+            else
+            {
+                <b style="display: flex; align-items: center; width: 85%"> 
+                    <InputField Title="Телефон клиента:">
+                        <Controls>
+                            <RadzenTextBox style="display: flex;align-items: center"
+                                           @bind-Value="PhoneEdit.Phone"
+                                           Placeholder="@Client.Phone"/>
+                        </Controls>
+                    </InputField>
+                </b>
+                                            
+                <div style="display: flex; align-items: center">
+                    <RadzenButton Click="@(_ => UpdatePhone())"
+                                  Text="Обновить"
+                                  Size="ButtonSize.Small"
+                                  Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => PhoneEdit = null)
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="close"
+                                  Style="height: 40px; width: 40px"
+                                  Size="ButtonSize.Small"/>
+                </div>
+            }
+        </li>
+        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+            @if (EmailEdit == null)
+            {
+                <b style="display: flex;  width: 85%; align-items: center">Email клиента: @Client.Email</b>
+                                                                                        
+                <RadzenButton Click="@(_ => EmailEdit = new UpdateClientsEmailHttpBody()
+                                     {
+                                         ClientId = Client.Id
+                                     })"
+                              Text="Изменить"
+                              Size="ButtonSize.Small"
+                              Style="margin: 1rem 0; float: right; display: flex "
+                              ButtonStyle="ButtonStyle.Secondary"/>
+            }
+            else
+            {
+                <b style="display: flex; align-items: center; width: 85%"> 
+                    <InputField Title="Email клиента:">
+                        <Controls>
+                            <RadzenTextBox style="display: flex;align-items: center"
+                                           @bind-Value="EmailEdit.Email"
+                                           Placeholder="@Client.Email"/>
+                        </Controls>
+                    </InputField>
+                </b>
+                                                        
+                <div style="display: flex; align-items: center">
+                    <RadzenButton Click="@(_ => UpdateEmail())"
+                                  Text="Обновить"
+                                  Size="ButtonSize.Small"
+                                  Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => EmailEdit = null)
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="close"
+                                  Style="height: 40px; width: 40px"
+                                  Size="ButtonSize.Small"/>
+                </div>
+            }
+            </li>
+        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+            @if (StateEdit == null)
+            {
+                <b style="display: flex;  width: 85%; align-items: center">Статус клиента: @Client.ClientState</b>
+                                                
+                <RadzenButton Click="@(_ => StateEdit = new UpdateClientsStateHttpBody(){ClientId = Client.Id})"
+                              Text="Изменить"
+                              Size="ButtonSize.Small"
+                              Style="margin: 1rem 0; float: right; display: flex "
+                              ButtonStyle="ButtonStyle.Secondary"/>
+            }
+            else
+            {
+                <b style="display: flex; align-items: center; width: 85%"> 
+                    <InputField Title="Статус клиента:">
+                        <Controls>
+                            <RadzenDropDown style="display: flex; "
+                                            AllowClear="true"
+                                            TValue="Guid"
+                                            Data=@(States.Select(g => new {Id = g.Id, Name = g.Name}))
+                                            TextProperty="Name"
+                                            ValueProperty="Id"
+                                            @bind-Value="StateEdit.StateId">
+                            </RadzenDropDown>
+                        </Controls>
+                    </InputField>
+                </b>
+                
+                <div style="display: flex; align-items: center">
+                    <RadzenButton Click="@(_ => UpdateState())"
+                                  Text="Обновить"
+                                  Size="ButtonSize.Small"
+                                  Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => StateEdit = null)
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="close"
+                                  Style="height: 40px; width: 40px"
+                                  Size="ButtonSize.Small"/>
+                </div>
+            }
+        </li>
+        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                @if (TypeEdit == null)
+                {
+                    <b style="display: flex;  width: 85%; align-items: center">Тип Клиента: @Client.ClientType</b>
+                                                                            
+                    <RadzenButton Click="@(_ => TypeEdit = new UpdateClientsTypeHttpBody(){ClientId = Client.Id})"
+                                  Text="Изменить"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0; float: right; display: flex "
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                }
+                else
+                {
+                    <b style="display: flex; align-items: center; width: 85%"> 
+                        <InputField Title="Тип Клиента:">
+                            <Controls>
+                                <RadzenDropDown style="display: flex; "
+                                                AllowClear="true"
+                                                TValue="Guid"
+                                                Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
+                                                TextProperty="Name"
+                                                ValueProperty="Id"
+                                                @bind-Value="TypeEdit.TypeId">
+                                </RadzenDropDown>
+                            </Controls>
+                        </InputField>
+                    </b>
+                                            
+                    <div style="display: flex; align-items: center">
+                        <RadzenButton Click="@(_ => UpdateType())"
+                                      Text="Обновить"
+                                      Size="ButtonSize.Small"
+                                      Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
+                                      ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton Click=@(_ => TypeEdit = null)
+                                      ButtonStyle="ButtonStyle.Danger"
+                                      Icon="close"
+                                      Style="height: 40px; width: 40px"
+                                      Size="ButtonSize.Small"/>
+                    </div>
+                }
+            </li>
+        </ul>
+    </RadzenFieldset>
+    </div>
+    }
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    [Parameter] public ClientViewModel Client { get; set; }
+    
+    private List<ArticleCategoryViewModel> Categories { get; set; }
+    
+    private UpdateClientsEmailHttpBody EmailEdit {get;set;}
+    private UpdateClientsNameHttpBody NameEdit {get;set;}
+    private UpdateClientsPhoneHttpBody PhoneEdit {get;set;}
+    private UpdateClientsSelleHttpBody SelleEdit {get;set;}
+    private UpdateClientsStateHttpBody StateEdit {get;set;}
+    private List<ClientStateViewModel> States { get; set; }
+    private UpdateClientsTypeHttpBody TypeEdit {get;set;}
+    private List<ClientTypeViewModel> Types { get; set; }
+    
+    private bool _loading = true;
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        States = (await new GetAllClientStatesRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllClientStatesHttpQuery(){}
+            ).Send()).Data.ToList();
+        
+        Types = (await new GetAllClientTypesRequest(
+            RequestManager,
+            HttpClient, 
+            new GetAllClientTypesHttpQuery(){}
+            ).Send()).Data.ToList();
+        
+        _loading = false;
+    }
+
+
+    private async Task UpdateName()
+    {
+        await new UpdateClientNameRequest(RequestManager, HttpClient, NameEdit).Send();
+        NameEdit = null;
+    }
+    
+    private async Task UpdatePhone()
+    {
+        await new UpdateClientPhoneRequest(RequestManager, HttpClient, PhoneEdit).Send();
+        PhoneEdit = null;
+    }
+    private async Task UpdateEmail()
+    {
+        await new UpdateClientEmailRequest(RequestManager, HttpClient, EmailEdit).Send();
+        EmailEdit = null;
+    }
+    private async Task UpdateSelle()
+    {
+        await new UpdateClientSelleRequest(RequestManager, HttpClient, SelleEdit).Send();
+        SelleEdit = null;
+    }
+    private async Task UpdateState()
+    {
+        await new UpdateClientStateRequest(RequestManager, HttpClient, StateEdit).Send();
+        StateEdit = null;
+    }
+    private async Task UpdateType()
+    {
+        await new UpdateClientTypeRequest(RequestManager, HttpClient, TypeEdit).Send();
+        TypeEdit = null;
+    }
+    
+    
+    
+}

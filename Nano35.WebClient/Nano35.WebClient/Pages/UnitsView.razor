@@ -89,10 +89,6 @@ else
     {
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
-        _data = (await new GetAllUnitsRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Units as List<UnitViewModel>;
+        _data = (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send()).Units as List<UnitViewModel>;
     }
 }

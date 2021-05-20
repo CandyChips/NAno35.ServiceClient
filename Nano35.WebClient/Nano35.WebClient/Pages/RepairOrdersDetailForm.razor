@@ -23,7 +23,7 @@ else
     <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
         @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
              !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
-             (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin)))
+             _roles.Any(c => c == RolesHelper.Manager || c == RolesHelper.Admin))
         {
             <RadzenButton Click=@(_ => AddWork())
                           Text="Закрыть заказ наряд и напечатать акт выполненых работ"
@@ -60,10 +60,8 @@ else
                         {
                             @if (_roles.Contains(RolesHelper.Master))
                             {
-                                <RadzenButton Click=@(_ => BecomeWorker())
-                                              Text="Стать исполнителем"
-                                              Style="width: 100%"
-                                              ButtonStyle="ButtonStyle.Primary"/>
+                                <RepairOrdersBecomePerformer FormSubmitted="SetPerformer"
+                                                             Model="SetUserAsPerformerOfRepairOrderQuery"/>
                             }
                             @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                             {
@@ -101,7 +99,8 @@ else
         <RadzenFieldset Text="Работы"
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
-                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)))
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
+                 _roles.Any(c => c == RolesHelper.Master))
             {
                 <RadzenButton Click=@(_ => AddWork())
                               Text="Добавить работу"
@@ -143,7 +142,7 @@ else
 
     public async Task Update()
     {        
-        _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpBody { Id = Id }).Send()).Data;
+        _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpQuery() { Id = Id }).Send()).Data;
         _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Statuses")).Data;
         _works = (await new GetRequestProvider<GetAllRepairOrderWorksRequestContract, GetAllRepairOrderWorksResultContract>(HttpClient, new GetAllRepairOrderWorksRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works")).Data;
     }
@@ -176,14 +175,6 @@ else
         _isLoaded = false;
         await Update();
         _isLoaded = true;
-    }
-
-    private async Task BecomeWorker()
-    {
-        await new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, new SetCurrentUserAsPerformerOfRepairOrderQuery { RepairOrderId = _model.Id }).Send();
-        _isLoaded = false;
-        await Update();
-        _isLoaded = true;    
     }
 
     private SetUserAsPerformerOfRepairOrderQuery SetUserAsPerformerOfRepairOrderQuery { get; set; } = new();

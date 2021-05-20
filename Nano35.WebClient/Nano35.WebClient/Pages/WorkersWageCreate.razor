@@ -12,12 +12,14 @@
 @code {
     private CreateWageOperationHttpBody _model;
     private string Error { get; set; }
+    [Parameter] public Guid UserId { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
         _model = new CreateWageOperationHttpBody
         {
-            NewId = Guid.NewGuid(),
+            NewId = Guid.NewGuid(), 
+            WorkerId = UserId, 
             CashOperations = new List<WagePerCashOperation>()
         };
     }

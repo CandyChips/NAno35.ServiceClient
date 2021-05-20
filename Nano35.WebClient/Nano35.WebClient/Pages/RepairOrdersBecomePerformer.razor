@@ -1,0 +1,53 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.Repair
+@using Nano35.WebClient.Helpers
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
+
+@if (_isLoaded)
+{
+    <EditForm Model="@Model" 
+              OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <InputField Title="Зарплата">
+            <Controls>
+                <RadzenNumeric TValue="int" 
+                               @bind-Value="Model.Wage"
+                               style="width: 100%"/>
+            </Controls>
+        </InputField>
+            
+        <RadzenButton type="submit"
+                      Text="Стать исполнителем"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Size="ButtonSize.Small"
+                      Style="width: 100%" />
+    </EditForm>
+}
+@code
+{
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public SetUserAsPerformerOfRepairOrderQuery Model { get; set; } = new();
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+
+    private List<WorkerViewModel> _workers = new();
+    private bool _isLoaded = false;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        Model.NewId = Guid.NewGuid();
+        Model.UserId = (await AuthService.GetCurrentUser()).Data.Id;
+        _isLoaded = true;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await FormSubmitted.InvokeAsync();
+        await ModalInstance.CloseAsync();
+    }
+}

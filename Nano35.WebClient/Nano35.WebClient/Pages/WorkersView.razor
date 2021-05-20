@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @using Nano35.WebClient.Services
+@using WorkerViewModel = Nano35.HttpContext.instance.WorkerViewModel
 @attribute [Authorize]
 @layout InstanceLayout
 @inject NavigationManager NavigationManager;
@@ -60,7 +62,7 @@ else
                                   Size="ButtonSize.Small"
                                   ButtonType="ButtonType.Button"
                                   ButtonStyle="ButtonStyle.Info"
-                                  Click="@(_ => NewWage())">
+                                  Click="@(_ => NewWage(item))">
                     </RadzenButton>
                 </Template>
             </RadzenGridColumn>
@@ -76,11 +78,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new GetAllWorkersRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id })
-            .Send()).Workers;
+        _data = (await new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send()).Workers;
         _loading = false;
     }
     
@@ -92,10 +90,12 @@ else
         
     }
     
-    private async Task NewWage()
+    private async Task NewWage(WorkerViewModel user)
     {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(WorkersWageCreate.UserId), user.Id);
         var currentUnit = (await new GetUnitByIdRequest(RequestManager, HttpClient, new GetUnitByIdHttpQuery() {Id = await SessionProvider.GetCurrentUnitId()}).Send()).Data.Name;
-        var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}");
+        var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters);
         await modal.Result;
         _data = new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send().Result.Workers;
     }

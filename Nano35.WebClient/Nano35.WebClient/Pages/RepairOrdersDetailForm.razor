@@ -3,6 +3,7 @@
 @using Nano35.WebClient.Helpers
 @using Nano35.HttpContext.instance
 @using Microsoft.AspNetCore.Components
+@using Nano35.Contracts.Repair.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -132,24 +133,7 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid Id { get; set; }
 
-    private RepairOrderDetailsViewModel _model = new RepairOrderDetailsViewModel(
-        Guid.Empty,
-        Guid.Empty,
-        Guid.Empty,
-        new DateTime(),
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        new List<RepairOrderWorkViewModel>(),
-        new List<RepairOrdersStateViewModel>(),
-        new List<UsesWithRepairOrderWork>()
-        );
+    private RepairOrderDetailsViewModel _model = new();
     private List<RepairOrderWorkViewModel> _works = new();
     private bool _isLoaded = false;
     private List<Guid> _roles = new();
@@ -158,7 +142,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
+        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient,new GetRepairOrderDetailsByIdHttpQuery() { Id = Id }).Send()).Data;
         _works = _model.Works;
         _roles = (await AuthService.GetCurrentRoles()).Roles;
         _isLoaded = true;
@@ -170,7 +154,7 @@ else
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
         await modal.Result;
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
+        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpQuery() { Id = Id }).Send()).Data;
         _works = _model.Works;
     }
     
@@ -180,13 +164,13 @@ else
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
         await modal.Result;
-        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id })).Send()).Data;
+        _model = (await (new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpQuery() { Id = Id })).Send()).Data;
     }
 
     private async Task BecomeWorker()
     {
         await new SetCurrentUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, new SetCurrentUserAsPerformerOfRepairOrderQuery { RepairOrderId = _model.Id }).Send();
-        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpBody { Id = Id }).Send()).Data;
+        _model = (await new GetRepairOrderDetailsByIdRequest(RequestManager, HttpClient, new GetRepairOrderDetailsByIdHttpQuery() { Id = Id }).Send()).Data;
     }
 
     private async Task SetPerformer()

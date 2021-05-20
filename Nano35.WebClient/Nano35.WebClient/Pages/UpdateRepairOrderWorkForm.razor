@@ -3,6 +3,7 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.HttpContext.instance
 @using Radzen.Blazor.Rendering
+@using Nano35.Contracts.Repair.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -106,7 +107,7 @@ else
         _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
 
-        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpBody() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpQuery() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
         _storageItems = (await (new GetAllStorageItemsOnUnitRequest(RequestManager, HttpClient, new GetAllStorageItemsOnUnitHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId()})).Send()).Contains;
         _isLoaded = true;
     }
@@ -133,7 +134,7 @@ else
     {
         var modal = Modal.Show<CreateWork>($"Новая работа");
         await modal.Result;
-        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpBody() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpQuery() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
     }
 
     private async Task WorkChanged()

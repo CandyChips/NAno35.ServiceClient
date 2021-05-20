@@ -90,7 +90,7 @@
         
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).Data.ToList();
+        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
     }
 
     private async Task HandleValidSubmit()

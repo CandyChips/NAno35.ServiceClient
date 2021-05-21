@@ -10,9 +10,9 @@ using Nano35.HttpContext.Repair;
 namespace Nano35.WebClient.Services
 {
     public class GetAllRepairOrderCashOperations : 
-        RequestProvider<GetAllRepairOrderOperationsQuery, GetAllRepairOrderOperationsHttpResponse>
+        RequestProvider<GetAllRepairOrderOperationsHttpQuery, GetAllRepairOrderOperationsHttpResponse>
     {
-        public GetAllRepairOrderCashOperations(IRequestManager requestManager, HttpClient httpClient, GetAllRepairOrderOperationsQuery request) : 
+        public GetAllRepairOrderCashOperations(IRequestManager requestManager, HttpClient httpClient, GetAllRepairOrderOperationsHttpQuery request) : 
             base(requestManager, httpClient, request)
         {
         }

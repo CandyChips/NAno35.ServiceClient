@@ -1,8 +1,40 @@
-﻿@inherits LayoutComponentBase
+﻿@using Nano35.WebClient.Services
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
-<div style="height: 100vh">
-    <NavBar/>
-    <div>
-        @Body
+@inject  ISessionProvider SessionProvider
+@inject  IRequestManager RequestManager
+@inject  IInstanceService InstanceService
+
+
+@if (_loading)
+    {
+        <div class="col-md-6 offset-md-3 mt-5">
+            <div class="card">
+                <h4 class="card-header">Загрузка</h4>
+                <div class="card-body">
+                    ...
+                </div>
+            </div>
+        </div>
+    }
+else
+{
+    <div style="height: 100vh">
+        <NavBar/>
+        <div>
+            @Body
+        </div>
     </div>
-</div>
+}
+
+@code
+{
+    private bool _serverAvailable = false;
+    private bool _loading = true;
+        
+    protected override async Task OnInitializedAsync()
+    {
+        _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
+        _loading = false;
+    }
+}

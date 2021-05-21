@@ -126,7 +126,7 @@ else
             };
         }
 
-            await (new UpdateRepairOrdersWorkRequest(RequestManager, HttpClient, _model)).Send();
+            await (new UpdateRepairOrderWorkRequest(RequestManager, HttpClient, _model)).Send();
         await ModalInstance.CloseAsync();
     }
 

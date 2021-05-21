@@ -6,8 +6,9 @@
 @inject ISessionProvider SessionProvider
 
 <EditForm Model="@(Model)" 
-          OnValidSubmit="Create">
+          OnSubmit="Create">
         <DataAnnotationsValidator />
+        <ValidationSummary/>
 @if (_isLoaded)
 {
     <InputField Title="Поставщик*">
@@ -169,12 +170,12 @@ else
         var modal = Modal.Show<ComingsDetailForm>($"Новая позиция к оприходованию");
         var result = await modal.Result;
         
-        if(!result.Cancelled)
+        if (result.Data is CreateComingDetailViewModel success)
         {
             Model.Details ??= new List<CreateComingDetailViewModel>();
             Model.Details.Add((CreateComingDetailViewModel) (result).Data);
-            _details.Add((CreateComingDetailViewModel) (result).Data);
-        };
+            _details.Add(success);
+        }
     }
     
     private async Task NewClient()

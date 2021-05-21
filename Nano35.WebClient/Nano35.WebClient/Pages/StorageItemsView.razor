@@ -2,12 +2,14 @@
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @using System.Web.Razor.Parser.SyntaxTree
+@using Nano35.WebClient.Helpers
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/warehouse"
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
 
 @if (_loading)
 {
@@ -86,17 +88,20 @@ else
                               Bubble="false"
                               Sortable="false"
                               Filterable="false"
-                              Width="250px"
+                              Width="auto"
                               TextAlign="TextAlign.Center">
                 <Template Context="item">
-                    <RadzenButton Click=@(_ => OpenStorageItem(item)) 
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Primary"/>
+                    @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
+                    {
+                        <RadzenButton Click=@(_ => OpenStorageItem(item))
+                                      Text="Изменить"
+                                      Size="ButtonSize.Small"
+                                      Style="margin: 1rem 0;"
+                                      ButtonStyle="ButtonStyle.Primary"/>
+                    }
                     <a href="http://192.168.100.210:30006/StorageItems/Ticket?storageItemId=@item.Item.Id" target="_blank">Этикетка</a>
                 </Template>
-                
+
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
@@ -107,10 +112,12 @@ else
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     private IEnumerable<StorageItemOnInstanceViewModel> _data;
+    private List<Guid> _roles = new();
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {        
+        _roles = (await AuthService.GetCurrentRoles()).Roles;
         _data = (await (new GetAllStorageItemsOnInstanceRequest(
             RequestManager,
             HttpClient, 

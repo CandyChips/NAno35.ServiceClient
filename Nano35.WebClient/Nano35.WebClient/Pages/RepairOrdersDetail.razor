@@ -1,0 +1,518 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.Repair
+@using Nano35.WebClient.Helpers
+@using Nano35.HttpContext.instance
+@using System.Web.Mvc
+@using Nano35.Contracts.Repair.Artifacts
+@using Nano35.Contracts.Repair.Models
+@using Nano35.HttpContext.storage
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
+
+@if (!_isLoaded)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
+        @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
+             !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
+             _roles.Any(c => c == RolesHelper.Manager || c == RolesHelper.Admin))
+        {
+            <RadzenButton Click=@(_ => AddWork())
+                          Text="Закрыть заказ наряд и напечатать акт выполненых работ"
+                          Style="width: 100%;"
+                          ButtonStyle="ButtonStyle.Danger"/>
+        }
+        <div style="display: flex;">
+            <RadzenFieldset Text="Информация"
+                            Style="width: 100%;">
+                <ul class="list-group">
+                    <li class="list-group-item" role="alert">
+                        <b>Клиент: @_model.Client</b>
+                    </li>
+                    <li class="list-group-item" role="alert">
+                        <b>Менеджер: @_model.Manager</b>
+                    </li>
+                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                        @if (DeviceEdit == null)
+                        {
+                            <b style="display: flex;  width: 85%; align-items: center">Устройство: @_model.Device</b>
+                                                               
+                            <RadzenButton Click="@(_ => DeviceEdit = new UpdateRepairOrdersDeviceBody()
+                                                 {
+                                                     RepairOrderId = _model.Id
+                                                 })"
+                                          Text="Изменить"
+                                          Size="ButtonSize.Small"
+                                          Style="float: right; 
+                                                 display: flex; 
+                                                 padding-left: 10px;
+                                                 padding-right: 10px;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        else
+                        {
+                            <EditForm Model="@DeviceEdit"
+                                      OnValidSubmit="@UpdateDevice"
+                                      style="display: flex;
+                                             width: 100%;">
+                                <b style="display: flex; 
+                                          width: 85%; 
+                                          align-items: center; 
+                                          height: 50px;
+                                          margin-top: 5px;"> 
+                                    <InputField Title="Устройство:">
+                                        <Controls>
+                                            <RadzenDropDown style="display: flex; "
+                                                            AllowClear="true"
+                                                            TValue="Guid"
+                                                            Data=@(_devices.Select(g => new {Id = g.Id, Name = $"{g.Brand} {g.Model}"}))
+                                                            TextProperty="Name"
+                                                            ValueProperty="Id"
+                                                            @bind-Value="DeviceEdit.DeviceId">
+                                            </RadzenDropDown>
+                                        </Controls>
+                                    </InputField>
+                                </b>
+                                <DataAnnotationsValidator/>
+                                <ValidationSummary/>
+                                <div style="display: flex; align-items: center">
+                                    <RadzenButton type="submit"
+                                                  Text="Обновить"
+                                                  Size="ButtonSize.Small"
+                                                  Style="display: flex; 
+                                                     align-items: center;
+                                                     height: 28px; 
+                                                     margin-right: 25px; 
+                                                     width: min-content;"
+                                                  ButtonStyle="ButtonStyle.Secondary"/>
+                                    <RadzenButton Click=@(_ => DeviceEdit = null)
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Icon="close"
+                                                  Style=""
+                                                  Size="ButtonSize.Small"/>
+                                </div>
+                            </EditForm>
+                        }
+                    </li>
+                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                        @if (TroubleEdit == null)
+                        {
+                            <b style="display: flex;  width: 85%; align-items: center">Неисправность со слов клиента: @_model.Trouble</b>
+                                                               
+                            <RadzenButton Click="@(_ => TroubleEdit = new UpdateRepairOrdersTroubleBody()
+                                                 {
+                                                     RepairOrderId = _model.Id
+                                                 })"
+                                          Text="Изменить"
+                                          Size="ButtonSize.Small"
+                                          Style="float: right; 
+                                                 display: flex; 
+                                                 padding-left: 10px;
+                                                 padding-right: 10px;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        else
+                        {
+                            <EditForm Model="@TroubleEdit"
+                                      OnValidSubmit="@UpdateTrouble"
+                                      style="display: flex;
+                                             width: 100%;">
+                                <b style="display: flex; 
+                                      width: 85%; 
+                                      align-items: center; 
+                                      height: 50px;
+                                      margin-top: 5px;">
+                                    <InputField Title="Неисправность со слов клиента:">
+                                        <Controls>
+                                            <RadzenTextBox style="display: flex;align-items: center"
+                                                           @bind-Value="TroubleEdit.Trouble"
+                                                           Placeholder="@_model.Trouble"/>
+                                       
+                                       
+                                        </Controls>
+                                    </InputField>
+                                </b>
+                               
+                                <DataAnnotationsValidator/>
+                                <ValidationSummary/>
+                               
+                                <div style="display: flex; align-items: center">
+                                    <RadzenButton type="submit"
+                                                  Text="Обновить"
+                                                  Size="ButtonSize.Small"
+                                                  Style="display: flex; 
+                                                     align-items: center;
+                                                     height: 28px; 
+                                                     margin-right: 25px; 
+                                                     width: min-content;"
+                                                  ButtonStyle="ButtonStyle.Secondary"/>
+                                    <RadzenButton Click=@(_ => TroubleEdit = null)
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Icon="close"
+                                                  Style=""
+                                                  Size="ButtonSize.Small"/>
+                                </div>
+                            </EditForm>
+                        }
+                    </li>
+                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                        @if (ConditionEdit == null)
+                        {
+                            <b style="display: flex;  width: 85%; align-items: center">Внешний вид: @_model.Condition</b>
+                                                               
+                            <RadzenButton Click="@(_ => ConditionEdit = new UpdateRepairOrdersConditionBody()
+                                                 {
+                                                     RepairOrderId = _model.Id
+                                                 })"
+                                          Text="Изменить"
+                                          Size="ButtonSize.Small"
+                                          Style="float: right; 
+                                                 display: flex; 
+                                                 padding-left: 10px;
+                                                 padding-right: 10px;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        else
+                        {
+                            <EditForm Model="@ConditionEdit"
+                                  OnValidSubmit="@UpdateCondition"
+                                  style="display: flex;
+                                         width: 100%;">
+                            <b style="display: flex; 
+                                      width: 85%; 
+                                      align-items: center; 
+                                      height: 50px;
+                                      margin-top: 5px;"> 
+                                <InputField Title="Внешний вид:">
+                                    <Controls>
+                                        <RadzenTextBox style="display: flex;align-items: center"
+                                                       @bind-Value="ConditionEdit.Condition"
+                                                       Placeholder="@_model.Condition"/>
+                                    </Controls>
+                                </InputField>
+                            </b>
+                              
+                            <DataAnnotationsValidator/>
+                            <ValidationSummary/>
+                        
+                            <div style="display: flex; align-items: center">
+                                <RadzenButton type="submit"
+                                              Text="Обновить"
+                                              Size="ButtonSize.Small"
+                                              Style="display: flex; 
+                                                    align-items: center;
+                                                    height: 28px; 
+                                                    margin-right: 25px; 
+                                                    width: min-content;"
+                                              ButtonStyle="ButtonStyle.Secondary"/>
+                                <RadzenButton Click=@(_ => ConditionEdit = null)
+                                              ButtonStyle="ButtonStyle.Danger"
+                                              Icon="close"
+                                              Style=""
+                                              Size="ButtonSize.Small"/>
+                            </div>
+                         </EditForm>
+                        }
+                    </li>
+                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                        @if (ComplicationEdit == null)
+                        {
+                            <b style="display: flex;  width: 85%; align-items: center">Комплектация: @_model.Complication</b>
+                                                               
+                            <RadzenButton Click="@(_ => ComplicationEdit = new UpdateRepairOrdersComplicationBody()
+                                                 {
+                                                     RepairOrderId = _model.Id
+                                                 })"
+                                          Text="Изменить"
+                                          Size="ButtonSize.Small"
+                                          Style="float: right; 
+                                                 display: flex; 
+                                                 padding-left: 10px;
+                                                 padding-right: 10px;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        else
+                        {
+                            <EditForm Model="@ComplicationEdit"
+                                      OnValidSubmit="@UpdateComplication"
+                                      style="display: flex;
+                                             width: 100%;">
+                                <b style="display: flex; 
+                                          width: 85%; 
+                                          align-items: center; 
+                                          height: 50px;
+                                          margin-top: 5px;"> 
+                                    <InputField Title="Комплектация:">
+                                        <Controls>
+                                            <RadzenTextBox style="display: flex;align-items: center"
+                                                           @bind-Value="ComplicationEdit.Complication"
+                                                           Placeholder="@_model.Complication"/>
+                                        </Controls>
+                                    </InputField>
+                                </b>
+                               
+                                <DataAnnotationsValidator/>
+                                <ValidationSummary/>
+                        
+                                <div style="display: flex; align-items: center">
+                                    <RadzenButton type="submit"
+                                                  Text="Обновить"
+                                                  Size="ButtonSize.Small"
+                                                  Style="display: flex; 
+                                                     align-items: center;
+                                                     height: 28px; 
+                                                     margin-right: 25px; 
+                                                     width: min-content;"
+                                                  ButtonStyle="ButtonStyle.Secondary"/>
+                                    <RadzenButton Click=@(_ => ComplicationEdit = null)
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Icon="close"
+                                                  Style=""
+                                                  Size="ButtonSize.Small"/>
+                                </div>
+                            </EditForm>
+                        }
+                    </li>
+                
+                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                        @if (SerialEdit == null)
+                        {
+                            <b style="display: flex;  width: 85%; align-items: center">Серийный номер/IMEI: @_model.Serial</b>
+                                                               
+                            <RadzenButton Click="@(_ => SerialEdit = new UpdateRepairOrdersSerialBody()
+                                                 {
+                                                     RepairOrderId = _model.Id
+                                                 })"
+                                          Text="Изменить"
+                                          Size="ButtonSize.Small"
+                                          Style="float: right; 
+                                                 display: flex; 
+                                                 padding-left: 10px;
+                                                 padding-right: 10px;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        else
+                        {
+                            <EditForm Model="@SerialEdit"
+                                      OnValidSubmit="@UpdateSerial"
+                                      style="display: flex;
+                                             width: 100%;">
+                                <b style="display: flex; 
+                                      width: 85%; 
+                                      align-items: center; 
+                                      height: 50px;
+                                      margin-top: 5px;"> 
+                                    <InputField Title="Серийный номер/IMEI:">
+                                        <Controls>
+                                            <RadzenTextBox style="display: flex;align-items: center"
+                                                           @bind-Value="SerialEdit.Serial"
+                                                           Placeholder="@_model.Serial"/>
+                                       
+                                       
+                                        </Controls>
+                                    </InputField>
+                                </b>
+                        
+                                <DataAnnotationsValidator/>
+                                <ValidationSummary/>   
+                        
+                                <div style="display: flex; align-items: center">
+                                    <RadzenButton type="submit"
+                                                  Text="Обновить"
+                                                  Size="ButtonSize.Small"
+                                                  Style="display: flex; 
+                                                     align-items: center;
+                                                     height: 28px; 
+                                                     margin-right: 25px; 
+                                                     width: min-content;"
+                                                  ButtonStyle="ButtonStyle.Secondary"/>
+                                    <RadzenButton Click=@(_ => SerialEdit = null)
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Icon="close"
+                                                  Style=""
+                                                  Size="ButtonSize.Small"/>
+                                </div>
+                            </EditForm>
+                        }
+                    </li>
+                    <li class="list-group-item " role="alert">
+                        @if (_model.Performer == string.Empty)
+                        {
+                            @if (_roles.Contains(RolesHelper.Master))
+                            {
+                                <RepairOrdersBecomePerformer FormSubmitted="SetPerformer"
+                                                             Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                            }
+                            @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
+                            {
+                                <RepairOrdersSetPerformer FormSubmitted="SetPerformer"
+                                                          Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                            }
+                        }
+                        else
+                        {
+                            <b>Исполнитель: @_model.Performer</b>
+                        }
+                    </li>
+                </ul>
+            </RadzenFieldset>
+            <RadzenFieldset Text="Состояние"
+                            Style="width: 70%;">
+                <ul class="list-group">
+                    @foreach (var state in _states)
+                    {
+                        <li class="list-group-item alert alert-primary" role="alert">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>
+                    }
+                    @if (!(_states.Select(e => e.Type).Contains(2) ||
+                           _states.Select(e => e.Type).Contains(6)))
+                    {
+                        <li class="list-group-item">
+                            <RadzenButton Click=@(_ => UpdateState(_model.Id))
+                                          Text="Изменить"
+                                          Style="width: 100%;"
+                                          ButtonStyle="ButtonStyle.Info"/>
+                        </li>
+                    }
+                </ul>
+            </RadzenFieldset>
+        </div>
+        <RadzenFieldset Text="Работы"
+                        Style="width: 100%;">
+            @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
+                 _roles.Any(c => c == RolesHelper.Master))
+            {
+                <RadzenButton Click=@(_ => AddWork())
+                              Text="Добавить работу"
+                              Style="margin: 1rem 0;"
+                              ButtonStyle="ButtonStyle.Primary"/>
+            }
+            <RadzenGrid Data="@(_works)"
+                        EmptyText="Нет проведенных работ..."
+                        TItem="RepairOrderWorkViewModel">
+                <Columns>
+                    <RadzenGridColumn TItem="RepairOrderWorkViewModel"
+                                      Property="WorkName"
+                                      Title="Наименование работы"/>
+                    <RadzenGridColumn TItem="RepairOrderWorkViewModel"
+                                      Property="Price"
+                                      Title="Цена"/>
+                </Columns>
+            </RadzenGrid>
+        </RadzenFieldset>
+        <RadzenFieldset Text="Переписка"
+                        Style="width: 100%;">
+        </RadzenFieldset>
+    </div>
+    
+}
+@code
+{
+    
+    
+    [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [Parameter] public Guid Id { get; set; }
+
+    private RepairOrderViewModel _model = null;
+    private List<RepairOrdersStateViewModel> _states = new();
+    private List<RepairOrderWorkViewModel> _works = new();
+    private List<ArticleViewModel> _devices { get; set; }
+    private bool _isLoaded = false;
+    
+    private UpdateRepairOrdersDeviceBody DeviceEdit { get; set; }
+    private UpdateRepairOrdersSerialBody SerialEdit { get; set; }
+    private UpdateRepairOrdersConditionBody ConditionEdit { get; set; }
+    private UpdateRepairOrdersTroubleBody TroubleEdit { get; set; }
+    private UpdateRepairOrdersComplicationBody ComplicationEdit { get; set; }
+    
+    private List<Guid> _roles = new();
+
+    public async Task Update()
+    {        
+        _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpQuery() { Id = Id }).Send()).Data;
+        _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Statuses")).Data;
+        _works = (await new GetRequestProvider<GetAllRepairOrderWorksRequestContract, GetAllRepairOrderWorksResultContract>(HttpClient, new GetAllRepairOrderWorksRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works")).Data;
+        _devices = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        _roles = (await AuthService.GetCurrentRoles()).Roles;
+        await Update();
+        _isLoaded = true;
+    }
+
+    private async Task AddWork()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
+        var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
+        await modal.Result;
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
+    }
+    
+    private async Task UpdateState(Guid modelId)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
+        var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
+        await modal.Result;
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
+    }
+
+    private SetUserAsPerformerOfRepairOrderQuery SetUserAsPerformerOfRepairOrderQuery { get; set; } = new();
+    private async Task SetPerformer()
+    {
+        SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
+        await new SetUserAsPerformerOfRepairOrderQueryRequest(RequestManager, HttpClient, SetUserAsPerformerOfRepairOrderQuery).Send();
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
+    }
+
+    private async Task UpdateDevice()
+    {
+        await new UpdateRepairOrderDeviceRequest(RequestManager, HttpClient, DeviceEdit).Send();
+        DeviceEdit = null;
+        await Update();
+    }
+    private async Task UpdateSerial()
+    {
+        await new UpdateRepairOrderSerialRequest(RequestManager, HttpClient, SerialEdit).Send();
+        SerialEdit = null;
+        await Update();
+    }
+    private async Task UpdateCondition()
+    {
+        await new UpdateRepairOrderConditionRequest(RequestManager, HttpClient, ConditionEdit).Send();
+        ConditionEdit = null;
+        await Update();
+    }
+    private async Task UpdateTrouble()
+    {
+        await new UpdateRepairOrderTroubleRequest(RequestManager, HttpClient, TroubleEdit).Send();
+        TroubleEdit = null;
+        await Update();
+    }
+    private async Task UpdateComplication()
+    {
+        await new UpdateRepairOrderComplicationRequest(RequestManager, HttpClient, ComplicationEdit).Send();
+        ComplicationEdit = null;
+        await Update();
+    }
+}

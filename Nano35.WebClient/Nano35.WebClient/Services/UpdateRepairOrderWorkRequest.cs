@@ -6,10 +6,10 @@ using Nano35.HttpContext.Repair;
 
 namespace Nano35.WebClient.Services
 {
-    public class UpdateRepairOrdersWorkRequest : 
+    public class UpdateRepairOrderWorkRequest : 
         RequestProvider<CreateRepairOrderWorkBody, CreateRepairOrderWorkSuccessResponse>
     {
-        public UpdateRepairOrdersWorkRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderWorkBody request) : 
+        public UpdateRepairOrderWorkRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderWorkBody request) : 
             base(requestManager, httpClient, request) {}
 
         public override async Task<CreateRepairOrderWorkSuccessResponse> Send()

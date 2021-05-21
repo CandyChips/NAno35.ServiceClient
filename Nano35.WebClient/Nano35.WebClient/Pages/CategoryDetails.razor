@@ -23,45 +23,61 @@ else
                  Style="width: 100%;">
      <ul class="list-group" style="width: 100%" >
          <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-             @if (NameEdit == null)
+             @if (ParentEdit == null)
              {
                  <b style="display: flex;  width: 85%; align-items: center">Наследуемая категория: @Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId).Name</b>
                                                     
                  <RadzenButton Click="@(_ => ParentEdit = new UpdateCategoryParentCategoryHttpBody(){Id = Category.Id})"
                                Text="Изменить"
                                Size="ButtonSize.Small"
-                               Style="margin: 1rem 0; float: right; display: flex "
+                               Style=" float: right; display: flex "
                                ButtonStyle="ButtonStyle.Secondary"/>
              }
              else
-             {
-                 <b style="display: flex; align-items: center; width: 85%"> 
-                     <InputField Title="Наследуемая категория:">
-                         <Controls>
-                             <RadzenDropDown style="display: flex; "
-                                             AllowClear="true"
-                                             TValue="Guid"
-                                             Data=@(Categories.Select(g => new {Id = g.Id, Name = g.Name}))
-                                             TextProperty="Name"
-                                             ValueProperty="Id"
-                                             @bind-Value="ParentEdit.ParentCategoryId">
-                             </RadzenDropDown>
-                         </Controls>
-                     </InputField>
-                 </b>
+             {<EditForm Model="@ParentEdit"
+                        OnValidSubmit="@UpdateParent"
+                        style="display: flex;
+                               width: 100%;">
+                  <b style="display: flex; 
+                           width: 85%; 
+                           align-items: center; 
+                           height: 50px;
+                           margin-top: 5px;"> 
+                      <InputField Title="Наследуемая категория:">
+                          <Controls>
+                              <RadzenDropDown style="display: flex; "
+                                              AllowClear="true"
+                                              TValue="Guid"
+                                              Data=@(Categories.Select(g => new {Id = g.Id, Name = g.Name}))
+                                              TextProperty="Name"
+                                              ValueProperty="Id"
+                                              @bind-Value="ParentEdit.ParentCategoryId">
+                              </RadzenDropDown>
+                          </Controls>
+                      </InputField>
+                  </b>
                     
-                 <div style="display: flex; align-items: center">
-                     <RadzenButton Click="@(_ => UpdateParent())"
-                                   Text="Обновить"
-                                   Size="ButtonSize.Small"
-                                   Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
-                                   ButtonStyle="ButtonStyle.Secondary"/>
-                     <RadzenButton Click=@(_ => ParentEdit = null)
-                                   ButtonStyle="ButtonStyle.Danger"
-                                   Icon="close"
-                                   Style="height: 40px; width: 40px"
-                                   Size="ButtonSize.Small"/>
-                 </div>
+                  <DataAnnotationsValidator/>
+                  <ValidationSummary/>
+
+                  <div style="display: flex; align-items: center">
+                      <RadzenButton type="submit"
+                                    Text="Обновить"
+                                    Size="ButtonSize.Small"
+                                    Style="display: flex; 
+                                          align-items: center;
+                                          height: 28px; 
+                                          margin-right: 25px; 
+                                          width: min-content;"
+
+                                    ButtonStyle="ButtonStyle.Secondary"/>
+                      <RadzenButton Click=@(_ => ParentEdit = null)
+                                    ButtonStyle="ButtonStyle.Danger"
+                                    Icon="close"
+                                    Style="height: 40px; width: 40px"
+                                    Size="ButtonSize.Small"/>
+                  </div>
+              </EditForm>
              }
          </li>
          <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
@@ -75,35 +91,52 @@ else
                                       })"
                                Text="Изменить"
                                Size="ButtonSize.Small"
-                               Style="margin: 1rem 0; float: right; display: flex "
+                               Style=" float: right; display: flex "
                                ButtonStyle="ButtonStyle.Secondary"/>
              }
              else
              {
-                 <b style="display: flex; align-items: center; width: 85%"> 
-                     <InputField Title="Имя категории:">
-                         <Controls>
-                             <RadzenTextBox style="display: flex;align-items: center"
-                                            @bind-Value="NameEdit.Name"
-                                            Placeholder="@Category.Name"/>
+                 <EditForm Model="@NameEdit"
+                           OnValidSubmit="@UpdateName"
+                           style="display: flex;
+                                  width: 100%;">
+                 
+                     <b style="display: flex; 
+                           width: 85%; 
+                           align-items: center; 
+                           height: 50px;
+                           margin-top: 5px;">  
+                         <InputField Title="Имя категории:">
+                             <Controls>
+                                 <RadzenTextBox style="display: flex;align-items: center"
+                                                @bind-Value="NameEdit.Name"
+                                                Placeholder="@Category.Name"/>
                             
                             
-                         </Controls>
-                     </InputField>
-                 </b>
+                             </Controls>
+                         </InputField>
+                     </b>
                     
-                 <div style="display: flex; align-items: center">
-                     <RadzenButton Click="@(_ => UpdateName())"
-                                   Text="Обновить"
-                                   Size="ButtonSize.Small"
-                                   Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
-                                   ButtonStyle="ButtonStyle.Secondary"/>
-                     <RadzenButton Click=@(_ => NameEdit = null)
-                                   ButtonStyle="ButtonStyle.Danger"
-                                   Icon="close"
-                                   Style="height: 40px; width: 40px"
-                                   Size="ButtonSize.Small"/>
-                 </div>
+                     <DataAnnotationsValidator/>
+                     <ValidationSummary/>
+                 
+                     <div style="display: flex; align-items: center">
+                         <RadzenButton type="submit"
+                                       Text="Обновить"
+                                       Size="ButtonSize.Small"
+                                       Style="display: flex; 
+                                          align-items: center;
+                                          height: 28px; 
+                                          margin-right: 25px; 
+                                          width: min-content;"
+                                       ButtonStyle="ButtonStyle.Secondary"/>
+                         <RadzenButton Click=@(_ => NameEdit = null)
+                                       ButtonStyle="ButtonStyle.Danger"
+                                       Icon="close"
+                                       Style="height: 40px; width: 40px"
+                                       Size="ButtonSize.Small"/>
+                     </div>
+                 </EditForm>
              }
          </li>
      </ul>

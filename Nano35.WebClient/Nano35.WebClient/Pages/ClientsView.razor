@@ -1,13 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.instance
 @using Nano35.HttpContext.storage
+@using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @page "/instance/clients"
 @layout InstanceLayout
 @inject NavigationManager NavigationManager
 @inject IRequestManager RequestManager     
-@inject ISessionProvider SessionProvider   
+@inject ISessionProvider SessionProvider
+@inject IAuthService AuthService 
 @inject HttpClient HttpClient              
 
 @if (_loading)
@@ -50,7 +52,8 @@ else
             <RadzenGridColumn TItem="ClientViewModel"
                               Property="ClientState" 
                               Title="Статус Клиента" />
-            
+            @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
+            {
             <RadzenGridColumn TItem="ClientViewModel"
                               Context="order"
                               Bubble="false"
@@ -69,6 +72,7 @@ else
                     </RadzenButton>
                 </Template>
             </RadzenGridColumn>
+            }
         </Columns>
     </RadzenGrid>
 }
@@ -80,6 +84,7 @@ else
     private bool _loading = true;
     private bool _serverAvailable;
     private IEnumerable<ClientViewModel> _data;
+    private List<Guid> _roles = new();
     
      protected override async Task OnInitializedAsync()
      {
@@ -89,6 +94,7 @@ else
         if (!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
          
+         _roles = (await AuthService.GetCurrentRoles()).Roles;
         _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
         _loading = false;
     }

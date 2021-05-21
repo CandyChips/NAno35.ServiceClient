@@ -87,8 +87,8 @@ else
     private async Task DetailsOpen(Guid id)
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(RepairOrdersDetailForm.Id), id);
-        Modal.Show<RepairOrdersDetailForm>($"Заказ наряд", parameters);
+        parameters.Add(nameof(RepairOrdersDetail.Id), id);
+        Modal.Show<RepairOrdersDetail>($"Заказ наряд", parameters);
     }
     
     private async Task NewOrder()

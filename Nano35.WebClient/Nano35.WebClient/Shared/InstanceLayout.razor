@@ -1,6 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using Nano35.WebClient.Services
+@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @layout MainLayout
+@inject  ISessionProvider SessionProvider
+@inject  IRequestManager RequestManager
+@inject  IInstanceService InstanceService
 
 @if (_loading)
     {
@@ -23,4 +27,21 @@ else
             @Body
         </div>
     </div>
+}
+
+@code
+{
+    private bool _serverAvailable = false;
+    private bool _loading = true;
+        
+    protected override async Task OnInitializedAsync()
+    {
+        _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
+        if(!_serverAvailable)
+            NavigationManager.NavigateTo("/instances");
+        if(!await SessionProvider.IsCurrentSessionIdExist())
+            NavigationManager.NavigateTo("/instances");
+        await InstanceService.IsInstanceExist();
+        _loading = false;
+    }
 }

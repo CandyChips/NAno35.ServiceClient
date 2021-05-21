@@ -251,13 +251,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        
-        UnitTypes = (await new GetAllUnitTypesRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllUnitTypesHttpQuery() {}
-            ).Send()).UnitTypes.ToList(); 
-        
+        UnitTypes = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
         _loading = false;
     }
 
@@ -287,8 +281,4 @@ else
         await new UpdateUnitWorkingFormatRequest(RequestManager, HttpClient, WorkingFormatEdit).Send();
         WorkingFormatEdit = null;
     }
-    
-    
-    
-    
 }

@@ -12,26 +12,41 @@
     @if (_isLoaded)
     {
         
-        <EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator />
-            <RadzenGrid Data="@_operations"
-                        EmptyText="Нет ожидаемых выплат"
-                        TItem="RepairOrderOperationViewModel">
-                <Columns>
-                    <RadzenGridColumn TItem="RepairOrderOperationViewModel"
-                                      Property="Id" 
-                                      Title="Id" />
-                
-                    <RadzenGridColumn TItem="RepairOrderOperationViewModel"
-                                      Property="Date" 
-                                      Title="Date" />
-                
-                    <RadzenGridColumn TItem="RepairOrderOperationViewModel"
-                                      Property="Number" 
-                                      Title="Number" />
-                </Columns>
-            </RadzenGrid>
-        </EditForm>
+        <RadzenFieldset Text="Ожидаемые выплаты"
+                        Style="width: 100%;">
+            <EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <RadzenGrid Data="@_operations"
+                            EmptyText="Нет ожидаемых выплат"
+                            TItem="WageOperationViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="WageOperationViewModel"
+                                          Title="Дата">
+                            <Template Context="item">
+                                @item.Date.ToString("d")
+                            </Template>
+                        </RadzenGridColumn>
+                        
+                        <RadzenGridColumn TItem="WageOperationViewModel"
+                                          Title="К выплате">
+                           <Template Context="item">
+                               @item.Cash руб.
+                           </Template>
+                       </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </EditForm>
+        </RadzenFieldset>
+        <RadzenFieldset Text="Сумма к выплате"
+                        Style="width: 100%;">
+            <div style="text-align: center">
+                @_operations.Sum(e => e.Cash) руб.
+            </div>
+        </RadzenFieldset>
+        <RadzenButton Click=@(_ => { })
+                      Text="Выплатить из кассы"
+                      ButtonStyle="ButtonStyle.Primary"
+                      style="width: 100%; margin-top: 1rem"/>
     }
     else
     {
@@ -44,13 +59,13 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    private List<RepairOrderOperationViewModel> _operations = new();
+    private List<WageOperationViewModel> _operations = new();
     private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _operations = (await new GetAllRepairOrderCashOperations(RequestManager, HttpClient, new GetAllRepairOrderOperationsQuery() {PerformerId = Model.WorkerId, UnitId = await SessionProvider.GetCurrentUnitId()}).Send()).Operations;
+        _operations = (await new GetAllWageCashOperations(RequestManager, HttpClient, new GetAllWageOperationsHttpQuery() {WorkerId = Model.WorkerId, UnitId = await SessionProvider.GetCurrentUnitId(), IsWageConfirmed = WageSelection.NotConfirmed}).Send()).Operations;
         _isLoaded = true;
     }
 

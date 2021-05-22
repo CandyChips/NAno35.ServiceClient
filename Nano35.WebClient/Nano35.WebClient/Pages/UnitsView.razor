@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.instance
+@using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
@@ -7,6 +8,7 @@
 @inject IRequestManager RequestManager;
 @inject IInstanceService InstanceService;
 @inject ISessionProvider SessionProvider;
+@inject IAuthService AuthService
 @inject HttpClient HttpClient
 @page "/instance/units"
 
@@ -64,6 +66,7 @@ else
                                           Filterable="false"
                                           Sortable="false"
                                           Title="Формат работы" />
+                        @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin)){
                         <RadzenGridColumn TItem="UnitViewModel"
                                           Filterable="false"
                                           Sortable="false"
@@ -76,6 +79,7 @@ else
                                               ButtonStyle="ButtonStyle.Primary"/>
                             </Template>
                         </RadzenGridColumn>
+                        }
                     </Columns>
                 </RadzenGrid>
             </RadzenTabsItem>
@@ -89,12 +93,13 @@ else
     [CascadingParameter] public IModalService Modal { get; set; }
     private List<UnitViewModel> _data = new List<UnitViewModel>();
     private bool _loading = true;
+    private List<Guid> _roles = new();
     
     protected override async Task OnInitializedAsync()
     {
         _data = (List<UnitViewModel>) (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units;
         _loading = false;
-        Console.WriteLine(_data.Count());
+        _roles = (await AuthService.GetCurrentRoles()).Roles;
     }
     
     private async Task NewUnit()

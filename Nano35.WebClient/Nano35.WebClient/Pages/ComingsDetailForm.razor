@@ -113,7 +113,7 @@ else
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    private CreateComingDetailViewModel _model;
+    private CreateComingDetailViewModel _model = new();
     private List<StorageItemViewModel> StorageItems { get; set; }
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
@@ -130,7 +130,7 @@ else
         _isLoaded = true;
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleValidSubmit() 
     {
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }

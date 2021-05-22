@@ -26,7 +26,7 @@ namespace Nano35.WebClient.Services
         public string IdentityServer => $"http://192.168.100.125:30001";
         public string InstanceServer => "http://192.168.100.125:30002";
         public string StorageServer => "http://192.168.100.125:30003";
-        public string RepairOrdersServer => "http://192.168.100.125:30004";
+        public string RepairOrdersServer => "http://localhost:5004";
         public string FileServer => "http://192.168.100.125:30005";
         public string CashboxServer => "http://192.168.100.125:30007";
 

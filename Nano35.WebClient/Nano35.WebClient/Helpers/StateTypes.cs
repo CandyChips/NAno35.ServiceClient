@@ -3,12 +3,15 @@
     public enum RepairOrderStateType
     {
         Created = 0,
-        InWork = 1,
-        Completed = 2,
-        Stopped = 3,
+        PerformerChanged = 1,
+        Diagnosis = 2,
+        Agreement = 3,
         OnWait = 4,
-        PerformerChanged = 5,
-        Closed = 6
+        OnWork = 5,
+        Ready = 6,
+        Completed = 7,
+        Closed = 8,
+        None = 99
     }
 
     public class RepairOrderStateTypesHelper

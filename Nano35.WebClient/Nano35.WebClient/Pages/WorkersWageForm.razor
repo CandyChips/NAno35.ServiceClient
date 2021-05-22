@@ -65,7 +65,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _operations = (await new GetAllWageCashOperations(RequestManager, HttpClient, new GetAllWageOperationsHttpQuery() {WorkerId = Model.WorkerId, UnitId = await SessionProvider.GetCurrentUnitId(), IsWageConfirmed = WageSelection.NotConfirmed}).Send()).Operations;
+        _operations = (await new GetAllWageCashOperations(RequestManager, HttpClient, new GetAllWageOperationsHttpQuery() {WorkerId = Model.CreatorId, UnitId = await SessionProvider.GetCurrentUnitId(), IsWageConfirmed = WageSelection.NotConfirmed}).Send()).Operations;
         _isLoaded = true;
     }
 

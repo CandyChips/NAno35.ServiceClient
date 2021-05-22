@@ -22,7 +22,6 @@ else
 {
     <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
         @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
-             !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
              _roles.Any(c => c == RolesHelper.Manager || c == RolesHelper.Admin))
         {
             <RadzenButton Click=@(_ => AddWork())
@@ -56,7 +55,7 @@ else
                         <b>Серийный номер/IMEI: @_model.Serial</b>
                     </li>
                     <li class="list-group-item " role="alert">
-                        @if (_model.Performer == string.Empty)
+                        @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Created))
                         {
                             @if (_roles.Contains(RolesHelper.Master))
                             {
@@ -99,7 +98,11 @@ else
         <RadzenFieldset Text="Работы"
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
-                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Created) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Diagnosis) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.OnWait) ||
+                   _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Ready)) &&
                  _roles.Any(c => c == RolesHelper.Master))
             {
                 <RadzenButton Click=@(_ => AddWork())
@@ -143,7 +146,7 @@ else
     public async Task Update()
     {        
         _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpQuery() { Id = Id }).Send()).Data;
-        _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Statuses")).Data;
+        _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States")).Data;
         _works = (await new GetRequestProvider<GetAllRepairOrderWorksRequestContract, GetAllRepairOrderWorksResultContract>(HttpClient, new GetAllRepairOrderWorksRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works")).Data;
     }
 

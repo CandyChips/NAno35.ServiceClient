@@ -137,7 +137,7 @@
 
 @code
 {
-    [Parameter] public CreateRepairOrderBody Model { get; set; }
+    [Parameter] public CreateRepairOrderHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }

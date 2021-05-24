@@ -11,19 +11,19 @@ using Newtonsoft.Json;
 namespace Nano35.WebClient.Services
 {
     public class UpdateRepairOrderSerialRequest : 
-        RequestProvider<UpdateRepairOrdersSerialBody, UpdateRepairOrdersSerialSuccessResponse>
+        RequestProvider<UpdateRepairOrdersSerialHttpBody, UpdateRepairOrdersSerialHttpResponse>
     {
-        public UpdateRepairOrderSerialRequest(IRequestManager requestManager, HttpClient httpClient, UpdateRepairOrdersSerialBody request) : 
+        public UpdateRepairOrderSerialRequest(IRequestManager requestManager, HttpClient httpClient, UpdateRepairOrdersSerialHttpBody request) : 
             base(requestManager, httpClient, request) {}
         
 
-        public override async Task<UpdateRepairOrdersSerialSuccessResponse> Send()
+        public override async Task<UpdateRepairOrdersSerialHttpResponse> Send()
         {
             HttpContent req = new StringContent(JsonConvert.SerializeObject(Request), Encoding.UTF8, "application/json");
             var response = await HttpClient.PatchAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/Serial",req);
             if (response.IsSuccessStatusCode)
             {
-                return (await response.Content.ReadFromJsonAsync<UpdateRepairOrdersSerialSuccessResponse>());
+                return (await response.Content.ReadFromJsonAsync<UpdateRepairOrdersSerialHttpResponse>());
             }
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }

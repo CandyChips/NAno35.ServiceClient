@@ -7,31 +7,25 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-@if (_isLoaded)
-{
-    <EditForm Model="@Model" 
-              OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <InputField Title="Зарплата">
-            <Controls>
-                <RadzenNumeric TValue="int" 
-                               @bind-Value="Model.Wage"
-                               style="width: 100%"/>
-            </Controls>
-        </InputField>
-            
-        <RadzenButton type="submit"
-                      Text="Стать исполнителем"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Size="ButtonSize.Small"
-                      Style="width: 100%" />
-    </EditForm>
-}
+<LoadingContent IsLoaded="_isLoaded">
+    <LoadedContent>
+        <EditForm Model="@Model" 
+                  OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <RadzenButton type="submit"
+                          Text="Стать исполнителем"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Size="ButtonSize.Small"
+                          Style="width: 100%" />
+        </EditForm>
+    </LoadedContent>
+</LoadingContent>
+
 @code
 {
     [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    [Parameter] public SetUserAsPerformerOfRepairOrderQuery Model { get; set; } = new();
+    [Parameter] public SetPerformerOfRepairOrderHttpQuery Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
 
     private List<WorkerViewModel> _workers = new();

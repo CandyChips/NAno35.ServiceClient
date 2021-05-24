@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using System.ComponentModel.DataAnnotations
 
 <AuthorizeView>
     <NavLink class="btn btn-secondary" href="instances">
@@ -7,44 +6,31 @@
     </NavLink>
 </AuthorizeView>
       
-<EditForm Model="@Model" 
-      OnValidSubmit="() => { }">
-    <DataAnnotationsValidator />
-    <InputField Title="Номер телефона">
-        <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Phone"/>
-        </Controls>
-        <Validation>
-            <ValidationMessage For="@(() => Model.Phone)" />
-        </Validation>
-    </InputField>
+<FieldList>
+    <FieldListItem>
         
-    <RadzenButton type="submit"
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
-</EditForm>  
-@Phone
+    </FieldListItem>
+    <FieldListItem>
+        
+    </FieldListItem>
+    <FieldListItem>
+        
+    </FieldListItem>
+</FieldList>
+
+<EditableField OnCancel="@(() => editableTest = "")"
+               OnEdit="@(() => editableTest = test)"
+               OnSave="@(() => test = editableTest)">
+    <View>
+        <p>@test</p>
+    </View>
+    <Edit>
+        <RadzenTextBox @bind-Value="@editableTest"></RadzenTextBox>
+    </Edit>
+</EditableField>
+
 @code
 {
-    public Phones Model { get; set; } = new Phones() { Phone = "" };
-    private string Phone
-    {
-        get
-        {
-            var tmp = string.Concat(Model.Phone
-                .AsEnumerable()
-                .Select(f => f.ToString())
-                .Where(f => int.TryParse(f, out _)));
-            return tmp.Length < 11 || tmp.Length > 11 ? "" : tmp.Substring(1, 10);
-        }
-    }
-
-    public class Phones
-    {
-        [RegularExpression(@"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$", ErrorMessage = "Введите корректный номер телефона клиента")]
-        public string Phone { get; set; }
-    }
+    private string test { get; set; } = "qweqwe";
+    private string editableTest { get; set; }
 }

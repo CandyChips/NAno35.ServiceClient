@@ -92,7 +92,7 @@ else
     [Parameter] public Guid RepairOrderId { get; set; }
     
     private bool _isLoaded;
-    private CreateRepairOrderWorkBody _model { get; set; } = new();
+    private CreateRepairOrderWorkHttpBody _model { get; set; } = new();
     private List<WorkViewModel>  _works { get; set; } = new();
     private List<StorageItemOnUnitViewModel> _storageItems { get; set; } = new();
     private List<PlaceWithStorageItemOnUnit> _places { get; set; } = new();

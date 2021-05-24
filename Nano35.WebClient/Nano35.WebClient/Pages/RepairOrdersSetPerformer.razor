@@ -34,7 +34,7 @@
 {
     [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    [Parameter] public SetUserAsPerformerOfRepairOrderQuery Model { get; set; } = new();
+    [Parameter] public SetPerformerOfRepairOrderHttpQuery Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
 
     private List<WorkerViewModel> _workers = new();

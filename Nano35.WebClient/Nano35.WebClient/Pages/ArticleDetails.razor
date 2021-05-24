@@ -8,16 +8,37 @@
 @inject ISessionProvider SessionProvider
 
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-Secondary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
+    <LoadedContent>
+    <FieldList Title="Информация">
+        <FieldListItem Title="Категория">
+            <EditableField OnCancel="@(() => CategoryEdit = null)"
+                           OnEdit="@(() => CategoryEdit = new UpdateArticleCategoryHttpBody(){Id = Article.Id})"
+                           OnSave="@(() => UpdateCategory())">
+                <View><p>@Article.Category</p></View>
+                <Edit>
+                    <RadzenDropDown style="display: flex;"
+                                    AllowClear="true"
+                                    TValue="Guid"
+                                    Data=@(Categories.Select(g => new {g.Id, g.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    @bind-Value="CategoryEdit.CategoryId">
+                        <Template Context="data">
+                            <div style="display: flex; flex-direction: row">
+                                <div style="width: 90%;">@(data.Name)</div>
+                                <RadzenButton 
+                                    Click="@(_ => OpenCategoryDetails(Categories.First(h=> h.Id == data.Id), data.Name))"
+                                    Size="ButtonSize.Small"
+                                    Text="🖉"
+                                    Style="height: 20px; display: flex; padding-left: revert; padding-right: revert; align-items: center;"/>
+                            </div>
+                        </Template>
+                    </RadzenDropDown>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+    </FieldList>
     <RadzenFieldset Text="Информация"
                     Style="width: 100%;">
         <ul class="list-group" >
@@ -97,27 +118,21 @@ else
             <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
                 @if (BrandEdit == null)
                 {
-                    <b style="display: flex;  width: 85%; align-items: center">Бренд: @Article.Brand</b>
+                    <b style="display: flex; width: 85%; align-items: center">Бренд: @Article.Brand</b>
                                                     
-                    <RadzenButton Click="@(_ => BrandEdit = new UpdateArticleBrandHttpBody()
-                                         {
-                                             Id = Article.Id
-                                         })"
+                    <RadzenButton Click="@(_ => BrandEdit = new UpdateArticleBrandHttpBody(){Id = Article.Id})"
                                   Text="Изменить"
                                   Size="ButtonSize.Small"
                                   Style=" float: right; display: flex "
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 }
                 else
-                {<EditForm Model="@BrandEdit"
+                {
+                    <EditForm Model="@BrandEdit"
                            OnValidSubmit="@UpdateBrand"
                            style="display: flex;
                            width: 100%;">
-                     <b style="display: flex; 
-                        width: 85%; 
-                        align-items: center; 
-                        height: 50px;
-                        margin-top: 5px;">
+                     <b style="display: flex; width: 85%; align-items: center; height: 50px; margin-top: 5px;">
                          <InputField Title="Бренд:">
                              <Controls>
                                  <RadzenTextBox style="display: flex;align-items: center"
@@ -285,7 +300,8 @@ else
             </Columns>
         </RadzenGrid>
     </RadzenFieldset>
-}
+    </LoadedContent>
+</LoadingContent>
 
 @code
 {
@@ -301,12 +317,12 @@ else
     private UpdateArticleModelHttpBody ModelEdit { get; set; }
     private UpdateArticleCategoryHttpBody CategoryEdit { get; set; }
     private UpdateArticleBrandHttpBody BrandEdit { get; set; }
-    private bool _loading = true;
+    private bool _isLoaded;
 
     
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
+        _isLoaded = false;
         Article = (await new GetArticleByIdRequest(
             RequestManager,
             HttpClient, 
@@ -319,32 +335,17 @@ else
             new GetAllArticlesCategoriesHttpQuery(){InstanceId = await SessionProvider.GetCurrentInstanceId(),ParentId = Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}
             ).Send()).Data;
 
-        _loading = false;
+        _isLoaded = true;
     }
 
 
-    private async Task UpdateCategory()
-    {
-        await new UpdateArticleCategoryRequest(RequestManager, HttpClient, CategoryEdit).Send();
-        CategoryEdit = null;
-    }
+    private async Task UpdateCategory() {await new UpdateArticleCategoryRequest(RequestManager, HttpClient, CategoryEdit).Send();CategoryEdit = null;}
     
-    private async Task UpdateBrand()
-    {
-        await new UpdateArticleBrandRequest(RequestManager, HttpClient, BrandEdit).Send();
-        BrandEdit = null;
-    }
+    private async Task UpdateBrand(){await new UpdateArticleBrandRequest(RequestManager, HttpClient, BrandEdit).Send();BrandEdit = null;}
     
-    private async Task UpdateModel()
-    {
-        await new UpdateArticleModelRequest(RequestManager, HttpClient, ModelEdit).Send();
-        ModelEdit = null;
-    }
+    private async Task UpdateModel(){await new UpdateArticleModelRequest(RequestManager, HttpClient, ModelEdit).Send();ModelEdit = null;}
     
-    private async Task UpdateInfo()
-    {
-        await new UpdateArticleInfoRequest(RequestManager, HttpClient, InfoEdit).Send();
-        ModelEdit = null;
+    private async Task UpdateInfo(){await new UpdateArticleInfoRequest(RequestManager, HttpClient, InfoEdit).Send();ModelEdit = null;
     }
     private async Task OpenCategoryDetails(ArticleCategoryViewModel item, string name)
     {

@@ -8,17 +8,16 @@ using Nano35.HttpContext.Repair;
 namespace Nano35.WebClient.Services
 {
     public class SetCurrentUserAsPerformerOfRepairOrderRequest : 
-        RequestProvider<SetCurrentUserAsPerformerOfRepairOrderQuery, SetCurrentUserAsPerformerOfRepairOrderSuccessResponse>
+        RequestProvider<SetPerformerOfRepairOrderHttpQuery, SetPerformerOfRepairOrderHttpResponse>
     {
-        public SetCurrentUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetCurrentUserAsPerformerOfRepairOrderQuery request) : 
-            base(requestManager, httpClient, request) { }
+        public SetCurrentUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetPerformerOfRepairOrderHttpQuery request) : base(requestManager, httpClient, request) { }
 
-        public override async Task<SetCurrentUserAsPerformerOfRepairOrderSuccessResponse> Send()
+        public override async Task<SetPerformerOfRepairOrderHttpResponse> Send()
         {
             var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrder/SetCurrentUserAsPerformerOfRepairOrder", Request);
             if (response.IsSuccessStatusCode)
             {
-                return (await response.Content.ReadFromJsonAsync<SetCurrentUserAsPerformerOfRepairOrderSuccessResponse>());
+                return (await response.Content.ReadFromJsonAsync<SetPerformerOfRepairOrderHttpResponse>());
             }
             throw new Exception(await response.Content.ReadFromJsonAsync<string>());
         }

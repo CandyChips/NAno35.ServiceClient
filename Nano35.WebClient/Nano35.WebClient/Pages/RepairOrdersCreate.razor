@@ -13,7 +13,7 @@
 
 @code
 {
-    private CreateRepairOrderBody _model = new()
+    private CreateRepairOrderHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
@@ -34,7 +34,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateRepairOrderBody
+        _model = new CreateRepairOrderHttpBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId(),

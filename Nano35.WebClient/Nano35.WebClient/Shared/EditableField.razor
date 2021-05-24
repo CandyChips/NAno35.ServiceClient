@@ -1,0 +1,49 @@
+﻿@if (_isEditable)
+{
+    <div class="LeftBlock">
+        @Edit
+    </div>
+    <div class="RightBlock">
+        <RadzenButton Click="@(_ => { _isEditable = false; OnSave.Invoke(); })"
+                      Text="Сохранить изменения"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Primary"/>
+        <RadzenButton Click="@(_ => { _isEditable = false; OnCancel.Invoke(); })"
+                      Text="Отменить"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Secondary"/>
+    </div>
+}
+else
+{
+    <div class="LeftBlock">
+        @View
+    </div>
+    <div class="RightBlock">
+        <RadzenButton Click="@(_ => { _isEditable = true; OnEdit.Invoke(); })"
+                      Text="Изменить"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Secondary"/>
+    </div>
+}
+
+<style>
+    .LeftBlock {
+        display: flex; 
+        width: 85%; 
+        align-items: center;
+    }
+    .RightBlock {
+        float: right; 
+        display: flex;
+    }
+</style>
+
+@code {
+    [Parameter] public RenderFragment Edit { get; set; }
+    [Parameter] public RenderFragment View { get; set; }
+    [Parameter] public Action OnSave { get; set; }
+    [Parameter] public Action OnCancel { get; set; }
+    [Parameter] public Action OnEdit { get; set; }
+    private bool _isEditable { get; set; }
+}

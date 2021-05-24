@@ -4,95 +4,43 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-Secondary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
+    <LoadedContent>
+        <FieldList Title="Информация">
+            <FieldListItem Title="Артикул">
+                <EditableField OnCancel="@(() => ArticleEdit = null)"
+                               OnEdit="@(() => ArticleEdit = new UpdateStorageItemArticleHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdateArticle())">
+                    <View>@StorageItem.Article</View>
+                    <Edit>
+                        <RadzenDropDown AllowClear="true"
+                                        TValue="Guid"
+                                        Data=@(Articles.Select(g => new {g.Id, Name = $"{g.Brand} {g.Model}"}))
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
+                                        @bind-Value="ArticleEdit.ArticleId">
+                            <Template Context="data">
+                                <div style="display: flex; flex-direction: row">
+                                    <div style="width: 90%;">@(data.Name)</div>
+                                    <RadzenButton
+                                        Click="@(_ => OpenArticleDetails(data.Id, data.Name))"
+                                        Size="ButtonSize.Small"
+                                        Text="🖉"
+                                        Style="height: 20px;
+                                           display: flex;
+                                           padding-left: revert;
+                                           padding-right: revert;
+                                           align-items: center;"/>
+                                </div>
+                            </Template>
+                        </RadzenDropDown>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+        </FieldList>
     <RadzenFieldset Text="Информация"
                     Style="width: 100%;">
         <ul class="list-group" >
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                    @if (ArticleEdit == null)
-                    {
-                        <b style="display: flex; width: 85%; align-items: center">Артикул: @StorageItem.Article</b>
-                                                        
-                        <RadzenButton Click="@(_ => ArticleEdit = new UpdateStorageItemArticleHttpBody()
-                                             {
-                                                 Id = StorageItem.Id
-                                             })"
-                                      Text="Изменить"
-                                      Size="ButtonSize.Small"
-                                      Style="display: flex"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                    }
-                    else
-                    {
-                        <EditForm Model="@ArticleEdit"
-                                  OnValidSubmit="@UpdateArticle"
-                                  style="display: flex;
-                                  width: 100%;">
-                            <ValidationSummary/>
-
-                            <div style="display: flex; 
-                                    width: 85%; 
-                                    align-items: center; 
-                                    height: 50px;
-                                    margin-top: 5px;">
-                                <InputField Title="Артикул">
-                                    <Controls>
-                                        <RadzenDropDown style="display: flex; align-items: center"
-                                                        AllowClear="true"
-                                                        TValue="Guid"
-                                                        Data=@(Articles.Select(g => new {Id = g.Id, Name = $"{g.Brand} {g.Model}"}))
-                                                        TextProperty="Name"
-                                                        ValueProperty="Id"
-                                                        @bind-Value="ArticleEdit.ArticleId">
-
-                                            <Template Context="data">
-                                                <div style="display: flex; flex-direction: row">
-                                                    <div style="width: 90%;">@(data.Name)</div>
-                                                    <RadzenButton
-                                                        Click="@(_ => OpenArticleDetails(data.Id, data.Name))"
-                                                        Size="ButtonSize.Small"
-                                                        Text="🖉"
-                                                        Style="height: 20px;
-                                                           display: flex;
-                                                           padding-left: revert;
-                                                           padding-right: revert;
-                                                           align-items: center;"/>
-                                                </div>
-                                            </Template>
-                                        </RadzenDropDown>
-                                    </Controls>
-                                </InputField>
-                            </div>
-                            <DataAnnotationsValidator/>
-                            <div style="display: flex; align-items: center">
-                                <RadzenButton type="submit"
-                                              Text="Обновить"
-                                              Size="ButtonSize.Small"
-                                              Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                              ButtonStyle="ButtonStyle.Secondary"/>
-
-                                <RadzenButton Click=@(_ => ArticleEdit = null)
-                                              ButtonStyle="ButtonStyle.Danger"
-                                              Icon="close"
-                                              Style=""
-                                              Size="ButtonSize.Small"/>
-                            </div>
-                        </EditForm>
-                    }
-            </li>
             <li class="list-group-item" role="alert" style="width: 100%; display: flex; align-content: center">
                 @if (PurchasePriceEdit == null)
                 {
@@ -322,61 +270,61 @@ else
             </li>
             
         <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                        @if (HiddenCommentEdit == null)
-                        {
-                            <b style="display: flex;  width: 85%; align-items: center">Скрытый комментарий: @StorageItem.HiddenComment</b>
-                                                            
-                            <RadzenButton Click="@(_ => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody()
-                                                 {
-                                                     Id = StorageItem.Id
-                                                 })"
-                                          Text="Изменить"
-                                          Size="ButtonSize.Small"
-                                          Style="float: right; display: flex "
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                        }
-                        else
-                        {
-                        <EditForm Model="@HiddenCommentEdit"
-                                  OnValidSubmit="@UpdateHiddenComment"
-                                  style ="display: flex;
-                                          width: 100%;">
-                            
-                            
-                            <b style="display: flex; 
-                                      width: 85%; 
-                                      align-items: center; 
-                                      height: 50px;
-                                      margin-top: 5px;"> 
-                                <InputField Title="Скрытый комментарий:">
-                                    <Controls>
-                                        <RadzenTextBox style="display: flex;align-items: center"
-                                                       @bind-Value="HiddenCommentEdit.HiddenComment"
-                                                       Placeholder="@StorageItem.HiddenComment"/>
-                                    </Controls>
-                                </InputField>
-                            </b>
-                            <ValidationSummary/>
-                            <DataAnnotationsValidator/>
-                            <div style="display: flex; align-items: center">
-                                <RadzenButton type="submit"
-                                              Text="Обновить"
-                                              Size="ButtonSize.Small"
-                                              Style="display: flex; 
-                                                     align-items: center;
-                                                     height: 28px; 
-                                                     margin-right: 25px; 
-                                                     width: min-content;"
-                                              ButtonStyle="ButtonStyle.Secondary"/>
-                                <RadzenButton Click=@(_ => HiddenCommentEdit = null)
-                                              ButtonStyle="ButtonStyle.Danger"
-                                              Icon="close"
-                                              Style=""
-                                              Size="ButtonSize.Small"/>
-                            </div>
-                        </EditForm>
-                        }
-                    </li>
+            @if (HiddenCommentEdit == null)
+            {
+                <b style="display: flex;  width: 85%; align-items: center">Скрытый комментарий: @StorageItem.HiddenComment</b>
+                                                
+                <RadzenButton Click="@(_ => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody()
+                                     {
+                                         Id = StorageItem.Id
+                                     })"
+                              Text="Изменить"
+                              Size="ButtonSize.Small"
+                              Style="float: right; display: flex "
+                              ButtonStyle="ButtonStyle.Secondary"/>
+            }
+            else
+            {
+            <EditForm Model="@HiddenCommentEdit"
+                      OnValidSubmit="@UpdateHiddenComment"
+                      style ="display: flex;
+                              width: 100%;">
+                
+                
+                <b style="display: flex; 
+                          width: 85%; 
+                          align-items: center; 
+                          height: 50px;
+                          margin-top: 5px;"> 
+                    <InputField Title="Скрытый комментарий:">
+                        <Controls>
+                            <RadzenTextBox style="display: flex;align-items: center"
+                                           @bind-Value="HiddenCommentEdit.HiddenComment"
+                                           Placeholder="@StorageItem.HiddenComment"/>
+                        </Controls>
+                    </InputField>
+                </b>
+                <ValidationSummary/>
+                <DataAnnotationsValidator/>
+                <div style="display: flex; align-items: center">
+                    <RadzenButton type="submit"
+                                  Text="Обновить"
+                                  Size="ButtonSize.Small"
+                                  Style="display: flex; 
+                                         align-items: center;
+                                         height: 28px; 
+                                         margin-right: 25px; 
+                                         width: min-content;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => HiddenCommentEdit = null)
+                                  ButtonStyle="ButtonStyle.Danger"
+                                  Icon="close"
+                                  Style=""
+                                  Size="ButtonSize.Small"/>
+                </div>
+            </EditForm>
+            }
+            </li>
         </ul>
     </RadzenFieldset>
 
@@ -395,7 +343,8 @@ else
             </Columns>
         </RadzenGrid>
     </RadzenFieldset>
-}
+    </LoadedContent>
+</LoadingContent>
 
 @code
 {
@@ -420,12 +369,12 @@ else
     
     private UpdateStorageItemHiddenCommentHttpBody HiddenCommentEdit { get; set; }
     
-    private bool _loading = true;
+    private bool _isLoaded;
 
     
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
+        _isLoaded = false;
         StorageItem = (await new GetStorageItemByIdRequest(
             RequestManager,
             HttpClient, 
@@ -458,7 +407,7 @@ else
                     })
                     .Send())).Data;
         
-        _loading = false;
+        _isLoaded = true;
     }
     private async Task UpdateArticle()
     {

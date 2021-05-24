@@ -19,7 +19,7 @@ else
     <div class="LeftBlock">
         @View
     </div>
-    <div class="RightBlock">
+    <div class="RightBlock" style="align-items: center">
         <RadzenButton Click="@(_ => { _isEditable = true; OnEdit.Invoke(); })"
                       Text="Изменить"
                       Size="ButtonSize.Small"
@@ -30,7 +30,7 @@ else
 <style>
     .LeftBlock {
         display: flex; 
-        width: 85%; 
+        width: 50%; 
         align-items: center;
     }
     .RightBlock {

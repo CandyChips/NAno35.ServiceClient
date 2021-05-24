@@ -7,17 +7,17 @@ using Nano35.HttpContext.Repair;
 namespace Nano35.WebClient.Services
 {
     public class UpdateRepairOrderWorkRequest : 
-        RequestProvider<CreateRepairOrderWorkHttpBody, CreateRepairOrderWorkHttpResponse>
+        RequestProvider<CreateRepairOrderWorkBody, CreateRepairOrderWorkSuccessResponse>
     {
-        public UpdateRepairOrderWorkRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderWorkHttpBody request) : 
+        public UpdateRepairOrderWorkRequest(IRequestManager requestManager, HttpClient httpClient, CreateRepairOrderWorkBody request) : 
             base(requestManager, httpClient, request) {}
 
-        public override async Task<CreateRepairOrderWorkHttpResponse> Send()
+        public override async Task<CreateRepairOrderWorkSuccessResponse> Send()
         {
             var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/Work", Request);
             if (response.IsSuccessStatusCode)
             {
-                return (await response.Content.ReadFromJsonAsync<CreateRepairOrderWorkHttpResponse>());
+                return (await response.Content.ReadFromJsonAsync<CreateRepairOrderWorkSuccessResponse>());
             }
             throw new Exception((await response.Content.ReadFromJsonAsync<string>()));
         }

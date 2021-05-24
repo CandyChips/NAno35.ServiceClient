@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Instance.Artifacts
 @using Nano35.HttpContext.instance
 @using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
@@ -97,16 +98,16 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (List<UnitViewModel>) (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units;
-        _loading = false;
+        _data =(List<UnitViewModel>) (await new HttpRequestWrapper<GetAllUnitsHttpQuery, GetAllUnitsSuccessHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units;
         _roles = (await AuthService.GetCurrentRoles()).Roles;
+        _loading = false;
     }
     
     private async Task NewUnit()
     {
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
-        _data = (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send()).Units as List<UnitViewModel>;
+        _data =(List<UnitViewModel>) (await new HttpRequestWrapper<GetAllUnitsHttpQuery, GetAllUnitsSuccessHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units;
     }
 
     private async Task OpenUnit(UnitViewModel value)

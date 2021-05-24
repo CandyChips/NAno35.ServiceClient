@@ -49,7 +49,7 @@ else
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Неисправность со слов клиента: @_model.Trouble</b>
                                                                
-                            <RadzenButton Click="@(_ => TroubleEdit = new UpdateRepairOrdersTroubleHttpBody()
+                            <RadzenButton Click="@(_ => TroubleEdit = new UpdateRepairOrdersTroubleBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -100,7 +100,7 @@ else
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Внешний вид: @_model.Condition</b>
                                                                
-                            <RadzenButton Click="@(_ => ConditionEdit = new UpdateRepairOrdersConditionHttpBody()
+                            <RadzenButton Click="@(_ => ConditionEdit = new UpdateRepairOrdersConditionBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -159,7 +159,7 @@ else
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Комплектация: @_model.Complication</b>
                                                                
-                            <RadzenButton Click="@(_ => ComplicationEdit = new UpdateRepairOrdersComplicationHttpBody()
+                            <RadzenButton Click="@(_ => ComplicationEdit = new UpdateRepairOrdersComplicationBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -219,7 +219,7 @@ else
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Серийный номер/IMEI: @_model.Serial</b>
                                                                
-                            <RadzenButton Click="@(_ => SerialEdit = new UpdateRepairOrdersSerialHttpBody()
+                            <RadzenButton Click="@(_ => SerialEdit = new UpdateRepairOrdersSerialBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -360,11 +360,11 @@ else
     private List<ArticleViewModel> _devices { get; set; }
     private bool _isLoaded = false;
     
-    private UpdateRepairOrdersDeviceHttpBody DeviceEdit { get; set; }
-    private UpdateRepairOrdersSerialHttpBody SerialEdit { get; set; }
-    private UpdateRepairOrdersConditionHttpBody ConditionEdit { get; set; }
-    private UpdateRepairOrdersTroubleHttpBody TroubleEdit { get; set; }
-    private UpdateRepairOrdersComplicationHttpBody ComplicationEdit { get; set; }
+    private UpdateRepairOrdersDeviceBody DeviceEdit { get; set; }
+    private UpdateRepairOrdersSerialBody SerialEdit { get; set; }
+    private UpdateRepairOrdersConditionBody ConditionEdit { get; set; }
+    private UpdateRepairOrdersTroubleBody TroubleEdit { get; set; }
+    private UpdateRepairOrdersComplicationBody ComplicationEdit { get; set; }
     
     private List<Guid> _roles = new();
 
@@ -410,7 +410,7 @@ else
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
-        await new SetPerformerOfRepairOrderHttpQueryRequest(RequestManager, HttpClient, SetUserAsPerformerOfRepairOrderQuery).Send();
+        await new SetUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, SetUserAsPerformerOfRepairOrderQuery).Send();
         _isLoaded = false;
         await Update();
         _isLoaded = true;

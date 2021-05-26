@@ -21,6 +21,67 @@
 }
 else
 {
+    @switch (_model.CurrentState)
+    {
+        case 0:
+        {
+            <RepairOrdersSetPerformer FormSubmitted="SetPerformer"
+                                      Model="SetUserAsPerformerOfRepairOrderQuery"/>
+            break;
+        };
+        case 1:
+        {
+            <RadzenButton Text="Продиагностировано"
+                          Click="@( () => SetAsDiagnosted())"/>
+            break;
+        };
+        case 2:
+        {
+            <RadzenButton Text="Согласовано"
+                          Click="@( () => SetAsAgreement())"/>
+            break;
+        };
+        case 3:
+        {
+            <RadzenButton Text="Ожидание"
+                          Click="@( () => SetAsOnWait())"/>
+            <RadzenButton Text="В работе"
+                          Click="@( () => SetAsOnWork())"/>
+            <RadzenButton Text="Готово"
+                          Click="@( () => SetAsReady())"/>
+            break;
+        };
+        case 4:
+        {
+            <RadzenButton Text="Готово"
+                          Click="@( () => SetAsReady())"/>
+            break;
+        };
+        case 5:
+        {
+            <RadzenButton Text="Готово"
+                          Click="@( () => SetAsReady())"/>
+            break; 
+        };
+        case 6:
+        {
+            <RadzenButton Text="Завершено"
+                          Click="@( () => SetAsCompleted())"/>
+            break; 
+        };
+        case 7:
+        {
+            <RadzenButton Text="Закрыто"
+                          Click="@( () => SetAsCompleted())"/>
+            break; 
+        };
+        case 8:
+        {
+            <div>Заказ наряд закрыт</div>
+            break; 
+        };
+    }
+    
     <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
         @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
              !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
@@ -276,23 +337,7 @@ else
                         }
                     </li>
                     <li class="list-group-item " role="alert">
-                        @if (_model.Performer == string.Empty)
-                        {
-                            @if (_roles.Contains(RolesHelper.Master))
-                            {
-                                <RepairOrdersBecomePerformer FormSubmitted="SetPerformer"
-                                                             Model="SetUserAsPerformerOfRepairOrderQuery"/>
-                            }
-                            @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
-                            {
-                                <RepairOrdersSetPerformer FormSubmitted="SetPerformer"
-                                                          Model="SetUserAsPerformerOfRepairOrderQuery"/>
-                            }
-                        }
-                        else
-                        {
-                            <b>Исполнитель: @_model.Performer</b>
-                        }
+                        <b>Исполнитель: @_model.Performer</b>
                     </li>
                 </ul>
             </RadzenFieldset>
@@ -365,6 +410,8 @@ else
     private UpdateRepairOrdersConditionBody ConditionEdit { get; set; }
     private UpdateRepairOrdersTroubleBody TroubleEdit { get; set; }
     private UpdateRepairOrdersComplicationBody ComplicationEdit { get; set; }
+    
+    private string DiagnosticResult { get; set; }
     
     private List<Guid> _roles = new();
 
@@ -445,5 +492,35 @@ else
         await new UpdateRepairOrderComplicationRequest(RequestManager, HttpClient, ComplicationEdit).Send();
         ComplicationEdit = null;
         await Update();
+    }
+
+    private async Task SetAsDiagnosted()
+    {
+        await new HttpRequestWrapper<SetRepairOrderAsDiagnosedBody, SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id,Result = DiagnosticResult});
+    }
+
+    private async Task SetAsAgreement()
+    {
+        
+    }
+    private async Task SetAsReady()
+    {
+        
+    }
+    private async Task SetAsOnWait()
+    {
+        
+    }
+    private async Task SetAsOnWork()
+    {
+        
+    }
+    private async Task SetAsCompleted()
+    {
+        
+    }
+    private async Task SetAsClosed()
+    {
+        
     }
 }

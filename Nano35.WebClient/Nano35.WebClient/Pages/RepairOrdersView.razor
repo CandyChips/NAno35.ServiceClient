@@ -80,8 +80,8 @@
     private async Task DetailsOpen(Guid id)
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(RepairOrdersDetailForm.Id), id);
-        var modal = Modal.Show<RepairOrdersDetailForm>($"Заказ наряд на ремонт", parameters);
+        parameters.Add(nameof(RepairOrdersDetail.Id), id);
+        var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters);
         await modal.Result;
         _isLoaded = false;
         _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;

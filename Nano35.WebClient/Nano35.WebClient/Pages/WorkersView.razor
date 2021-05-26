@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Instance.Artifacts
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @using Nano35.WebClient.Helpers
@@ -84,7 +85,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         _roles = (await AuthService.GetCurrentRoles()).Roles;
-        _data = (await new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send()).Workers;
+        _data = (await new HttpRequestWrapper<GetAllWorkersHttpQuery, GetAllWorkersSuccessHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}")
+            .GetAsync()).Workers;
         _loading = false;
     }
     
@@ -92,8 +94,7 @@ else
     {
         var modal = Modal.Show<WorkerForm>("Новый Сотрудник");
         await modal.Result;
-        _data = new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send().Result.Workers;
-        
+        _data = (await new HttpRequestWrapper<GetAllWorkersHttpQuery, GetAllWorkersSuccessHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
     }
     
     private async Task NewWage(WorkerViewModel user)
@@ -103,6 +104,6 @@ else
         var currentUnit = (await new GetUnitByIdRequest(RequestManager, HttpClient, new GetUnitByIdHttpQuery() {Id = await SessionProvider.GetCurrentUnitId()}).Send()).Data.Name;
         var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters);
         await modal.Result;
-        _data = new GetAllWorkersRequest(RequestManager, HttpClient, new GetAllWorkersHttpQuery() { InstanceId = InstanceService.GetCurrentInstance().Id }).Send().Result.Workers;
+        _data = (await new HttpRequestWrapper<GetAllWorkersHttpQuery, GetAllWorkersSuccessHttpResponse >(HttpClient,$"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
     }
 }

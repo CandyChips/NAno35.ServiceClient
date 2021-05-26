@@ -7,10 +7,10 @@ using Nano35.HttpContext.Repair;
 
 namespace Nano35.WebClient.Services
 {
-    public class SetPerformerOfRepairOrderHttpQueryRequest : 
+    public class SetUserAsPerformerOfRepairOrderRequest : 
         RequestProvider<SetPerformerOfRepairOrderHttpQuery, SetPerformerOfRepairOrderHttpResponse>
     {
-        public SetPerformerOfRepairOrderHttpQueryRequest(IRequestManager requestManager, HttpClient httpClient, SetPerformerOfRepairOrderHttpQuery request) : 
+        public SetUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetPerformerOfRepairOrderHttpQuery request) : 
             base(requestManager, httpClient, request) { }
 
         public override async Task<SetPerformerOfRepairOrderHttpResponse> Send()

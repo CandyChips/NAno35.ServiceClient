@@ -38,253 +38,49 @@
                 </Edit>
             </EditableField>
         </FieldListItem>
+        
+        <FieldListItem Title="Бренд">
+            <EditableField OnCancel="@(() => BrandEdit = null)"
+                           OnEdit="@(() => BrandEdit = new UpdateArticleBrandHttpBody() {Id = Article.Id})"
+                           OnSave="@(() => UpdateBrand())">
+                <View>
+                    <p>@Article.Brand</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="BrandEdit.Brand"
+                                   Placeholder="@Article.Brand"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        
+        <FieldListItem Title="Модель">
+            <EditableField OnCancel="@(() => ModelEdit = null)"
+                           OnEdit="@(() => ModelEdit = new UpdateArticleModelHttpBody(){Id = Article.Id})"
+                           OnSave="@(() => UpdateModel())">
+                <View><p>@Article.Model</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="ModelEdit.Model"
+                                   Placeholder="@Article.Model"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        
+        <FieldListItem Title="Информация">
+            <EditableField OnCancel="@(() => InfoEdit = null)"
+                           OnEdit="@(() => InfoEdit = new UpdateArticleInfoHttpBody(){Id = Article.Id})"
+                           OnSave="@(() => UpdateInfo())">
+                <View><p>@Article.Info</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="InfoEdit.Info"
+                                   Placeholder="@Article.Info"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        
     </FieldList>
-    <RadzenFieldset Text="Информация"
-                    Style="width: 100%;">
-        <ul class="list-group" >
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (CategoryEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Категория: @Article.Category</b>
-                                                    
-                    <RadzenButton Click="@(_ => CategoryEdit = new UpdateArticleCategoryHttpBody(){Id = Article.Id})"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style=" float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@CategoryEdit"
-                              OnValidSubmit="@UpdateCategory"
-                              style="display: flex;
-                              width: 100%;">
-                <b style="display: flex; 
-                        width: 85%; 
-                        align-items: center; 
-                        height: 50px;
-                        margin-top: 5px;"> 
-                    <InputField Title="Категория:">
-                        <Controls>
-                            <RadzenDropDown style="display: flex; "
-                                            AllowClear="true"
-                                            TValue="Guid"
-                                            Data=@(Categories.Select(g => new {Id = g.Id, Name = g.Name}))
-                                            TextProperty="Name"
-                                            ValueProperty="Id"
-                                            @bind-Value="CategoryEdit.CategoryId">
-                                <Template Context="data">
-                                    <div style="display: flex; flex-direction: row">
-                                        <div style="width: 90%;">@(data.Name)</div>
-                                        <RadzenButton 
-                                            Click="@(_ => OpenCategoryDetails(Categories.First(h=> h.Id == data.Id), data.Name))"
-                                            Size="ButtonSize.Small"
-                                            Text="🖉"
-                                            Style="height: 20px;
-                                                    display: flex;
-                                                    padding-left: revert;
-                                                    padding-right: revert;
-                                                    align-items: center;"/>
-                                    </div>
-                                </Template>
-                            </RadzenDropDown>
-                        </Controls>
-                    </InputField>
-                </b>
-                
-                    <DataAnnotationsValidator/>
-                <ValidationSummary/>
-                
-                    <div style="display: flex; align-items: center">
-                        <RadzenButton type="submit"
-                                      Text="Обновить"
-                                      Size="ButtonSize.Small"
-                                      Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                        
-                        <RadzenButton Click=@(_ => CategoryEdit = null)
-                                  ButtonStyle="ButtonStyle.Danger"
-                                  Icon="close"
-                                  Style="height: 40px; width: 40px"
-                                  Size="ButtonSize.Small"/>
-                    </div>
-                    </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (BrandEdit == null)
-                {
-                    <b style="display: flex; width: 85%; align-items: center">Бренд: @Article.Brand</b>
-                                                    
-                    <RadzenButton Click="@(_ => BrandEdit = new UpdateArticleBrandHttpBody(){Id = Article.Id})"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style=" float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@BrandEdit"
-                           OnValidSubmit="@UpdateBrand"
-                           style="display: flex;
-                           width: 100%;">
-                     <b style="display: flex; width: 85%; align-items: center; height: 50px; margin-top: 5px;">
-                         <InputField Title="Бренд:">
-                             <Controls>
-                                 <RadzenTextBox style="display: flex;align-items: center"
-                                                @bind-Value="BrandEdit.Brand"
-                                                Placeholder="@Article.Brand"/>
-
-
-                             </Controls>
-                         </InputField>
-                     </b>
-
-                     <DataAnnotationsValidator/>
-                     <ValidationSummary/>
-
-                     <div style="display: flex; align-items: center">
-                         <RadzenButton type="submit"
-                                       Text="Обновить"
-                                       Size="ButtonSize.Small"
-                                       Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                       ButtonStyle="ButtonStyle.Secondary"/>
-                         <RadzenButton Click=@(_ => BrandEdit = null)
-                                       ButtonStyle="ButtonStyle.Danger"
-                                       Icon="close"
-                                       Style="height: 40px; width: 40px"
-                                       Size="ButtonSize.Small"/>
-                     </div>
-                 </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (ModelEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Модель: @Article.Model</b>
-                                                    
-                    <RadzenButton Click="@(_ => ModelEdit = new UpdateArticleModelHttpBody()
-                                         {
-                                             Id = Article.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style=" float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@ModelEdit"
-                              OnValidSubmit="@UpdateModel"
-                              style="display: flex;
-                              width: 100%;">
-                        <b style="display: flex; 
-                           width: 85%; 
-                           align-items: center; 
-                           height: 50px;
-                           margin-top: 5px;"> 
-                            <InputField Title="Модель:">
-                                <Controls>
-                                    <RadzenTextBox style="display: flex;align-items: center"
-                                                   @bind-Value="ModelEdit.Model"
-                                                   Placeholder="@Article.Model"/>
-                            
-                            
-                                </Controls>
-                            </InputField>
-                        </b>
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
-                        <div style="display: flex; align-items: center">
-                            <RadzenButton type="submit"
-                                          Text="Обновить"
-                                          Size="ButtonSize.Small"
-                                          Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                        
-                            <RadzenButton Click=@(_ => ModelEdit = null)
-                                          ButtonStyle="ButtonStyle.Danger"
-                                          Icon="close"
-                                          Style="height: 40px; width: 40px"
-                                          Size="ButtonSize.Small"/>
-                        </div>
-                    </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (InfoEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Информация: @Article.Info</b>
-                                                    
-                    <RadzenButton Click="@(_ => InfoEdit = new UpdateArticleInfoHttpBody()
-                                         {
-                                             Id = Article.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style=" float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@InfoEdit"
-                              OnValidSubmit="@UpdateInfo"
-                              style="display: flex;
-                              width: 100%;">
-                    
-                        <b style="display: flex; 
-                                  width: 85%; 
-                                  align-items: center; 
-                                  height: 50px;
-                                  margin-top: 5px;">
-                            <InputField Title="Информация:">
-                                <Controls>
-                                    <RadzenTextBox style="display: flex;align-items: center"
-                                                   @bind-Value="InfoEdit.Info"
-                                                   Placeholder="@Article.Info"/>
-                            
-                            
-                                </Controls>
-                            </InputField>
-                        </b>
-                    
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
-
-                        <div style="display: flex; align-items: center">
-                            <RadzenButton type="submit"
-                                          Text="Обновить"
-                                          Size="ButtonSize.Small"
-                                          Style="display: flex; align-items: center;height: 40px; margin-right: 25px;"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                            <RadzenButton Click=@(_ => InfoEdit = null)
-                                          ButtonStyle="ButtonStyle.Danger"
-                                          Icon="close"
-                                          Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                          Size="ButtonSize.Small"/>
-                        </div>
-                    </EditForm>
-                }
-            </li>
-        </ul>
-    </RadzenFieldset>
-    
+        
     <RadzenFieldset Text="Характеристики"
                     Style="width: 60rem">
         <RadzenGrid Data="@(Article.Specs)"

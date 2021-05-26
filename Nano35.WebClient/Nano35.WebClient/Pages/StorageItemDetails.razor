@@ -37,298 +37,82 @@
                     </Edit>
                 </EditableField>
             </FieldListItem>
-        </FieldList>
-    <RadzenFieldset Text="Информация"
-                    Style="width: 100%;">
-        <ul class="list-group" >
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex; align-content: center">
-                @if (PurchasePriceEdit == null)
-                {
-                    <b style="display: flex; width: 85%; align-items: center">Закупочная цена: @StorageItem.PurchasePrice</b>
-                                                    
-                    <RadzenButton Click="@(_ => PurchasePriceEdit = new UpdateStorageItemPurchasePriceHttpBody()
-                                         {
-                                             Id = StorageItem.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@PurchasePriceEdit"
-                              OnValidSubmit="@UpdatePurchasePrice"
-                              style="display: flex;
-                              width: 100%;">
-                        <ValidationSummary/>
-                        <b style="display: flex; 
-                              width: 85%; 
-                              align-items: center; 
-                              height: 50px;
-                              margin-top: 5px;">
-                            <InputField title="Закупочная цена: ">
-                                <Controls>
-                                    <RadzenNumeric style="display: flex; "
-                                                   @bind-Value="PurchasePriceEdit.PurchasePrice"
-                                                   ShowUpDown="false"
-                                                   Placeholder="@StorageItem.PurchasePrice.ToString()"
-                                                   Min="0"/>
-                                </Controls>
-                            </InputField>
-                        </b>
-                        <DataAnnotationsValidator/>
-                        <div style="display: flex; align-items: center">
-                            <RadzenButton type="submit"
-                                          Text="Обновить"
-                                          Size="ButtonSize.Small"
-                                          Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-
-                            <RadzenButton Click=@(_ => PurchasePriceEdit = null)
-                                          ButtonStyle="ButtonStyle.Danger"
-                                          Icon="close"
-                                          Style=""
-                                          Size="ButtonSize.Small"/>
-                        </div>
-                    </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (RetailPriceEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Цена продажи: @StorageItem.RetailPrice</b>
-                                                    
-                    <RadzenButton Click="@(_ => RetailPriceEdit = new UpdateStorageItemRetailPriceHttpBody()
-                                         {
-                                             Id = StorageItem.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@RetailPriceEdit"
-                              OnValidSubmit="@UpdateRetailPrice"
-                              style="display: flex;
-                              width: 100%;">
-                        <ValidationSummary/>
-                        <b style="display: flex; 
-                              width: 85%; 
-                              align-items: center; 
-                              height: 50px;
-                              margin-top: 5px;">
-                            <InputField Title="Цена продажи:">
-                                <Controls>
-                                    <RadzenNumeric style="display: flex; align-items: center"
-                                                   @bind-Value="RetailPriceEdit.RetailPrice"
-                                                   ShowUpDown="false"
-                                                   Placeholder="@StorageItem.RetailPrice.ToString()"
-                                                   Min="0"/>
-
-                                </Controls>
-                            </InputField>
-                        </b>
-                        <DataAnnotationsValidator/>
-                        <div style="display: flex; align-items: center">
-                            <RadzenButton type="submit"
-                                          Text="Обновить"
-                                          Size="ButtonSize.Small"
-                                          Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                            <RadzenButton Click=@(_ => RetailPriceEdit = null)
-                                          ButtonStyle="ButtonStyle.Danger"
-                                          Icon="close"
-                                          Style=""
-                                          Size="ButtonSize.Small"/>
-                        </div>
-                    </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (ConditionEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Состояние: @StorageItem.Condition</b>
-                                                    
-                    <RadzenButton Click="@(_ => ConditionEdit = new UpdateStorageItemConditionHttpBody()
-                                         {
-                                             Id = StorageItem.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {<EditForm Model="@ConditionEdit"
-                           OnValidSubmit="@UpdateCondition"
-                           style="display: flex;
-                                   width: 100%;">
-                     <ValidationSummary/>
-                     <b style="display: flex; 
-                          width: 85%; 
-                          align-items: center; 
-                          height: 50px;
-                          margin-top: 5px;">
-                         <InputField Title="Состояние:">
-                             <Controls>
-                                 <RadzenDropDown style="display: flex; "
-                                                 AllowClear="true"
-                                                 TValue="Guid"
-                                                 Data=@(Conditions.Select(g => new {Id = g.Id, Name = g.Name}))
-                                                 TextProperty="Name"
-                                                 ValueProperty="Id"
-                                                 @bind-Value="ConditionEdit.ConditionId"/>
-
-                             </Controls>
-                         </InputField>
-                     </b>
-                     <DataAnnotationsValidator/>
-                     <div style="display: flex; align-items: center">
-                         <RadzenButton type="submit"
-                                       Text="Обновить"
-                                       Size="ButtonSize.Small"
-                                       Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                       ButtonStyle="ButtonStyle.Secondary"/>
-                         <RadzenButton Click=@(_ => ConditionEdit = null)
-                                       ButtonStyle="ButtonStyle.Danger"
-                                       Icon="close"
-                                       Style=""
-                                       Size="ButtonSize.Small"/>
-                     </div>
-                 </EditForm>
-                }
-            </li>
-            <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (CommentEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Комментарий: @StorageItem.Comment</b>
-                                                    
-                    <RadzenButton Click="@(_ => CommentEdit = new UpdateStorageItemCommentHttpBody()
-                                         {
-                                             Id = StorageItem.Id
-                                         })"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {<EditForm Model="@CommentEdit"
-                           OnValidSubmit="@UpdateComment"
-                           style ="display: flex;
-                                   width: 100%;" >
-                
-                
-                     <b style="display: flex; 
-                          width: 85%; 
-                          align-items: center; 
-                          height: 50px;
-                          margin-top: 5px;">
-                         <InputField Title="Комментарий:">
-                             <Controls>
-                                 <RadzenTextBox style="display: flex;align-items: center"
-                                                @bind-Value="CommentEdit.Comment"
-                                                Placeholder="@StorageItem.Comment"/>
-                             </Controls>
-                         </InputField>
-                     </b>
-                     <ValidationSummary/>
-                    <DataAnnotationsValidator/>
-                    <div style="display: flex; align-items: center">
-                        <RadzenButton type="submit"
-                                      Text="Обновить"
-                                      Size="ButtonSize.Small"
-                                      Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                        <RadzenButton Click=@(_ => CommentEdit = null)
-                                  ButtonStyle="ButtonStyle.Danger"
-                                  Icon="close"
-                                  Style=""
-                                  Size="ButtonSize.Small"/>
-                    </div>
-                </EditForm>
-                }
-            </li>
             
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-            @if (HiddenCommentEdit == null)
-            {
-                <b style="display: flex;  width: 85%; align-items: center">Скрытый комментарий: @StorageItem.HiddenComment</b>
-                                                
-                <RadzenButton Click="@(_ => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody()
-                                     {
-                                         Id = StorageItem.Id
-                                     })"
-                              Text="Изменить"
-                              Size="ButtonSize.Small"
-                              Style="float: right; display: flex "
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            }
-            else
-            {
-            <EditForm Model="@HiddenCommentEdit"
-                      OnValidSubmit="@UpdateHiddenComment"
-                      style ="display: flex;
-                              width: 100%;">
-                
-                
-                <b style="display: flex; 
-                          width: 85%; 
-                          align-items: center; 
-                          height: 50px;
-                          margin-top: 5px;"> 
-                    <InputField Title="Скрытый комментарий:">
-                        <Controls>
-                            <RadzenTextBox style="display: flex;align-items: center"
-                                           @bind-Value="HiddenCommentEdit.HiddenComment"
-                                           Placeholder="@StorageItem.HiddenComment"/>
-                        </Controls>
-                    </InputField>
-                </b>
-                <ValidationSummary/>
-                <DataAnnotationsValidator/>
-                <div style="display: flex; align-items: center">
-                    <RadzenButton type="submit"
-                                  Text="Обновить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => HiddenCommentEdit = null)
-                                  ButtonStyle="ButtonStyle.Danger"
-                                  Icon="close"
-                                  Style=""
-                                  Size="ButtonSize.Small"/>
-                </div>
-            </EditForm>
-            }
-            </li>
-        </ul>
-    </RadzenFieldset>
+            <FieldListItem Title="Закупочная цена">
+                <EditableField OnCancel="@(() => PurchasePriceEdit = null)"
+                               OnEdit="@(() => PurchasePriceEdit = new UpdateStorageItemPurchasePriceHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdatePurchasePrice())">
+                    <View>@StorageItem.PurchasePrice</View>
+                    <Edit>
+                        <RadzenNumeric style="display: flex; "
+                                       @bind-Value="PurchasePriceEdit.PurchasePrice"
+                                       ShowUpDown="false"
+                                       Placeholder="@StorageItem.PurchasePrice.ToString()"
+                                       Min="0"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            
+            <FieldListItem Title="Цена продажи">
+                <EditableField OnCancel="@(() => RetailPriceEdit = null)"
+                               OnEdit="@(() => RetailPriceEdit = new UpdateStorageItemRetailPriceHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdateRetailPrice())">
+                    <View>@StorageItem.RetailPrice</View>
+                    <Edit>
+                        <RadzenNumeric style="display: flex; align-items: center"
+                                       @bind-Value="RetailPriceEdit.RetailPrice"
+                                       ShowUpDown="false"
+                                       Placeholder="@StorageItem.RetailPrice.ToString()"
+                                       Min="0"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            
+            <FieldListItem Title="Состояние">
+                <EditableField OnCancel="@(() => ConditionEdit = null)"
+                               OnEdit="@(() => ConditionEdit = new UpdateStorageItemConditionHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdateCondition())">
+                    <View>@StorageItem.Condition</View>
+                    <Edit>
+                        <RadzenDropDown style="display: flex; "
+                                        AllowClear="true"
+                                        TValue="Guid"
+                                        Data=@(Conditions.Select(g => new {Id = g.Id, Name = g.Name}))
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
+                                        @bind-Value="ConditionEdit.ConditionId"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            
+            <FieldListItem Title="Комментарий">
+                <EditableField OnCancel="@(() => CommentEdit = null)"
+                               OnEdit="@(() => CommentEdit = new UpdateStorageItemCommentHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdateComment())">
+                    <View>@StorageItem.Comment</View>
+                    <Edit>
+                        <RadzenTextBox style="display: flex;align-items: center"
+                                       @bind-Value="CommentEdit.Comment"
+                                       Placeholder="@StorageItem.Comment"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            
+            <FieldListItem Title="Скрытый комментарий">
+                <EditableField OnCancel="@(() => HiddenCommentEdit = null)"
+                               OnEdit="@(() => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody(){Id = StorageItem.Id})"
+                               OnSave="@(() => UpdateHiddenComment())">
+                    <View>@StorageItem.HiddenComment</View>
+                    <Edit>
+                        <RadzenTextBox style="display: flex;align-items: center"
+                                       @bind-Value="HiddenCommentEdit.HiddenComment"
+                                       Placeholder="@StorageItem.HiddenComment"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+        </FieldList>
 
-    <RadzenFieldset Text="Товары в наличии"
+        <RadzenFieldset Text="Товары в наличии"
                     Style="width: 60rem">
         <RadzenGrid Data="@(Places)"
                     EmptyText="Нет занятых мест в текущем подразделении..."

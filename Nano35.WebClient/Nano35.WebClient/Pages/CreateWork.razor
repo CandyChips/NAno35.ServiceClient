@@ -10,7 +10,7 @@
 
 @code
 {
-    private CreateWorkHttpBody _model = new()
+    private CreateWorkBody _model = new()
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
@@ -32,7 +32,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateWorkHttpBody
+        _model = new CreateWorkBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId()

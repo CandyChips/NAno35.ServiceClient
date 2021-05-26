@@ -10,7 +10,8 @@ namespace Nano35.WebClient.Services
     public class SetCurrentUserAsPerformerOfRepairOrderRequest : 
         RequestProvider<SetPerformerOfRepairOrderHttpQuery, SetPerformerOfRepairOrderHttpResponse>
     {
-        public SetCurrentUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetPerformerOfRepairOrderHttpQuery request) : base(requestManager, httpClient, request) { }
+        public SetCurrentUserAsPerformerOfRepairOrderRequest(IRequestManager requestManager, HttpClient httpClient, SetPerformerOfRepairOrderHttpQuery request) : 
+            base(requestManager, httpClient, request) { }
 
         public override async Task<SetPerformerOfRepairOrderHttpResponse> Send()
         {

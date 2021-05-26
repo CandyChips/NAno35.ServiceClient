@@ -1,0 +1,30 @@
+﻿
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 400px">
+        
+        
+        <RadzenButton Click="@(_ => No())"
+                      Text="@NoTitle"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Secondary"/>
+        <RadzenButton Click="@(_ => Yes())"
+                      Text="@YesTitle"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Primary"/>
+    </div>
+
+@code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string YesTitle { get; set; } = "Подтвердить";
+    [Parameter] public string NoTitle { get; set; } = "Отклонить";
+
+    private async Task No()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Cancel());
+    }
+    private async Task Yes()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Ok(""));
+    }
+}

@@ -8,310 +8,98 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-Secondary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
-    <div style="width: 40rem;">
-        <RadzenFieldset Text="Информация"
-                    Style="width: 100%;">
-        <ul class="list-group" style="width: 100%" >
-            
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-            @if (NameEdit == null)
-            {
-                <b style="display: flex;  width: 85%; align-items: center">Фио Клинта: @Client.Name</b>
-                <RadzenButton Click="@(_ => NameEdit = new UpdateClientsNameHttpBody()
-                                     {
-                                         ClientId = Client.Id
-                                     })"
-                              Text="Изменить"
-                              Size="ButtonSize.Small"
-                              Style=" float: right; display: flex "
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            }
-            else
-            {
-                <EditForm Model="@NameEdit"
-                          OnValidSubmit="@UpdateName"
-                          style="display: flex;
-                                 width: 100%;">
-                <b style="display: flex; 
-                          width: 85%; 
-                          align-items: center; 
-                          height: 50px;
-                          margin-top: 5px;"> 
-                    <InputField Title="Фио Клинта:">
-                        <Controls>
-                            <RadzenTextBox style="display: flex;align-items: center"
-                                           @bind-Value="NameEdit.Name"
-                                           Placeholder="@Client.Name"/>
-                            </Controls>
-                        </InputField>
-                </b>
-            
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
-            
-            <div style="display: flex; align-items: center">
-                    <RadzenButton type="submit"
-                                  Text="Обновить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => NameEdit = null)
-                                  ButtonStyle="ButtonStyle.Danger"
-                                  Icon="close"
-                                  Style="height: 40px; width: 40px"
-                                  Size="ButtonSize.Small"/>
-                </div>
-                </EditForm>
-            }
-        </li>
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-            @if (PhoneEdit == null)
-            {
-                <b style="display: flex;  width: 85%; align-items: center">Телефон клиента: @Client.Phone</b>
-                                                                            
-                <RadzenButton Click="@(_ => PhoneEdit = new UpdateClientsPhoneHttpBody()
-                                     {
-                                         ClientId = Client.Id
-                                     })"
-                              Text="Изменить"
-                              Size="ButtonSize.Small"
-                              Style=" float: right; display: flex "
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            }
-            else
-            {
-                <EditForm Model="@PhoneEdit"
-                          OnValidSubmit="@UpdatePhone"
-                          style="display: flex;
-                                 width: 100%;">
-                <b style="display: flex; 
-                          width: 85%; 
-                          align-items: center; 
-                          height: 50px;
-                          margin-top: 5px;"> 
-                    <InputField Title="Телефон клиента:">
-                        <Controls>
-                            <RadzenTextBox style="display: flex;align-items: center"
-                                           @bind-Value="PhoneEdit.Phone"
-                                           Placeholder="@Client.Phone"/>
-                        </Controls>
-                    </InputField>
-                </b>
-            
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
-            
-            <div style="display: flex; align-items: center">
-                    <RadzenButton type="submit"
-                                  Text="Обновить"
-                                  Size="ButtonSize.Small"
-                                  Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => PhoneEdit = null)
-                                  ButtonStyle="ButtonStyle.Danger"
-                                  Icon="close"
-                                  Style="height: 40px; width: 40px"
-                                  Size="ButtonSize.Small"/>
-                </div>
-                </EditForm>
-            }
-        </li>
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-            @if (EmailEdit == null)
-            {
-                <b style="display: flex;  width: 85%; align-items: center">Email клиента: @Client.Email</b>
-                                                                                        
-                <RadzenButton Click="@(_ => EmailEdit = new UpdateClientsEmailHttpBody()
-                                     {
-                                         ClientId = Client.Id
-                                     })"
-                              Text="Изменить"
-                              Size="ButtonSize.Small"
-                              Style=" float: right; display: flex "
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            }
-            else
-            {
-                <EditForm Model="@EmailEdit"
-                          OnValidSubmit="@UpdateEmail"
-                          style="display: flex;
-                                 width: 100%;">
-                    <b style="display: flex; 
-                              width: 85%; 
-                              align-items: center; 
-                              height: 50px;
-                              margin-top: 5px;"> 
-                        <InputField Title="Email клиента:">
-                            <Controls>
-                                <RadzenTextBox style="display: flex;align-items: center"
-                                               @bind-Value="EmailEdit.Email"
-                                               Placeholder="@Client.Email"/>
-                            </Controls>
-                        </InputField>
-                    </b>
-            
-                    <DataAnnotationsValidator/>
-                    <ValidationSummary/>   
-            
-                    <div style="display: flex; align-items: center">
-                        <RadzenButton type="submit"
-                                      Text="Обновить"
-                                      Size="ButtonSize.Small"
-                                      Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                        <RadzenButton Click=@(_ => EmailEdit = null)
-                                      ButtonStyle="ButtonStyle.Danger"
-                                      Icon="close"
-                                      Style="height: 40px; width: 40px"
-                                      Size="ButtonSize.Small"/>
-                    </div>
-                </EditForm>
-            }
-            </li>
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-            @if (StateEdit == null)
-            {
-                <b style="display: flex;  width: 85%; align-items: center">Статус клиента: @Client.ClientState</b>
-                                                
-                <RadzenButton Click="@(_ => StateEdit = new UpdateClientsStateHttpBody(){ClientId = Client.Id})"
-                              Text="Изменить"
-                              Size="ButtonSize.Small"
-                              Style=" float: right; display: flex "
-                              ButtonStyle="ButtonStyle.Secondary"/>
-            }
-            else
-            {
-                <EditForm Model="@StateEdit"
-                          OnValidSubmit="@UpdateState"
-                          style="display: flex;
-                                 width: 100%;">
-                    <b style="display: flex; 
-                              width: 85%; 
-                              align-items: center; 
-                              height: 50px;
-                              margin-top: 5px;"> 
-                        <InputField Title="Статус клиента:">
-                            <Controls>
-                                <RadzenDropDown style="display: flex; "
-                                                AllowClear="true"
-                                                TValue="Guid"
-                                                Data=@(States.Select(g => new {Id = g.Id, Name = g.Name}))
-                                                TextProperty="Name"
-                                                ValueProperty="Id"
-                                                @bind-Value="StateEdit.StateId">
-                                </RadzenDropDown>
-                            </Controls>
-                        </InputField>
-                    </b>
-                
-                    <DataAnnotationsValidator/>
-                    <ValidationSummary/>
-            
-                    <div style="display: flex; align-items: center">
-                        <RadzenButton type="submit"
-                                      Text="Обновить"
-                                      Size="ButtonSize.Small"
-                                      Style="display: flex; 
-                                         align-items: center;
-                                         height: 28px; 
-                                         margin-right: 25px; 
-                                         width: min-content;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                        <RadzenButton Click=@(_ => StateEdit = null)
-                                      ButtonStyle="ButtonStyle.Danger"
-                                      Icon="close"
-                                      Style="height: 40px; width: 40px"
-                                      Size="ButtonSize.Small"/>
-                    </div>
-                </EditForm>
-            }
-        </li>
-        <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-                @if (TypeEdit == null)
-                {
-                    <b style="display: flex;  width: 85%; align-items: center">Тип Клиента: @Client.ClientType</b>
-                                                                            
-                    <RadzenButton Click="@(_ => TypeEdit = new UpdateClientsTypeHttpBody(){ClientId = Client.Id})"
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style=" float: right; display: flex "
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                }
-                else
-                {
-                    <EditForm Model="@TypeEdit"
-                              OnValidSubmit="@UpdateType"
-                              style="display: flex;
-                                     width: 100%;">
-                        <b style="display: flex; 
-                                  width: 85%; 
-                                  align-items: center; 
-                                  height: 50px;
-                                  margin-top: 5px;"> 
-
-                            <InputField Title="Тип Клиента:">
-                                <Controls>
-                                    <RadzenDropDown style="display: flex; "
-                                                    AllowClear="true"
-                                                    TValue="Guid"
-                                                    Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
-                                                    TextProperty="Name"
-                                                    ValueProperty="Id"
-                                                    @bind-Value="TypeEdit.TypeId">
-                                    </RadzenDropDown>
-                                </Controls>
-                            </InputField>
-                        </b>
-                               
-                        <DataAnnotationsValidator/>
-                        <ValidationSummary/>
-                
-                        <div style="display: flex; align-items: center">
-                            <RadzenButton type="submit"
-                                          Text="Обновить"
-                                          Size="ButtonSize.Small"
-                                          Style="display: flex; 
-                                             align-items: center;
-                                             height: 28px; 
-                                             margin-right: 25px; 
-                                             width: min-content;"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                            <RadzenButton Click=@(_ => TypeEdit = null)
-                                          ButtonStyle="ButtonStyle.Danger"
-                                          Icon="close"
-                                          Style="height: 40px; width: 40px"
-                                          Size="ButtonSize.Small"/>
-                        </div>
-                    </EditForm>
-                }
-            </li>
-        </ul>
-    </RadzenFieldset>
-    </div>
-    }
+   
+<LoadingContent IsLoaded="_isLoaded">
+    <LoadedContent>
+        <FieldList Title="Информация">
+            <FieldListItem Title="Фио Клинта">
+                <EditableField OnCancel="@(() => NameEdit = null)"
+                               OnEdit="@(() => NameEdit = new UpdateClientsNameHttpBody() {ClientId = Client.Id})"
+                               OnSave="@(() => UpdateName())">
+                    <View>
+                        <p>@Client.Name</p></View>
+                    <Edit>
+                        <RadzenTextBox style="display: flex;align-items: center"
+                                       @bind-Value="NameEdit.Name"
+                                       Placeholder="@Client.Name"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Телефон клиента">
+                <EditableField OnCancel="@(() => PhoneEdit = null)"
+                               OnEdit="@(() => PhoneEdit = new UpdateClientsPhoneHttpBody() {ClientId = Client.Id})"
+                               OnSave="@(() => UpdatePhone())">
+                    <View>
+                        <p>@Client.Phone</p></View>
+                    <Edit>
+                        <RadzenTextBox style="display: flex;align-items: center"
+                                       @bind-Value="PhoneEdit.Phone"
+                                       Placeholder="@Client.Phone"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Email клиента">
+                <EditableField OnCancel="@(() => EmailEdit = null)"
+                               OnEdit="@(() => EmailEdit = new UpdateClientsEmailHttpBody() {ClientId = Client.Id})"
+                               OnSave="@(() => UpdateEmail())">
+                    <View>
+                        <p>@Client.Email</p></View>
+                    <Edit>
+                        <RadzenTextBox style="display: flex;align-items: center"
+                                       @bind-Value="EmailEdit.Email"
+                                       Placeholder="@Client.Email"/>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Статус клиента">
+                <EditableField OnCancel="@(() => StateEdit = null)"
+                               OnEdit="@(() => StateEdit = new UpdateClientsStateHttpBody() {ClientId = Client.Id})"
+                               OnSave="@(() => UpdateState())">
+                    <View>
+                        <p>@Client.ClientState</p></View>
+                    <Edit>
+                        <RadzenDropDown style="display: flex; "
+                                        AllowClear="true"
+                                        TValue="Guid"
+                                        Data=@(States.Select(g => new {Id = g.Id, Name = g.Name}))
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
+                                        @bind-Value="StateEdit.StateId">
+                        </RadzenDropDown>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Тип клиента">
+                <EditableField OnCancel="@(() => TypeEdit = null)"
+                               OnEdit="@(() => TypeEdit = new UpdateClientsTypeHttpBody() {ClientId = Client.Id})"
+                               OnSave="@(() => UpdateType())">
+                    <View>
+                        <p>@Client.ClientType</p></View>
+                    <Edit>
+                        <RadzenDropDown style="display: flex; "
+                                        AllowClear="true"
+                                        TValue="Guid"
+                                        Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
+                                        @bind-Value="TypeEdit.TypeId">
+                        </RadzenDropDown>
+                    </Edit>
+                </EditableField>
+            </FieldListItem>
+            <RadzenButton Click="@(() => ConfirmDelete())"
+                          Text="Удалить"
+                          Size="ButtonSize.Small"
+                          ButtonStyle="ButtonStyle.Danger"
+                          Style="display: flex;
+                                 align-items: end;
+                                 width: 50px;
+                                 justify-content: center;
+                                 align-self: flex-end;
+                                 margin-top: 10px;"/>
+        </FieldList>
+    </LoadedContent>
+</LoadingContent>
 
 @code
 {
@@ -319,8 +107,6 @@ else
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
     [Parameter] public ClientViewModel Client { get; set; }
-    
-    private List<ArticleCategoryViewModel> Categories { get; set; }
     
     private UpdateClientsEmailHttpBody EmailEdit {get;set;}
     private UpdateClientsNameHttpBody NameEdit {get;set;}
@@ -331,12 +117,12 @@ else
     private UpdateClientsTypeHttpBody TypeEdit {get;set;}
     private List<ClientTypeViewModel> Types { get; set; }
     
-    private bool _loading = true;
-
+    private DeleteClientHttpBody ClientDelete { get; set; }
+    
+    private bool _isLoaded = false;
     
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
         States = (await new GetAllClientStatesRequest(
             RequestManager,
             HttpClient, 
@@ -349,10 +135,28 @@ else
             new GetAllClientTypesHttpQuery(){}
             ).Send()).Data.ToList();
         
-        _loading = false;
+        _isLoaded = true;
     }
 
-
+    private async Task ConfirmDelete()
+    {
+        ClientDelete = new DeleteClientHttpBody() {ClientId = Client.Id};
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(ModalConfirm.NoTitle), "Отменить");
+        parameters.Add(nameof(ModalConfirm.YesTitle), "Удалить");
+        var modal = Modal.Show<ModalConfirm>($"Вы уверены", parameters);
+        var res = await modal.Result;
+        if (!res.Cancelled)
+        {
+            DeleteClient();
+        }
+    }
+    
+    private async Task DeleteClient()
+    {
+        await new DeleteClientRequest(RequestManager, HttpClient, ClientDelete).Send();
+        ClientDelete = null;
+    }
     private async Task UpdateName()
     {
         await new UpdateClientNameRequest(RequestManager, HttpClient, NameEdit).Send();

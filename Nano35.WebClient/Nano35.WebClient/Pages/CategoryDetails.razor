@@ -7,142 +7,42 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-
-@if (_loading)
-{<div style="width: 40rem;">
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-Secondary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
- </div>
-}
-else
-{<div style="width: 40rem;">
-    <RadzenFieldset Text="Информация"
-                 Style="width: 100%;">
-     <ul class="list-group" style="width: 100%" >
-         <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-             @if (ParentEdit == null)
-             {
-                 <b style="display: flex;  width: 85%; align-items: center">Наследуемая категория: @Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId).Name</b>
-                                                    
-                 <RadzenButton Click="@(_ => ParentEdit = new UpdateCategoryParentCategoryHttpBody(){Id = Category.Id})"
-                               Text="Изменить"
-                               Size="ButtonSize.Small"
-                               Style=" float: right; display: flex "
-                               ButtonStyle="ButtonStyle.Secondary"/>
-             }
-             else
-             {<EditForm Model="@ParentEdit"
-                        OnValidSubmit="@UpdateParent"
-                        style="display: flex;
-                               width: 100%;">
-                  <b style="display: flex; 
-                           width: 85%; 
-                           align-items: center; 
-                           height: 50px;
-                           margin-top: 5px;"> 
-                      <InputField Title="Наследуемая категория:">
-                          <Controls>
-                              <RadzenDropDown style="display: flex; "
-                                              AllowClear="true"
-                                              TValue="Guid"
-                                              Data=@(Categories.Select(g => new {Id = g.Id, Name = g.Name}))
-                                              TextProperty="Name"
-                                              ValueProperty="Id"
-                                              @bind-Value="ParentEdit.ParentCategoryId">
-                              </RadzenDropDown>
-                          </Controls>
-                      </InputField>
-                  </b>
-                    
-                  <DataAnnotationsValidator/>
-                  <ValidationSummary/>
-
-                  <div style="display: flex; align-items: center">
-                      <RadzenButton type="submit"
-                                    Text="Обновить"
-                                    Size="ButtonSize.Small"
-                                    Style="display: flex; 
-                                          align-items: center;
-                                          height: 28px; 
-                                          margin-right: 25px; 
-                                          width: min-content;"
-
-                                    ButtonStyle="ButtonStyle.Secondary"/>
-                      <RadzenButton Click=@(_ => ParentEdit = null)
-                                    ButtonStyle="ButtonStyle.Danger"
-                                    Icon="close"
-                                    Style="height: 40px; width: 40px"
-                                    Size="ButtonSize.Small"/>
-                  </div>
-              </EditForm>
-             }
-         </li>
-         <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
-             @if (NameEdit == null)
-             {
-                 <b style="display: flex;  width: 85%; align-items: center">Имя категории: @Category.Name</b>
-                                                    
-                 <RadzenButton Click="@(_ => NameEdit = new UpdateCategoryNameHttpBody()
-                                      {
-                                          Id = Category.Id
-                                      })"
-                               Text="Изменить"
-                               Size="ButtonSize.Small"
-                               Style=" float: right; display: flex "
-                               ButtonStyle="ButtonStyle.Secondary"/>
-             }
-             else
-             {
-                 <EditForm Model="@NameEdit"
-                           OnValidSubmit="@UpdateName"
-                           style="display: flex;
-                                  width: 100%;">
-                 
-                     <b style="display: flex; 
-                           width: 85%; 
-                           align-items: center; 
-                           height: 50px;
-                           margin-top: 5px;">  
-                         <InputField Title="Имя категории:">
-                             <Controls>
-                                 <RadzenTextBox style="display: flex;align-items: center"
-                                                @bind-Value="NameEdit.Name"
-                                                Placeholder="@Category.Name"/>
-                            
-                            
-                             </Controls>
-                         </InputField>
-                     </b>
-                    
-                     <DataAnnotationsValidator/>
-                     <ValidationSummary/>
-                 
-                     <div style="display: flex; align-items: center">
-                         <RadzenButton type="submit"
-                                       Text="Обновить"
-                                       Size="ButtonSize.Small"
-                                       Style="display: flex; 
-                                          align-items: center;
-                                          height: 28px; 
-                                          margin-right: 25px; 
-                                          width: min-content;"
-                                       ButtonStyle="ButtonStyle.Secondary"/>
-                         <RadzenButton Click=@(_ => NameEdit = null)
-                                       ButtonStyle="ButtonStyle.Danger"
-                                       Icon="close"
-                                       Style="height: 40px; width: 40px"
-                                       Size="ButtonSize.Small"/>
-                     </div>
-                 </EditForm>
-             }
-         </li>
-     </ul>
- </RadzenFieldset>
- </div>
-}
+<LoadingContent IsLoaded="_loading">
+    <LoadedContent>
+        <FieldListItem Title="Наследуемая категория">
+            <EditableField OnCancel="@(() => ParentEdit = null)"
+                           OnEdit="@(() => ParentEdit = new UpdateCategoryParentCategoryHttpBody() {Id = Category.Id})"
+                           OnSave="@(() => UpdateParent())">
+                <View>
+                    <p>@Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId).Name</p></View>
+                <Edit>
+                    <RadzenDropDown style="display: flex; "
+                                    AllowClear="true"
+                                    TValue="Guid"
+                                    Data=@(Categories.Select(g => new {Id = g.Id, Name = g.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    @bind-Value="ParentEdit.ParentCategoryId">
+                    </RadzenDropDown>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        
+        <FieldListItem Title="Бренд">
+                    <EditableField OnCancel="@(() => NameEdit = null)"
+                                   OnEdit="@(() => NameEdit = new UpdateCategoryNameHttpBody() {Id = Category.Id})"
+                                   OnSave="@(() => UpdateName())">
+                        <View>
+                            <p>@Category.Name</p></View>
+                        <Edit>
+                            <RadzenTextBox style="display: flex;align-items: center"
+                                           @bind-Value="NameEdit.Name"
+                                           Placeholder="@Category.Name"/>
+                        </Edit>
+        	</EditableField>
+        </FieldListItem>
+    </LoadedContent>
+</LoadingContent>
 
 @code
 {

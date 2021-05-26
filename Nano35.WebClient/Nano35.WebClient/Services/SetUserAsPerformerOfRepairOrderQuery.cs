@@ -15,7 +15,7 @@ namespace Nano35.WebClient.Services
 
         public override async Task<SetPerformerOfRepairOrderHttpResponse> Send()
         {
-            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/SetUserAsPerformerOfRepairOrder", Request);
+            var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/SetPerformerOfRepairOrder", Request);
             if (response.IsSuccessStatusCode)
             {
                 return (await response.Content.ReadFromJsonAsync<SetPerformerOfRepairOrderHttpResponse>());

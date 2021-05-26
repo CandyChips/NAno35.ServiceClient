@@ -5,32 +5,3 @@
         Организации
     </NavLink>
 </AuthorizeView>
-      
-<FieldList>
-    <FieldListItem>
-        
-    </FieldListItem>
-    <FieldListItem>
-        
-    </FieldListItem>
-    <FieldListItem>
-        
-    </FieldListItem>
-</FieldList>
-
-<EditableField OnCancel="@(() => editableTest = "")"
-               OnEdit="@(() => editableTest = test)"
-               OnSave="@(() => test = editableTest)">
-    <View>
-        <p>@test</p>
-    </View>
-    <Edit>
-        <RadzenTextBox @bind-Value="@editableTest"></RadzenTextBox>
-    </Edit>
-</EditableField>
-
-@code
-{
-    private string test { get; set; } = "qweqwe";
-    private string editableTest { get; set; }
-}

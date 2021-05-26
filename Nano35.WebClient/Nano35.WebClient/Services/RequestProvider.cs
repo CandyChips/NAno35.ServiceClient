@@ -6,13 +6,13 @@ using Nano35.HttpContext.storage;
 
 namespace Nano35.WebClient.Services
 {
-    public abstract class RequestProvider<TReq, TSRes>
+    public abstract class RequestProviderr<TReq, TSRes>
     {
         protected readonly HttpClient HttpClient;
         protected readonly IRequestManager RequestManager;
         protected readonly TReq Request;
 
-        protected RequestProvider(IRequestManager requestManager, HttpClient httpClient, TReq request)
+        protected RequestProviderr(IRequestManager requestManager, HttpClient httpClient, TReq request)
         {
             RequestManager = requestManager;
             HttpClient = httpClient;
@@ -22,7 +22,7 @@ namespace Nano35.WebClient.Services
         public abstract Task<TSRes> Send();
     }
 
-    public class GetRequestProvider<TReq, TSRes> : RequestProvider<TReq, TSRes>
+    public class GetRequestProvider<TReq, TSRes> : RequestProviderr<TReq, TSRes>
     {
         public GetRequestProvider(HttpClient httpClient, TReq request) : base(null, httpClient, request) { }
         private string _addr;

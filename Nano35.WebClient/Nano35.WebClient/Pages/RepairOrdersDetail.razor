@@ -510,7 +510,9 @@ else
     }
     private async Task SetAsReady()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsReadyBody, SetRepairOrderAsReadySuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyBody(){RepairOrderId = _model.Id});
+        var modal = Modal.Show<ReadyResult>($"Оплата за заказ наряд");
+        var res = await modal.Result;
+        await new HttpRequestWrapper<SetRepairOrderAsReadyBody, SetRepairOrderAsReadySuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0});
         Update();
     }
     private async Task SetAsOnWait()

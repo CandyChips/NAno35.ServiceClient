@@ -23,17 +23,17 @@ namespace Nano35.WebClient.Services
         {
             _httpClient = httpClient;
         }
-        public string IdentityServer => $"http://192.168.100.125:30001";
-        public string InstanceServer => "http://192.168.100.125:30002";
-        public string StorageServer => "http://192.168.100.125:30003";
-        public string RepairOrdersServer => "http://localhost:5004";
-        public string FileServer => "http://192.168.100.125:30005";
-        public string CashboxServer => "http://192.168.100.125:30007";
+        public string IdentityServer => $"https://192.168.100.125/identity";
+        public string InstanceServer => "https://192.168.100.125:30002/instance";
+        public string StorageServer => "https://192.168.100.125:30003/storage";
+        public string RepairOrdersServer => "https://192.168.100.125:30004/repairorders";
+        public string FileServer => "https://192.168.100.125:30005";
+        public string CashboxServer => "https://192.168.100.125:30007/cashbox";
 
 
         public async Task<bool> HealthCheck(string serverUrl)
         {
-            var result = await _httpClient.GetAsync($"{serverUrl}/health");
+            var result = await _httpClient.GetAsync($ "{serverUrl}/health");
             return result.IsSuccessStatusCode;
         }
     }

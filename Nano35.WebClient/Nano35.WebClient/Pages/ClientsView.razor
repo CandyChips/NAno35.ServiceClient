@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Helpers
@@ -12,19 +13,10 @@
 @inject IAuthService AuthService 
 @inject HttpClient HttpClient              
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
     
-    <RadzenButton Click=@(_ => OpenCreateClient()) 
+    <RadzenButton Click="@(_ => OpenCreateClient())" 
                   Text="Создать"
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
@@ -33,65 +25,43 @@ else
                 EmptyText="Добавте оприходуемые товары..."
                 TItem="ClientViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ClientViewModel"
-                              Property="Name" 
-                              Title="Фио" />
-            
-            <RadzenGridColumn TItem="ClientViewModel" 
-                              Property="Email" 
-                              Title="Адресс" />
-            
-            <RadzenGridColumn TItem="ClientViewModel"
-                              Property="Phone"
-                              Title="Телефон" />
-
-            <RadzenGridColumn TItem="ClientViewModel"
-                              Property="ClientType" 
-                              Title="Тип Клиента" />
-            
-            <RadzenGridColumn TItem="ClientViewModel"
-                              Property="ClientState" 
-                              Title="Статус Клиента" />
+            <RadzenGridColumn TItem="ClientViewModel" Property="Name" Title="Фио" />
+            <RadzenGridColumn TItem="ClientViewModel" Property="Email" Title="Адресс" />
+            <RadzenGridColumn TItem="ClientViewModel" Property="Phone" Title="Телефон" />
+            <RadzenGridColumn TItem="ClientViewModel" Property="ClientType" Title="Тип Клиента" />
+            <RadzenGridColumn TItem="ClientViewModel" Property="ClientState" Title="Статус Клиента" />
             @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
             {
-            <RadzenGridColumn TItem="ClientViewModel"
-                              Context="order"
-                              Bubble="false"
-                              TextAlign="TextAlign.Center"
-                              Width="160px">
-                <Template Context="item">
-                    <RadzenButton Click=@(_ => OpenClient(item)) 
-                                  Text="Изменить"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Primary"/>
-                </Template>
-            </RadzenGridColumn>
+                <RadzenGridColumn TItem="ClientViewModel" Context="order" Bubble="false" TextAlign="TextAlign.Center" Width="160px">
+                    <Template Context="item">
+                        <RadzenButton Click=@(_ => OpenClient(item)) 
+                                      Text="Изменить"
+                                      Size="ButtonSize.Small"
+                                      Style="margin: 1rem 0;"
+                                      ButtonStyle="ButtonStyle.Primary"/>
+                    </Template>
+                </RadzenGridColumn>
             }
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
+
+
 @code
 {
     
     [CascadingParameter] public IModalService Modal { get; set; }
-    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }     
-    private bool _loading = true;
-    private bool _serverAvailable;
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private bool _isLoaded;
     private IEnumerable<ClientViewModel> _data;
     private List<Guid> _roles = new();
     
      protected override async Task OnInitializedAsync()
-     {
-        _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
-        if(!_serverAvailable)
-            NavigationManager.NavigateTo("/instances");
-        if (!await SessionProvider.IsCurrentSessionIdExist())
-            NavigationManager.NavigateTo("/instances");
-         
-         _roles = (await AuthService.GetCurrentRoles()).Roles;
-        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
-        _loading = false;
+     {        
+         _isLoaded = false;
+         _roles = await AuthService.GetCurrentRoles();
+         _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+         _isLoaded = true;
     }
 
     private async Task OpenCreateClient()

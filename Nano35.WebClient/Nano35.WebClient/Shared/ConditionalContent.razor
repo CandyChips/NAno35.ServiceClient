@@ -1,0 +1,14 @@
+﻿@if (IsLoaded)
+{
+    @AllowedContent
+}
+else
+{
+    @RejectedContent
+}
+
+@code {
+    [Parameter] public RenderFragment AllowedContent { get; set; }
+    [Parameter] public RenderFragment RejectedContent { get; set; }
+    [Parameter] public bool IsLoaded { get; set; } = true;
+}

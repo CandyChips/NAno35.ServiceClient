@@ -1,8 +1,10 @@
 ﻿@page "/log-in"
 @using Nano35.WebClient.Services
+@using Microsoft.AspNetCore.Components
 @using Nano35.HttpContext.identity
 @inject IAuthService AuthService           
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
 @inject IRequestManager RequestManager     
 
 <div class="col-md-6 offset-md-3 mt-5">
@@ -73,7 +75,8 @@
     {
         try
         {
-            await AuthService.Login(_model);
+            var response = await new HttpRequestWrapper<GenerateUserTokenHttpBody, GenerateUserTokenHttpResponse>(HttpClient, $"{RequestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model);
+            await AuthService.Login(response.Token);
             NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)

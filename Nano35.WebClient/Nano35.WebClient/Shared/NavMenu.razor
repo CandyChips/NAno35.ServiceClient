@@ -1,4 +1,7 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Nano35.WebClient.Services
+@inject IInstanceService InstanceService
+
+<div class="top-row pl-4 navbar navbar-dark">
     <NavLink class="navbar-brand" href="/instance-view">
         <span class="oi oi-list-rich" aria-hidden="true"></span> @OrgName
     </NavLink>
@@ -22,3 +25,14 @@
             </RadzenPanelMenuItem>
     </RadzenPanelMenu>
 </div>
+
+@code
+{
+    private string OrgName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        OrgName = InstanceService.GetCurrentInstance().OrgName;
+    }
+    
+}

@@ -1,5 +1,6 @@
 ﻿using Nano35.HttpContext.identity;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -7,23 +8,22 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nano35.Contracts.Identity.Artifacts;
+using Nano35.Contracts.Identity.Models;
 using Nano35.HttpContext.instance;
 
 namespace Nano35.WebClient.Services
 {
     public interface IAuthService
     {
-        Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest);
+        Task Login(string token);
         Task LogOut();
-        Task<GetUserByIdResultContract> GetCurrentUser();
-        Task<GetAllRolesByUserSuccessHttpResponse> GetCurrentRoles();
-        Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model);
+        Task<UserViewModel> GetCurrentUser();
+        Task<List<Guid>> GetCurrentRoles();
+        Task Register(RegisterHttpBody model);
     }
 
     public class AuthService : IAuthService
     {
-        [Inject] private ISessionProvider SessionProvider { get; set; }
-        
         private readonly IRequestManager _requestManager;
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
@@ -41,14 +41,10 @@ namespace Nano35.WebClient.Services
             _localStorage = localStorage;
         }
 
-        public async Task<GenerateUserTokenSuccessHttpResponse> Login(GenerateUserTokenHttpBody loginRequest)
+        public async Task Login(string token)
         {
-            var result = await _httpClient.PostAsJsonAsync($"{_requestManager.IdentityServer}/Identity/Authenticate", loginRequest);
-            if (!result.IsSuccessStatusCode) throw new Exception(await result.Content.ReadAsStringAsync());
-            var success = await result.Content.ReadFromJsonAsync<GenerateUserTokenSuccessHttpResponse>();
-            await _localStorage.SetItemAsync("authToken", success?.Token);
-            ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(success?.Token);
-            return success;
+            await _localStorage.SetItemAsync("authToken", token);
+            ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsAuthenticated(token);
         }
 
         public async Task LogOut()
@@ -57,29 +53,19 @@ namespace Nano35.WebClient.Services
             ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsLogout();
         }
 
-        public async Task<GetUserByIdResultContract> GetCurrentUser()
-        {
-            var result = await _httpClient.GetAsync($"{_requestManager.IdentityServer}/Identity/FromToken");
-            if (!result.IsSuccessStatusCode)
-                throw new Exception(await result.Content.ReadAsStringAsync());
-            else
-            {
-                return await result.Content.ReadFromJsonAsync<GetUserByIdResultContract>();
-            }
+        public async Task<UserViewModel> GetCurrentUser()
+        {            
+            var response = await new HttpGetRequest<GetUserFromTokenHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/Identity/FromToken").GetAsync();
+            return response.Data;
         }
 
-        public async Task<GetAllRolesByUserSuccessHttpResponse> GetCurrentRoles()
+        public async Task<List<Guid>> GetCurrentRoles()
         {
-            var result = await _httpClient.GetAsync($"{_requestManager.InstanceServer}/Workers/Current/Roles");
-            if (!result.IsSuccessStatusCode)
-                throw new Exception(await result.Content.ReadAsStringAsync());
-            else
-            {
-                return await result.Content.ReadFromJsonAsync<GetAllRolesByUserSuccessHttpResponse>();
-            }
+            var response = await new HttpGetRequest<GetAllRolesByUserHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Workers/Current/Roles").GetAsync();
+            return response.Roles;
         }
 
-        public Task<RegisterSuccessHttpResponse> Register(RegisterHttpBody model)
+        public Task Register(RegisterHttpBody model)
         {
             throw new NotImplementedException();
         }

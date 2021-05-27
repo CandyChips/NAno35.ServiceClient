@@ -1,11 +1,13 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@inject HttpClient HttpClient
-@inject IRequestManager RequestManager
-@inject IInstanceService InstanceService
+@using Nano35.Contracts.Instance.Models
+@inject HttpClient _httpClient
+@inject IRequestManager _requestManager
+@inject IInstanceService _instanceService
 
-@if (_loaded)
-{
+
+<LoadingContent IsLoaded="_isLoaded">
+    
     <EditForm Model="@Model" 
           OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
@@ -20,9 +22,7 @@
                                 style="width: 100%"
                                 Placeholder="Выберите статус клиента..."/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.ClientStateId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.ClientStateId)" />/</Validation>
         </InputField>
         
         <InputField Title="Тип клиента">
@@ -35,77 +35,43 @@
                                 style="width: 100%"
                                 Placeholder="Выберите тип клиента..."/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.ClientTypeId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.ClientTypeId)" /></Validation>
         </InputField>
         
         <InputField Title="@(Model.ClientStateId != Guid.Empty && 
                              Model.ClientStateId == _state.First().Id ?
                                "Название организации" : 
                                "ФИО клиента")">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Name"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Name)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Name"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
         </InputField>
         
         <InputField Title="Эл почта">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Email"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Email)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
         </InputField>
         
         <InputField Title="Номер телефона">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Phone"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Phone)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
         </InputField>
         
         <InputField Title="Скидка">
-            <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="Model.Selle"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Selle)" />
-            </Validation>
+            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Selle"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Selle)" /></Validation>
         </InputField>
-        
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="alert alert-danger mt-3 mb-0">@Error</div>
-        }
         
         <RadzenButton type="submit"
                       Text="Создать"
                       ButtonStyle="ButtonStyle.Primary"
                       Style="width: 100%" />
+        
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">@Error</div>
+        }
     </EditForm>
-}
-else
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
+</LoadingContent>
 
 @code
 {
@@ -114,24 +80,21 @@ else
     [Parameter] public CreateClientHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
-    [Parameter] public Guid TypeId { get; set; }
 
     private List<ClientTypeViewModel> _types = new();
     private List<ClientStateViewModel> _state = new();
-    private bool _loaded;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
-        if (TypeId != Guid.Empty)
-        {
-            Model.ClientTypeId = TypeId;
-            Console.WriteLine(@$"Model.ClientTypeId = {Model.ClientTypeId}");
-            StateHasChanged();
-        }
-        _loaded = false;
-        _state = (await (new GetAllClientStatesRequest(RequestManager, HttpClient, new GetAllClientStatesHttpQuery())).Send()).Data.ToList();
-        _types = (await (new GetAllClientTypesRequest(RequestManager, HttpClient, new GetAllClientTypesHttpQuery()).Send())).Data.ToList();
-        _loaded = true;
+        _isLoaded = false;
+        
+        _state = new List<ClientStateViewModel>(
+            (await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/ClientStates").GetAsync()).Data);
+        _types = new List<ClientTypeViewModel>(
+            (await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/ClientTypes").GetAsync()).Data);
+        
+        _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()

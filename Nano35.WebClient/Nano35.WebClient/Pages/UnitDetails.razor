@@ -1,12 +1,10 @@
-﻿@using Nano35.HttpContext.storage
-@using Nano35.WebClient.Services
-@using Nano35.Contracts.Storage.Models
-@using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
-@using Nano35.Contracts.Storage.Artifacts
+﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@inject HttpClient HttpClient
-@inject IRequestManager RequestManager
-@inject ISessionProvider SessionProvider
+@using UnitViewModel = Nano35.Contracts.Instance.Models.UnitViewModel
+@using UnitTypeViewModel = Nano35.Contracts.Instance.Models.UnitTypeViewModel
+@inject HttpClient _httpClient
+@inject IRequestManager _requestManager
+@inject ISessionProvider _sessionProvider
 
 <LoadingContent IsLoaded="_loading">
     <LoadedContent>
@@ -106,34 +104,34 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        UnitTypes = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
+        UnitTypes = (await new GetAllUnitTypesRequest(_requestManager, _httpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
         _loading = false;
     }
 
 
     private async Task UpdateName()
     {
-        await new UpdateUnitNameRequest(RequestManager, HttpClient, NameEdit).Send();
+        await new UpdateUnitNameRequest(_requestManager, _httpClient, NameEdit).Send();
         NameEdit = null;
     }
     private async Task UpdatePhone()
     {
-        await new UpdateUnitPhoneRequest(RequestManager, HttpClient, PhoneEdit).Send();
+        await new UpdateUnitPhoneRequest(_requestManager, _httpClient, PhoneEdit).Send();
         PhoneEdit = null;
     }
     private async Task UpdateAddress()
     {
-        await new UpdateUnitAddressRequest(RequestManager, HttpClient, AddressEdit).Send();
+        await new UpdateUnitAddressRequest(_requestManager, _httpClient, AddressEdit).Send();
         AddressEdit = null;
     }
     private async Task UpdateType()
     {
-        await new UpdateUnitTypeRequest(RequestManager, HttpClient, TypeEdit).Send();
+        await new UpdateUnitTypeRequest(_requestManager, _httpClient, TypeEdit).Send();
         TypeEdit = null;
     }
     private async Task UpdateWorkingFormat()
     {
-        await new UpdateUnitWorkingFormatRequest(RequestManager, HttpClient, WorkingFormatEdit).Send();
+        await new UpdateUnitWorkingFormatRequest(_requestManager, _httpClient, WorkingFormatEdit).Send();
         WorkingFormatEdit = null;
     }
 }

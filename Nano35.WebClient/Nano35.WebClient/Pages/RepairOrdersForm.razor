@@ -1,6 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @using Blazored.FluentValidation
+@using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.Repair
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
@@ -165,7 +166,6 @@
     private async Task OpenCreateClient()
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ClientsCreate.TypeId), Guid.Parse("ebc7556f-3022-4c03-0cf1-08d8d1d70d30"));
         var modal = Modal.Show<ClientsCreate>($"Новый клиент", parameters);
         await modal.Result;
         _isLoaded = false;
@@ -185,9 +185,8 @@
     }
 
     private async Task<List<ClientViewModel>> LoadClients() =>
-        (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId(), ClientTypeId = Guid.Parse("5E9FFC4F-4A52-4C49-0CF2-08D8D1D70D30")}).Send()).Data.ToList();
+        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ClientTypeId={Guid.Parse("5E9FFC4F-4A52-4C49-0CF2-08D8D1D70D30")}").GetAsync()).Data.ToList();
 
     private async Task<List<ArticleViewModel>> LoadArticles() =>
-        (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
-    
+        (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 }

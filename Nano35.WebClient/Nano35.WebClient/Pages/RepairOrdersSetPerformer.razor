@@ -2,6 +2,7 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Helpers
 @using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -44,7 +45,7 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        _workers = (await new GetAllWorkersRequest(RequestManager, HttpClient,new GetAllWorkersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), WorkersRoleId = RolesHelper.Master }).Send()).Workers.ToList();
+        _workers = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}").GetAsync()).Workers.ToList();
         _isLoaded = true;
     }
 

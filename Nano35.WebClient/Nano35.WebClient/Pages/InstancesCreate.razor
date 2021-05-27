@@ -17,7 +17,7 @@
     {
         try
         {
-            await new CreateInstanceRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateInstanceHttpBody,CreateInstanceHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances").PostAsync(_model);
         }
         catch (Exception e)
         {

@@ -4,6 +4,7 @@
 @using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
 @using Nano35.Contracts.Storage.Artifacts
 @using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -119,22 +120,12 @@
     
     private DeleteClientHttpBody ClientDelete { get; set; }
     
-    private bool _isLoaded = false;
+    private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()
     {
-        States = (await new GetAllClientStatesRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllClientStatesHttpQuery(){}
-            ).Send()).Data.ToList();
-        
-        Types = (await new GetAllClientTypesRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllClientTypesHttpQuery(){}
-            ).Send()).Data.ToList();
-        
+        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
+        Types = (await new HttpGetRequest<GetAllClientTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data.ToList();
         _isLoaded = true;
     }
 
@@ -154,38 +145,38 @@
     
     private async Task DeleteClient()
     {
-        await new DeleteClientRequest(RequestManager, HttpClient, ClientDelete).Send();
+        await new HttpDeleteRequest<DeleteClientSuccessHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Client.Id}").DeleteAsync();
         ClientDelete = null;
     }
     private async Task UpdateName()
     {
-        await new UpdateClientNameRequest(RequestManager, HttpClient, NameEdit).Send();
+        await new HttpPatchRequest<UpdateClientsNameHttpBody, UpdateClientsNameHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{NameEdit.ClientId}/Name").PatchAsync(NameEdit);
         NameEdit = null;
     }
     
     private async Task UpdatePhone()
     {
-        await new UpdateClientPhoneRequest(RequestManager, HttpClient, PhoneEdit).Send();
+        await new HttpPatchRequest<UpdateClientsPhoneHttpBody, UpdateClientsPhoneHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{PhoneEdit.ClientId}/Phone").PatchAsync(PhoneEdit);
         PhoneEdit = null;
     }
     private async Task UpdateEmail()
     {
-        await new UpdateClientEmailRequest(RequestManager, HttpClient, EmailEdit).Send();
+        await new HttpPatchRequest<UpdateClientsEmailHttpBody, UpdateClientsEmailHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{EmailEdit.ClientId}/Email").PatchAsync(EmailEdit);
         EmailEdit = null;
     }
     private async Task UpdateSelle()
     {
-        await new UpdateClientSelleRequest(RequestManager, HttpClient, SelleEdit).Send();
+        await new HttpPatchRequest<UpdateClientsSelleHttpBody, UpdateClientsSelleHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{SelleEdit.ClientId}/Selle").PatchAsync(SelleEdit);
         SelleEdit = null;
     }
     private async Task UpdateState()
     {
-        await new UpdateClientStateRequest(RequestManager, HttpClient, StateEdit).Send();
+        await new HttpPatchRequest<UpdateClientsStateHttpBody, UpdateClientsStateHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{StateEdit.ClientId}/State").PatchAsync(StateEdit);
         StateEdit = null;
     }
     private async Task UpdateType()
     {
-        await new UpdateClientTypeRequest(RequestManager, HttpClient, TypeEdit).Send();
+        await new HttpPatchRequest<UpdateClientsTypeHttpBody, UpdateClientsTypeHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{TypeEdit.ClientId}/Type").PatchAsync(TypeEdit);
         TypeEdit = null;
     }
     

@@ -60,7 +60,7 @@
      {        
          _isLoaded = false;
          _roles = await AuthService.GetCurrentRoles();
-         _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
          _isLoaded = true;
     }
 
@@ -68,7 +68,7 @@
     {
         var modal = Modal.Show<ClientsCreate>("Новый клиент");
         await modal.Result;
-        _data = (await new GetAllClientsRequest(RequestManager, HttpClient, new GetAllClientsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
     }
 
     private async Task OpenClient(ClientViewModel value)

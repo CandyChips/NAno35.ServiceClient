@@ -1,5 +1,6 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
@@ -90,7 +91,7 @@
         
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new GetAllUnitTypesRequest(RequestManager, HttpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
+        _types = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
     }
 
     private async Task HandleValidSubmit()

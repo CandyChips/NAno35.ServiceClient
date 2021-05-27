@@ -75,7 +75,7 @@
     {
         try
         {
-            var response = await new HttpRequestWrapper<GenerateUserTokenHttpBody, GenerateUserTokenHttpResponse>(HttpClient, $"{RequestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model);
+            var response = await new HttpPostRequest<GenerateUserTokenHttpBody,GenerateUserTokenHttpResponse>(HttpClient, $"{RequestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model); 
             await AuthService.Login(response.Token);
             NavigationManager.NavigateTo("/");
         }

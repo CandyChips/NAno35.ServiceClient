@@ -90,9 +90,9 @@
         _isLoaded = false;
         
         _state = new List<ClientStateViewModel>(
-            (await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/ClientStates").GetAsync()).Data);
+            (await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/ClientStates").GetAsync()).Data);
         _types = new List<ClientTypeViewModel>(
-            (await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/ClientTypes").GetAsync()).Data);
+            (await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/ClientTypes").GetAsync()).Data);
         
         _isLoaded = true;
     }

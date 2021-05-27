@@ -62,7 +62,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var request = new GetComingDetailsByIdHttpQuery() {Id = Coming.Id};
-        Details = (await new GetAllComingDetailsRequest(RequestManager, HttpClient, request).Send()).Data;
+        Details = (await new HttpGetRequest<GetAllComingDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings/{Coming.Id}/Details").GetAsync()).Data;
     }
 }

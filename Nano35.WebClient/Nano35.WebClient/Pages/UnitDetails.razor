@@ -6,7 +6,7 @@
 @inject IRequestManager _requestManager
 @inject ISessionProvider _sessionProvider
 
-<LoadingContent IsLoaded="_loading">
+<LoadingContent IsLoaded="_isLoaded">
     <LoadedContent>
         <FieldList Title="Информация">
             <FieldListItem Title="Тип подразделения">
@@ -98,40 +98,40 @@
     private UpdateUnitsWorkingFormatHttpBody WorkingFormatEdit { get; set; }
     
     
-    private bool _loading = true;
+    private bool _isLoaded = false;
 
     
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
-        UnitTypes = (await new GetAllUnitTypesRequest(_requestManager, _httpClient, new GetAllUnitTypesHttpQuery()).Send()).UnitTypes.ToList();
-        _loading = false;
+        UnitTypes = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
+        _isLoaded = true;
     }
 
 
     private async Task UpdateName()
     {
-        await new UpdateUnitNameRequest(_requestManager, _httpClient, NameEdit).Send();
+        await new HttpPatchRequest<UpdateUnitsNameHttpBody, UpdateUnitsNameHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{NameEdit.UnitId}/Name").PatchAsync(NameEdit);
         NameEdit = null;
     }
     private async Task UpdatePhone()
     {
-        await new UpdateUnitPhoneRequest(_requestManager, _httpClient, PhoneEdit).Send();
+        await new HttpPatchRequest<UpdateUnitsPhoneHttpBody, UpdateUnitsPhoneHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{PhoneEdit.UnitId}/Phone").PatchAsync(PhoneEdit);
+
         PhoneEdit = null;
     }
     private async Task UpdateAddress()
     {
-        await new UpdateUnitAddressRequest(_requestManager, _httpClient, AddressEdit).Send();
+        await new HttpPatchRequest<UpdateUnitsAddressHttpBody, UpdateUnitsAddressHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{AddressEdit.UnitId}/Address").PatchAsync(AddressEdit);
         AddressEdit = null;
     }
     private async Task UpdateType()
     {
-        await new UpdateUnitTypeRequest(_requestManager, _httpClient, TypeEdit).Send();
+        await new HttpPatchRequest<UpdateUnitsTypeHttpBody, UpdateUnitsTypeHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{TypeEdit.UnitId}/Type").PatchAsync(TypeEdit);
         TypeEdit = null;
     }
     private async Task UpdateWorkingFormat()
     {
-        await new UpdateUnitWorkingFormatRequest(_requestManager, _httpClient, WorkingFormatEdit).Send();
+        await new HttpPatchRequest<UpdateUnitsWorkingFormatHttpBody, UpdateUnitsWorkingFormatHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{WorkingFormatEdit.UnitId}/WorkingFormat").PatchAsync(WorkingFormatEdit);
         WorkingFormatEdit = null;
     }
 }

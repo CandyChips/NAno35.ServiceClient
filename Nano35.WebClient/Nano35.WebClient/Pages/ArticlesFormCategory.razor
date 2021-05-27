@@ -66,10 +66,7 @@
     
     protected override async Task OnInitializedAsync()
     {            
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = Guid.Empty};
-
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-        
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoading = false;
     }
 
@@ -79,8 +76,8 @@
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = selected.Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}").GetAsync()).Data;
         Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
@@ -96,11 +93,10 @@
             NewId = Guid.NewGuid(),
             ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
         };
-        _ = await new CreateCategoryRequest(RequestManager, HttpClient, body).Send();
+        await new HttpPostRequest<CreateCategoryHttpBody,CreateCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category").PostAsync(body);
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-        Value = _selectedCategories.Last().Id;
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
 
@@ -109,8 +105,8 @@
         _isLoading = true;
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
         Value = _selectedCategories.Last().Id;
         StateHasChanged();

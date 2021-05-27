@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @using Nano35.WebClient.Services
 @attribute [Authorize]
@@ -66,7 +67,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        _data = (await (new GetAllInstancesRequest(RequestManager, HttpClient, new GetAllInstancesHttpQuery() {})).Send()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         _loading = false;
     }
     
@@ -74,7 +75,7 @@ else
     {
         var modal = Modal.Show<InstancesCreate>("Новая организация");
         await modal.Result;
-        _data = (await (new GetAllInstancesRequest(RequestManager, HttpClient, new GetAllInstancesHttpQuery() {})).Send()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         
     }
 

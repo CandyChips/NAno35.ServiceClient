@@ -21,8 +21,8 @@
     private async Task Submit()
     {
         try
-        {
-            await new CreateWorkRequest(RequestManager, HttpClient, _model).Send();
+        {   
+            await new HttpPostRequest<CreateWorkBody,CreateWorkSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works").PostAsync(_model);
         }
         catch (Exception e)
         {

@@ -3,6 +3,7 @@
 @using Nano35.HttpContext.instance
 @using Radzen
 @using Radzen.Blazor
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -117,8 +118,8 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _types = (await (new GetAllInstanceTypesRequest(RequestManager, HttpClient, new GetAllInstanceTypesHttpQuery())).Send()).Data.ToList();
-        _regions = (await (new GetAllInstanceRegionsRequest(RequestManager, HttpClient, new GetAllRegionsHttpQuery()).Send())).Data.ToList();
+        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
+        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
     }
 
     private async Task HandleValidSubmit()

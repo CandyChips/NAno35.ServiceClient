@@ -77,8 +77,12 @@ else
 {
     private IEnumerable<CancellationViewModel> _data;
     private bool _loading = true;
-    [CascadingParameter] public IModalService Modal { get; set; }
-    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance ModalInstance { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -87,16 +91,16 @@ else
         _data = await GetAllCancellations();
         _loading = false;
     }
-    
+
     private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
-        (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() { UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
 
     private async Task NewCancellation()
     {
         var modal = Modal.Show<CancellationsCreate>("Новое списание");
         await modal.Result;
-        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId(), })).Send()).Data;}
-
+        _data = await GetAllCancellations();
+    }
 
     private async Task OpenCancellation(CancellationViewModel coming)
     {
@@ -104,5 +108,6 @@ else
         parameters.Add(nameof(CancellationsDetails.Cancellation), coming);
         var modal = Modal.Show<CancellationsDetails>($"Списание", parameters);
         await modal.Result;
-        _data = (await (new GetAllCancellationsRequest(RequestManager, HttpClient, new GetAllCancellationsHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId(), InstanceId = await SessionProvider.GetCurrentInstanceId(), })).Send()).Data;}
+        _data = await GetAllCancellations();
+    }
 }

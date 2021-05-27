@@ -70,7 +70,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new GetAllMyRepairOrdersRequest(RequestManager, HttpClient, new GetAllMyRepairOrdersHttpQuery()).Send()).Data;
+        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = false;
     }
 
@@ -85,7 +85,7 @@ else
     {
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
         await modal.Result;
-        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
 
     }
 

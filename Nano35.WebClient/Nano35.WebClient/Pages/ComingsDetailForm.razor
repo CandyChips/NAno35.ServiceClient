@@ -139,26 +139,18 @@ else
     {
         var moviesModal = Modal.Show<StorageItemsCreate>("Новое изделие");
         await moviesModal.Result;
-        await GetAllStorageItems();
+        StorageItems = await GetAllStorageItems();
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
     private async Task StorageItemChanged()
     {
         _model.PlaceOnStorage = "";
-        Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = _model.StorageItemId,
-                UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
-            })
-            .Send())
-            .Contains
-            .ToList();
+        Warehouse =  (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
         _model.Price = (double) StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).PurchasePrice;
     }
 }

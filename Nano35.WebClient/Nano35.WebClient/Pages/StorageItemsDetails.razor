@@ -159,72 +159,49 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        StorageItem = (await new GetStorageItemByIdRequest(
-            RequestManager,
-            HttpClient, 
-            new GetStorageItemByIdHttpQuery() {Id = Item.Item.Id}
-            ).Send()).Data;
-
-        Places = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = Item.Item.Id, 
-                UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
-            })
-            .Send())
-            .Contains;
         
-        Conditions = (await (new GetAllStorageItemConditionsRequest(
-            RequestManager,
-            HttpClient,
-            new GetAllStorageItemConditionsHttpQuery(){})
-            .Send())).Data;
+        StorageItem = (await new HttpGetRequest<GetStorageItemByIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/{Item.Item.Id}").GetAsync()).Data;
         
-        Articles = (await (new GetAllArticlesRequest(
-                    RequestManager,
-                    HttpClient,
-                    new GetAllArticlesHttpQuery()
-                    {
-                        InstanceId = await SessionProvider.GetCurrentInstanceId()
-                    })
-                    .Send())).Data;
+        Places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        
+        Conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data;
+        
+        Articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         
         _isLoaded = true;
     }
     private async Task UpdateArticle()
     {
-        await new UpdateStorageItemArticleRequest(RequestManager, HttpClient, ArticleEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemArticleHttpBody, UpdateStorageItemArticleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Article").PatchAsync(ArticleEdit);
         ArticleEdit = null;
     }
 
     private async Task UpdatePurchasePrice()
     {
-        await new UpdateStorageItemPurchasePriceRequest(RequestManager, HttpClient, PurchasePriceEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemPurchasePriceHttpBody, UpdateStorageItemPurchasePriceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/PurchasePrice").PatchAsync(PurchasePriceEdit);
         PurchasePriceEdit = null;
     }
 
     private async Task UpdateRetailPrice() 
     {
-        await new UpdateStorageItemRetailPriceRequest(RequestManager, HttpClient, RetailPriceEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemRetailPriceHttpBody, UpdateStorageItemRetailPriceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/RetailPrice").PatchAsync(RetailPriceEdit);
         RetailPriceEdit = null;
     }
     
     private async Task UpdateCondition() 
     {
-        await new UpdateStorageItemConditionRequest(RequestManager, HttpClient, ConditionEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemConditionHttpBody, UpdateStorageItemConditionSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Condition").PatchAsync(ConditionEdit);
         ConditionEdit = null;
     }    
     private async Task UpdateComment()
     {
-        await new UpdateStorageItemCommentRequest(RequestManager, HttpClient, CommentEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemCommentHttpBody, UpdateStorageItemCommentSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Comment").PatchAsync(CommentEdit);
         CommentEdit = null;
     }
     
     private async Task UpdateHiddenComment()
     {
-        await new UpdateStorageItemHiddenCommentRequest(RequestManager, HttpClient, HiddenCommentEdit).Send();
+        await new HttpPatchRequest<UpdateStorageItemHiddenCommentHttpBody, UpdateStorageItemHiddenCommentSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/HiddenComment").PatchAsync(HiddenCommentEdit);
         HiddenCommentEdit = null;
     }
 

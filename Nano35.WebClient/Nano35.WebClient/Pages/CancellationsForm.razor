@@ -2,6 +2,7 @@
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @using Blazored.FluentValidation
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -146,7 +147,8 @@
             new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
         await FormSubmitted.InvokeAsync();
     }
-    
+
     private async Task<List<UnitViewModel>> LoadUnits() =>
-        (await new GetAllUnitsRequest(RequestManager, HttpClient, new GetAllUnitsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Units.ToList();
+        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+
 }

@@ -25,7 +25,7 @@
     {
         try
         {
-            await new CreateComingRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateComingHttpBody,CreateComingSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings").PostAsync(_model);            
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)

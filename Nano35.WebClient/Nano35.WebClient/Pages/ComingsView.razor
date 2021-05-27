@@ -82,19 +82,18 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery()
-        {
-            InstanceId = await SessionProvider.GetCurrentInstanceId(), 
-            UnitId = await SessionProvider.GetCurrentUnitId()
-        })).Send()).Data;
-        _loading = false;
+        _data = await GetAllComings();
     }
+    
+    private async Task<IEnumerable<ComingViewModel>> GetAllComings() =>
+        (await new HttpGetRequest<GetAllComingsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+
 
     private async Task NewComing()
     {
         var modal = Modal.Show<ComingsCreate>("Новое оприходование");
         await modal.Result;
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId(), UnitId = await SessionProvider.GetCurrentUnitId()})).Send()).Data;
+        _data = await GetAllComings();
     }
 
     private async Task OpenComing(ComingViewModel coming)
@@ -103,10 +102,6 @@ else
         parameters.Add(nameof(ComingsDetails.Coming), coming);
         var modal = Modal.Show<ComingsDetails>($"Оприходование", parameters);
         await modal.Result;
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery()
-        {
-            InstanceId = await SessionProvider.GetCurrentInstanceId(), 
-            UnitId = await SessionProvider.GetCurrentUnitId()
-        })).Send()).Data;
+        _data = await GetAllComings();
     }
 }

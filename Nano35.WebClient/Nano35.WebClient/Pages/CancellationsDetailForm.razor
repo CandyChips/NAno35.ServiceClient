@@ -95,17 +95,8 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-                RequestManager, 
-                HttpClient, 
-                new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-                {
-                    StorageItemId = _model.StorageItemId,
-                    UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
-                })
-                .Send())
-                .Contains
-                .ToList();
+        Warehouse = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit").GetAsync()).Contains.ToList();
     }
     
     private async Task HandleValidSubmit() 
@@ -113,17 +104,9 @@
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
-    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new GetAllStorageItemsRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllStorageItemsQuery()
-            {
-                InstanceId = await SessionProvider.GetCurrentInstanceId()
-            })
-            .Send())
-            .Data
-            .ToList();
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems() =>
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/StorageItems").GetAsync()).Data.ToList();
 
     private async Task PlaceOnStorageChanged()
     {

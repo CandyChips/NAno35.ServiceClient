@@ -2,6 +2,7 @@
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -21,7 +22,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Unit = (await new GetUnitByIdRequest(RequestManager, HttpClient, new GetUnitByIdHttpQuery() {Id = await SessionProvider.GetCurrentUnitId()}).Send()).Data;
+        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 }

@@ -119,30 +119,21 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Article = (await new GetArticleByIdRequest(
-            RequestManager,
-            HttpClient, 
-            new GetArticleByIdHttpQuery() {Id = Id}
-            ).Send()).Data;
-        
-        Categories = (await new GetAllArticleCategoriesRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllArticlesCategoriesHttpQuery(){InstanceId = await SessionProvider.GetCurrentInstanceId(),ParentId = Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}
-            ).Send()).Data;
-
+        Article = (await new HttpGetRequest<GetArticleByIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/{Id}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}").GetAsync()).Data;
         _isLoaded = true;
     }
 
 
-    private async Task UpdateCategory() {await new UpdateArticleCategoryRequest(RequestManager, HttpClient, CategoryEdit).Send();CategoryEdit = null;}
+    private async Task UpdateCategory() {await new HttpPatchRequest<UpdateArticleCategoryHttpBody, UpdateArticleCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Category").PatchAsync(CategoryEdit);CategoryEdit = null;}
     
-    private async Task UpdateBrand(){await new UpdateArticleBrandRequest(RequestManager, HttpClient, BrandEdit).Send();BrandEdit = null;}
+    private async Task UpdateBrand(){await new HttpPatchRequest<UpdateArticleBrandHttpBody, UpdateArticleBrandSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Brand").PatchAsync(BrandEdit);BrandEdit = null;}
     
-    private async Task UpdateModel(){await new UpdateArticleModelRequest(RequestManager, HttpClient, ModelEdit).Send();ModelEdit = null;}
+    private async Task UpdateModel(){await new HttpPatchRequest<UpdateArticleModelHttpBody, UpdateArticleModelSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Model").PatchAsync(ModelEdit);ModelEdit = null;}
     
-    private async Task UpdateInfo(){await new UpdateArticleInfoRequest(RequestManager, HttpClient, InfoEdit).Send();ModelEdit = null;
-    }
+    private async Task UpdateInfo(){await new HttpPatchRequest<UpdateArticleInfoHttpBody, UpdateArticleInfoSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Info").PatchAsync(InfoEdit);ModelEdit = null;}
+    
     private async Task OpenCategoryDetails(ArticleCategoryViewModel item, string name)
     {
         var parameters = new ModalParameters();

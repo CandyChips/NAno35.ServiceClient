@@ -113,7 +113,7 @@
     private async Task HandleValidSubmit()
     {
         _model.Roles = roles.ToList();
-        await new CreateWorkerRequest(RequestManager, HttpClient, _model).Send();
+        await new HttpPostRequest<CreateWorkerHttpBody,CreateWorkerHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers").PostAsync(_model);
         //await new HttpRequestWrapper<CreateWorkerHttpBody, CreateWorkerSuccessHttpResponse>(HttpClient).PostAsync($"{RequestManager.InstanceServer}/Workers", _model);
         await OnHideModalNewWorker.InvokeAsync();
         await ModalInstance.CloseAsync(ModalResult.Ok(""));

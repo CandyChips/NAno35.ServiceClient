@@ -26,7 +26,7 @@
     {
         try
         {
-            await new CreateUnitRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateUnitHttpBody,CreateUnitHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units").PostAsync(_model);
         }
         catch (Exception e)
         {

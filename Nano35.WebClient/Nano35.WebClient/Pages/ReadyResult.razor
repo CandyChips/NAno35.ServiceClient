@@ -1,0 +1,19 @@
+﻿
+<RadzenNumeric style="display: flex;align-items: center; justify-content: center"
+               @bind-Value="Result"
+               Placeholder=""/>
+
+<RadzenButton Click="@(() => Submit())"
+              Text="Отправить"
+              Style="display: flex;align-items: center; justify-content: center"/>
+@code {
+    
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private double Result { get; set; }
+
+    private async Task Submit()
+    {
+        await ModalInstance.CloseAsync(ModalResult.Ok(Result));
+    }
+}

@@ -22,7 +22,7 @@
     {
         try
         {
-            await new CreateArticleRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateArticleHttpBody,CreateArticleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").PostAsync(_model);
         }
         catch (Exception e)
         {

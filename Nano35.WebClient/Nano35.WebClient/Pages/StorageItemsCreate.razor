@@ -17,7 +17,8 @@
     {
         try
         {
-            await new CreateStorageItemRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateStorageItemHttpBody,CreateStorageItemSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems").PostAsync(_model);
+
         }
         catch (Exception e)
         {

@@ -11,76 +11,55 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-@if (!_isLoaded)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
     @switch (_model.CurrentState)
     {
         case 0:
         {
-            <RepairOrdersSetPerformer FormSubmitted="SetPerformer"
-                                      Model="SetUserAsPerformerOfRepairOrderQuery"/>
+            <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
             break;
         };
         case 1:
         {
-            <RadzenButton Text="Продиагностировано"
-                          Click="@( () => SetAsDiagnosted())"/>
+            <RadzenButton Text="Продиагностировано" Click="@( () => SetAsDiagnosted())"/>
             break;
         };
         case 2:
         {
-            <RadzenButton Text="Согласовано"
-                          Click="@( () => SetAsAgreement())"/>
+            <RadzenButton Text="Согласовано" Click="@( () => SetAsAgreement())"/>
             break;
         };
         case 3:
         {
-            <RadzenButton Text="Ожидание"
-                          Click="@( () => SetAsOnWait())"/>
-            <RadzenButton Text="В работе"
-                          Click="@( () => SetAsOnWork())"/>
-            <RadzenButton Text="Готово"
-                          Click="@( () => SetAsReady())"/>
+            <RadzenButton Text="Ожидание" Click="@( () => SetAsOnWait())"/>
+            <RadzenButton Text="В работе" Click="@( () => SetAsOnWork())"/>
+            <RadzenButton Text="Готово" Click="@( () => SetAsReady())"/>
             break;
         };
         case 4:
         {
-            <RadzenButton Text="В работе"
-                          Click="@( () => SetAsOnWork())"/>
+            <RadzenButton Text="В работе" Click="@( () => SetAsOnWork())"/>
             break;
         };
         case 5:
         {
-            <RadzenButton Text="Ожидание"
-                          Click="@( () => SetAsOnWait())"/>
-            <RadzenButton Text="Готово"
-                          Click="@( () => SetAsReady())"/>
+            <RadzenButton Text="Ожидание" Click="@( () => SetAsOnWait())"/>
+            <RadzenButton Text="Готово" Click="@( () => SetAsReady())"/>
             break; 
         };
         case 6:
         {
-            <RadzenButton Text="Завершено"
-                          Click="@( () => SetAsCompleted())"/>
+            <RadzenButton Text="Завершено" Click="@( () => SetAsCompleted())"/>
             break; 
         };
         case 7:
         {
-            <RadzenButton Text="Закрыто"
-                          Click="@( () => SetAsCompleted())"/>
+            <RadzenButton Text="Закрыто" Click="@( () => SetAsCompleted())"/>
             break; 
         };
         case 8:
         {
-            <RadzenButton Text="Закрыто"
-                          Click="@( () => SetAsClosed())"/>
+            <RadzenButton Text="Закрыто" Click="@( () => SetAsClosed())"/>
             break; 
         };
     }
@@ -390,8 +369,8 @@ else
                         Style="width: 100%;">
         </RadzenFieldset>
     </div>
-    
-}
+</LoadingContent>
+
 @code
 {
     
@@ -416,18 +395,19 @@ else
     
     private List<Guid> _roles = new();
 
-    public async Task Update()
-    {        
-        _model = (await new GetRepairOrderByIdRequest(RequestManager, HttpClient,new GetRepairOrderByIdHttpQuery() { Id = Id }).Send()).Data;
-        _states = (await new GetRequestProvider<GetAllRepairOrderStatusesRequestContract, GetAllRepairOrderStatusesResultContract>(HttpClient, new GetAllRepairOrderStatusesRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States")).Data;
-        _works = (await new GetRequestProvider<GetAllRepairOrderWorksRequestContract, GetAllRepairOrderWorksResultContract>(HttpClient, new GetAllRepairOrderWorksRequestContract()).Ask($"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works")).Data;
-        _devices = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+    private async Task Update()
+    {   
+        _model = (await new HttpGetRequest<GetRepairOrderByIdHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}").GetAsync()).Data;
+        _states = (await new HttpGetRequest<GetAllRepairOrderStatesHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States").GetAsync()).Data;
+        _works = (await new HttpGetRequest<GetAllRepairOrderWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works").GetAsync()).Data;
+        _devices = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").GetAsync()).Data;
+        
     }
 
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _roles = (await AuthService.GetCurrentRoles()).Roles;
+        _roles = await AuthService.GetCurrentRoles();
         await Update();
         _isLoaded = true;
     }
@@ -458,7 +438,7 @@ else
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
-        await new SetUserAsPerformerOfRepairOrderRequest(RequestManager, HttpClient, SetUserAsPerformerOfRepairOrderQuery).Send();
+        await new HttpPostRequest<SetPerformerOfRepairOrderHttpQuery,SetPerformerOfRepairOrderHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/SetPerformerOfRepairOrder").PostAsync(SetUserAsPerformerOfRepairOrderQuery);
         _isLoaded = false;
         await Update();
         _isLoaded = true;
@@ -466,31 +446,31 @@ else
 
     private async Task UpdateDevice()
     {
-        await new UpdateRepairOrderDeviceRequest(RequestManager, HttpClient, DeviceEdit).Send();
+        await new HttpPatchRequest<UpdateRepairOrdersDeviceBody, UpdateRepairOrdersDeviceSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Device").PatchAsync(DeviceEdit);
         DeviceEdit = null;
         await Update();
     }
     private async Task UpdateSerial()
     {
-        await new UpdateRepairOrderSerialRequest(RequestManager, HttpClient, SerialEdit).Send();
+        await new HttpPatchRequest<UpdateRepairOrdersSerialBody, UpdateRepairOrdersSerialSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Serial").PatchAsync(SerialEdit);
         SerialEdit = null;
         await Update();
     }
     private async Task UpdateCondition()
     {
-        await new UpdateRepairOrderConditionRequest(RequestManager, HttpClient, ConditionEdit).Send();
+        await new HttpPatchRequest<UpdateRepairOrdersConditionBody, UpdateRepairOrdersConditionSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Condition").PatchAsync(ConditionEdit);
         ConditionEdit = null;
         await Update();
     }
     private async Task UpdateTrouble()
     {
-        await new UpdateRepairOrderTroubleRequest(RequestManager, HttpClient, TroubleEdit).Send();
+        await new HttpPatchRequest<UpdateRepairOrdersTroubleBody, UpdateRepairOrdersTroubleSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Trouble").PatchAsync(TroubleEdit);
         TroubleEdit = null;
         await Update();
     }
     private async Task UpdateComplication()
     {
-        await new UpdateRepairOrderComplicationRequest(RequestManager, HttpClient, ComplicationEdit).Send();
+        await new HttpPatchRequest<UpdateRepairOrdersComplicationBody, UpdateRepairOrdersComplicationSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Complication").PatchAsync(ComplicationEdit);
         ComplicationEdit = null;
         await Update();
     }
@@ -499,38 +479,40 @@ else
     {
         var modal = Modal.Show<DiagnosticResult>($"Результат диагностики");
         var res = await modal.Result;
-        await new HttpRequestWrapper<SetRepairOrderAsDiagnosedBody, SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id,Result = res.Data.ToString()});
-        Update();
+        await new HttpPostRequest<SetRepairOrderAsDiagnosedBody,SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id,Result = res.Data.ToString()});
+        await Update();
     }
 
     private async Task SetAsAgreement()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsAgreementBody, SetRepairOrderAsAgreementSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Agreement").PostAsync(new SetRepairOrderAsAgreementBody(){RepairOrderId = _model.Id});
-        Update();
+        await new HttpPostRequest<SetRepairOrderAsAgreementBody,SetRepairOrderAsAgreementSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Agreement").PostAsync(new SetRepairOrderAsAgreementBody(){RepairOrderId = _model.Id});
+        await Update();
     }
     private async Task SetAsReady()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsReadyBody, SetRepairOrderAsReadySuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyBody(){RepairOrderId = _model.Id});
-        Update();
+        var modal = Modal.Show<ReadyResult>($"Оплата за заказ наряд");
+        var res = await modal.Result;
+        await new HttpPostRequest<SetRepairOrderAsReadyBody,SetRepairOrderAsReadySuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0});
+        await Update();
     }
     private async Task SetAsOnWait()
-    {
-        await new HttpRequestWrapper<SetRepairOrderAsOnWaitBody, SetRepairOrderAsOnWaitSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/OnWait").PostAsync(new SetRepairOrderAsOnWaitBody(){RepairOrderId = _model.Id});
-        Update();
+    {        
+        await new HttpPostRequest<SetRepairOrderAsOnWaitBody,SetRepairOrderAsOnWaitSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWait").PostAsync(new SetRepairOrderAsOnWaitBody(){RepairOrderId = _model.Id});
+        await Update();
     }
     private async Task SetAsOnWork()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsOnWorkBody, SetRepairOrderAsOnWorkSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/OnWork").PostAsync(new SetRepairOrderAsOnWorkBody(){RepairOrderId = _model.Id});
-        Update();
+        await new HttpPostRequest<SetRepairOrderAsOnWorkBody,SetRepairOrderAsOnWorkSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWork").PostAsync(new SetRepairOrderAsOnWorkBody(){RepairOrderId = _model.Id});
+        await Update();
     }
     private async Task SetAsCompleted()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsCompletedBody, SetRepairOrderAsCompletedSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Completed").PostAsync(new SetRepairOrderAsCompletedBody(){RepairOrderId = _model.Id});
-        Update();
+        await new HttpPostRequest<SetRepairOrderAsCompletedBody,SetRepairOrderAsCompletedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Completed").PostAsync(new SetRepairOrderAsCompletedBody(){RepairOrderId = _model.Id});
+        await Update();
     }
     private async Task SetAsClosed()
     {
-        await new HttpRequestWrapper<SetRepairOrderAsClosedBody, SetRepairOrderAsClosedSuccessResponse>(HttpClient,$"{RequestManager.RepairOrdersServer}/RepairOrders/Close").PostAsync(new SetRepairOrderAsClosedBody(){RepairOrderId = _model.Id});
-        Update();
+        await new HttpPostRequest<SetRepairOrderAsClosedBody,SetRepairOrderAsClosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Close").PostAsync(new SetRepairOrderAsClosedBody(){RepairOrderId = _model.Id});
+        await Update();
     }
 }

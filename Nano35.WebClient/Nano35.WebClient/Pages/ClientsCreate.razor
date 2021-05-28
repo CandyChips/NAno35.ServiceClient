@@ -1,25 +1,24 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@inject HttpClient HttpClient
-@inject IRequestManager RequestManager
-@inject ISessionProvider SessionProvider
+@inject HttpClient _httpClient
+@inject IRequestManager _requestManager
+@inject ISessionProvider _sessionProvider
 
 <div style="width: 40rem;">
     <ClientsForm FormSubmitted="Submit"
                  Model="_model" 
-                 Error="@Error"
-                 TypeId="@TypeId"/>
+                 Error="@Error"/>
 </div>
 
 @code
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    [Parameter] public Guid TypeId { get; set; } = Guid.Empty;
+    
     private CreateClientHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
-        InstanceId = Guid.Empty
+        InstanceId = Guid.Empty,
     };
     
     private string Error { get; set; }
@@ -28,7 +27,7 @@
     {
         try
         {
-            await new CreateClientRequest(RequestManager, HttpClient, _model).Send();
+            var response = await new HttpPostRequest<CreateClientHttpBody, CreateClientHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Clients").PostAsync(_model);
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
@@ -42,7 +41,7 @@
         _model = new CreateClientHttpBody
         {
             NewId = Guid.NewGuid(),
-            InstanceId = await SessionProvider.GetCurrentInstanceId()
+            InstanceId = await _sessionProvider.GetCurrentInstanceId()
         };
     }
 }

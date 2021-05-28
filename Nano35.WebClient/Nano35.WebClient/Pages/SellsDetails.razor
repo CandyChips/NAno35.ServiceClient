@@ -44,5 +44,6 @@
     
     protected override async Task OnInitializedAsync()
     {
+        Details = (await new HttpGetRequest<GetAllSellDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Sells/{Selle.Id}/details").GetAsync()).Data.ToList();
     }
 }

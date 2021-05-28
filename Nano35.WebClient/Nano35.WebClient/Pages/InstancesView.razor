@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Authorization
-@using Nano35.Contracts.Instance.Artifacts
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @using Nano35.WebClient.Services
@@ -12,73 +11,78 @@
 @inject HttpClient HttpClient
 
 <AuthorizeView>
-    <LoadingContent IsLoaded="_isLoaded">
-        <LoadedContent>
-            <div style="margin: 1rem;">
-                <RadzenHeading Text="Организации"/>
+@if (_loading)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <div style="margin: 1rem;">
+        <RadzenHeading Text="Организации"/>
 
-                <RadzenButton Click=@(_ => NewInstance()) 
-                              Text="Создать"
-                              Style="margin: 1rem 0;"
-                              ButtonStyle="ButtonStyle.Secondary"/>
+        <RadzenButton Click=@(_ => NewInstance()) 
+                      Text="Создать"
+                      Style="margin: 1rem 0;"
+                      ButtonStyle="ButtonStyle.Secondary"/>
 
-                <RadzenGrid Data=@(_data)
-                            EmptyText="..."
-                            TItem="InstanceViewModel">
-                    <Columns>
-                        <RadzenGridColumn TItem="InstanceViewModel"
-                                          Property="OrgName" 
-                                          Title="Название" />
-                        <RadzenGridColumn TItem="InstanceViewModel" 
-                                          Property="OrgRealName" 
-                                          Title="Организация" />
-                        <RadzenGridColumn TItem="InstanceViewModel"
-                                          Context="order"
-                                          Bubble="false"
-                                          TextAlign="TextAlign.Center" 
-                                          Width="200px">
-                            <Template Context="item">
-                                <RadzenButton
-                                    ButtonStyle="ButtonStyle.Secondary"
-                                    Click="@(_ => OpenOrg(item.Id))">
-                                    Войти
-                                </RadzenButton>
-                            </Template>
-                        </RadzenGridColumn>
-                    </Columns>
-                </RadzenGrid>
-            </div>
-        </LoadedContent>
-    </LoadingContent>
+        <RadzenGrid Data=@(_data)
+                    EmptyText="..."
+                    TItem="InstanceViewModel">
+            <Columns>
+                <RadzenGridColumn TItem="InstanceViewModel"
+                                  Property="OrgName" 
+                                  Title="Название" />
+                <RadzenGridColumn TItem="InstanceViewModel" 
+                                  Property="OrgRealName" 
+                                  Title="Организация" />
+                <RadzenGridColumn TItem="InstanceViewModel"
+                                  Context="order"
+                                  Bubble="false"
+                                  TextAlign="TextAlign.Center" 
+                                  Width="200px">
+                    <Template Context="item">
+                        <RadzenButton
+                            ButtonStyle="ButtonStyle.Secondary"
+                            Click="@(_ => OpenOrg(item.Id))">
+                            Войти
+                        </RadzenButton>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+    </div>
+}
 </AuthorizeView>
 
 @code
 {
-    private bool _isLoaded;
+    private bool _loading = true;
     private IEnumerable<InstanceViewModel> _data;
     [CascadingParameter] public IModalService Modal { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        _isLoaded = false;
-        var instances = await new HttpRequestWrapper<GetAllInstancesHttpQuery, GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances?UserId={await SessionProvider.GetCurrentUserId()}").GetAsync();
-        if (instances.IsSuccess()){_data = instances.Success.Data;}
-        _isLoaded = true;
+        _loading = true;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        _loading = false;
     }
     
     private async Task NewInstance()
     {
         var modal = Modal.Show<InstancesCreate>("Новая организация");
         await modal.Result;
-        var instances = await new HttpRequestWrapper<GetAllInstancesHttpQuery, GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances?UserId={await SessionProvider.GetCurrentUserId()}").GetAsync();
-        if (instances.IsSuccess()){_data = instances.Success.Data;}
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         
     }
 
     private async Task OpenOrg(Guid id)
     {
-        await InstanceService.SetInstanceById(id);      
-        await SessionProvider.SetCurrentInstanceId(id); 
+        await InstanceService.SetInstanceById(id);         //get session
+        await SessionProvider.SetCurrentInstanceId(id);    //set instance id
         NavigationManager.NavigateTo("/instance-view");
     }
 }

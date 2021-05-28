@@ -23,8 +23,8 @@
     private async Task SendCreateRepairOrderRequest()
     {
         try
-        {             
-            await new CreateRepairOrderRequest(RequestManager, HttpClient, _model).Send();
+        {
+            await new HttpPostRequest<CreateRepairOrderBody,CreateRepairOrderSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders").PostAsync(_model);
         }
         catch (Exception e)
         {

@@ -56,7 +56,7 @@
     {
         try
         {
-            await new CreateSelleRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateSelleHttpBody,CreateSelleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Sells").PostAsync(_model);
         }
         catch (Exception e)
         {

@@ -1,17 +1,17 @@
-﻿@if (IsLoaded)
-{
-    @LoadedContent
-}
-else
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
+﻿<ConditionalContent IsLoaded="IsLoaded">
+    <AllowedContent>
+        @ChildContent
+    </AllowedContent>
+    <RejectedContent>
+        <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden"></span>
+            </div>
         </div>
-    </div>
-}
+    </RejectedContent>
+</ConditionalContent>
 
 @code {
-    [Parameter] public RenderFragment LoadedContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
     [Parameter] public bool IsLoaded { get; set; }
 }

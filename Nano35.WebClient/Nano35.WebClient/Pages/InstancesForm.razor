@@ -12,28 +12,58 @@
     <DataAnnotationsValidator />
     
     <InputField Title="Название сервиса">
-        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
+        <Controls>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Name"/>
+        </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Name)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Эл почта">
-        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
+        <Controls>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Email"/>
+        </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Email)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Номер телефона">
-        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
+        <Controls>
+            <RadzenTextBox Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Phone"/>
+        </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Phone)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Название организации">
-        <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.RealName"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.RealName)" /></Validation>
+        <Controls>
+            <RadzenNumeric Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.RealName"/>
+        </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.RealName)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Описание">
-        <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Info"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Info)" /></Validation>
+        <Controls>
+            <RadzenNumeric Style="width: 100%;" 
+                           Placeholder="..."
+                           @bind-Value="Model.Info"/>
+        </Controls>
+        <Validation>
+            <ValidationMessage For="@(() => Model.Info)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Регион">
@@ -46,7 +76,9 @@
                             style="width: 100%"
                             Placeholder="..."/>
         </Controls>
-        <Validation><ValidationMessage For="@(() => Model.RegionId)" /></Validation>
+        <Validation>
+            <ValidationMessage For="@(() => Model.RegionId)" />
+        </Validation>
     </InputField>
     
     <InputField Title="Тип">
@@ -59,7 +91,9 @@
                             style="width: 100%"
                             Placeholder="..."/>
         </Controls>
-        <Validation><ValidationMessage For="@(() => Model.TypeId)" /></Validation>
+        <Validation>
+            <ValidationMessage For="@(() => Model.TypeId)" />
+        </Validation>
     </InputField>
     
     @if (!string.IsNullOrEmpty(Error))
@@ -84,10 +118,8 @@
     
     protected override async Task OnInitializedAsync()
     {
-        var typesResponse = new HttpRequestWrapper<GetAllInstanceTypesHttpQuery, GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync().Result;
-        if (typesResponse.IsSuccess()){_types = new List<InstanceTypeViewModel>(typesResponse.Success.Data);}
-        var regionsResponse = new HttpRequestWrapper<GetAllRegionsHttpQuery, GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync().Result;
-        if (regionsResponse.IsSuccess()){_regions = new List<RegionViewModel>(regionsResponse.Success.Data);}
+        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
+        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
     }
 
     private async Task HandleValidSubmit()

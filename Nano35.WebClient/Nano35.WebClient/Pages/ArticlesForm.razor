@@ -4,18 +4,9 @@
 @inject IRequestManager RequestManager 
 @inject ISessionProvider SessionProvider
 
-@if (!_loaded)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
-    <EditForm Model="@Model" 
-              OnValidSubmit="HandleValidSubmit">
+<LoadingContent IsLoaded="_isLoaded">
+    
+    <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         
         <RadzenFieldset Text="Категория">    
@@ -24,59 +15,44 @@ else
         </RadzenFieldset>
         
         <InputField Title="Бренд">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Brand"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Brand)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Brand"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Brand)" /></Validation>
         </InputField>
         
         <InputField Title="Модель">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Model"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Model)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Model"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Model)" /></Validation>
         </InputField>
         
-        @if (IsExpandedView)
-        {
-            <InputField Title="Описание">
-                <Controls>
-                    <RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Info"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.Info)" />
-                </Validation>
-            </InputField>
-        
-            <InputField Title="Харрактеристики">
-                <Controls>
-                    <ArticlesFormSpecification @bind-Value="Model.Specs"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.Specs)" />
-                </Validation>
-            </InputField>
-        }
-        
-        <ul class="list-group">
-            @foreach (var item in Model.Specs)
-            {
-                <li class="list-group-item">@item.Key : @item.Value</li>
-            }
-        </ul>
-        
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="alert alert-danger mt-3 mb-0">@Error</div>
-        }
+        <ConditionalContent IsLoaded="IsExpandedView">
+            <AllowedContent>
+                <InputField Title="Описание">
+                    <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Info"/></Controls>
+                    <Validation><ValidationMessage For="@(() => Model.Info)" /></Validation>
+                </InputField>
+            
+                <InputField Title="Харрактеристики">
+                    <Controls><ArticlesFormSpecification @bind-Value="Model.Specs"/></Controls>
+                    <Validation><ValidationMessage For="@(() => Model.Specs)"/></Validation>
+                </InputField>
+            
+                <ul class="list-group">
+                    @foreach (var item in Model.Specs)
+                    {
+                        <li class="list-group-item">@item.Key : @item.Value</li>
+                    }
+                </ul>
+            </AllowedContent>
+        </ConditionalContent>
+        <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
+            <AllowedContent>
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            </AllowedContent>
+        </ConditionalContent>
         
         <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     </EditForm>
-}
+</LoadingContent>
 
 @code
 {
@@ -84,12 +60,12 @@ else
     [Parameter] public CreateArticleHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
-    private bool _loaded;
+    private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()
     {
         Model.Specs = new List<SpecHttpContext>();
-        _loaded = true;
+        _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()

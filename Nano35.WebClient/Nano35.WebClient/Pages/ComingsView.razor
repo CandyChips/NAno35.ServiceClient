@@ -8,85 +8,92 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
-<LoadingContent IsLoaded="_isLoaded">
-    <LoadedContent>
-        <RadzenHeading Text="Оприходования"/>
-
-        <RadzenButton Click=@(_ => NewComing())
-                      Text="Создать"
-                      Style="margin: 1rem 0;"
-                      ButtonStyle="ButtonStyle.Primary"/>
-
-        <RadzenGrid EmptyText="Нет оприходований."
-                    Data="@_data"
-                    TItem="ComingViewModel">
-            <Columns>
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  Property="Number"
-                                  Title="Номер"
-                                  Width="70px"/>
-
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  Title="Дата">
-                    <Template Context="item">
-                        @item.Date.ToString("dd-MM-yyyy hh:mm")
-                    </Template>
-                </RadzenGridColumn>
-
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  Property="Unit"
-                                  Title="Подразделение"/>
-
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  Property="Client"
-                                  Title="Клиент"/>
-
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  Width="130px"
-                                  Title="Цена">
-                    <Template Context="item">
-                        @item.Cash руб.
-                    </Template>
-                </RadzenGridColumn>
-
-                <RadzenGridColumn TItem="ComingViewModel"
-                                  TextAlign="TextAlign.Center">
-                    <Template Context="item">
-                        <RadzenButton Click=@(_ => OpenComing(item))
-                                      Text="Информация"
-                                      Size="ButtonSize.Small"
-                                      Style="margin: 1rem 0;"
-                                      ButtonStyle="ButtonStyle.Primary"/>
-                        <a href="http://192.168.100.124:5002/StorageItems/GenerateComingDocument?comingId=@item.Id.ToString()" target="_blank">Документ</a>
-                    </Template>
-                </RadzenGridColumn>
-
-            </Columns>
-        </RadzenGrid>
-    </LoadedContent>
-</LoadingContent>
+@if (_loading)
+{
+    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+        </div>
+    </div>
+}
+else
+{
+    <RadzenHeading Text="Оприходования"/>
+    
+    <RadzenButton Click=@(_ => NewComing()) 
+                  Text="Создать"
+                  Style="margin: 1rem 0;"
+                  ButtonStyle="ButtonStyle.Primary"/>
+    
+    <RadzenGrid EmptyText="Нет оприходований."
+                Data="@_data"
+                TItem="ComingViewModel">
+        <Columns>
+            <RadzenGridColumn TItem="ComingViewModel" 
+                              Property="Number"
+                              Title="Номер" 
+                              Width="70px"/>
+            
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Title="Дата">
+                <Template Context="item">
+                    @item.Date.ToString("dd-MM-yyyy hh:mm")
+                </Template>
+            </RadzenGridColumn>
+            
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Property="Unit" 
+                              Title="Подразделение" />
+            
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Property="Client" 
+                              Title="Клиент" />
+            
+            <RadzenGridColumn TItem="ComingViewModel"
+                              Width="130px"
+                              Title="Цена">
+                <Template Context="item">
+                    @item.Cash руб.
+                </Template>
+            </RadzenGridColumn>
+            
+            <RadzenGridColumn TItem="ComingViewModel"
+                              TextAlign="TextAlign.Center">
+                <Template Context="item">
+                    <RadzenButton Click=@(_ => OpenComing(item)) 
+                                  Text="Информация"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                    <a href="http://192.168.100.124:5002/StorageItems/GenerateComingDocument?comingId=@item.Id.ToString()" target="_blank">Документ</a>
+                </Template>
+            </RadzenGridColumn>
+            
+        </Columns>
+    </RadzenGrid>
+    
+}
 
 @code
 {
     private IEnumerable<ComingViewModel> _data;
-    private bool _isLoaded;
+    private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery()
-        {
-            InstanceId = await SessionProvider.GetCurrentInstanceId(), 
-            UnitId = await SessionProvider.GetCurrentUnitId()
-        })).Send()).Data;
-        _isLoaded = true;
+        _data = await GetAllComings();
     }
+    
+    private async Task<IEnumerable<ComingViewModel>> GetAllComings() =>
+        (await new HttpGetRequest<GetAllComingsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+
 
     private async Task NewComing()
     {
         var modal = Modal.Show<ComingsCreate>("Новое оприходование");
         await modal.Result;
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId(), UnitId = await SessionProvider.GetCurrentUnitId()})).Send()).Data;
+        _data = await GetAllComings();
     }
 
     private async Task OpenComing(ComingViewModel coming)
@@ -95,10 +102,6 @@
         parameters.Add(nameof(ComingsDetails.Coming), coming);
         var modal = Modal.Show<ComingsDetails>($"Оприходование", parameters);
         await modal.Result;
-        _data = (await (new GetAllComingsRequest(RequestManager, HttpClient, new GetAllComingsHttpQuery()
-        {
-            InstanceId = await SessionProvider.GetCurrentInstanceId(), 
-            UnitId = await SessionProvider.GetCurrentUnitId()
-        })).Send()).Data;
+        _data = await GetAllComings();
     }
 }

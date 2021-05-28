@@ -4,12 +4,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-@if (_isLoaded)
-{
-    <EditForm Model="@_model" 
-              OnValidSubmit="HandleValidSubmit">
+<LoadingContent IsLoaded="_isLoaded">
+    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
-        
         <InputField Title="Товар">
             <Controls>
                 <div style="display: flex; width: 100%">
@@ -30,11 +27,8 @@
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.StorageItemId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
         </InputField>
-        
         @if(Warehouse.Any())
         {
             <InputField Title="Ячейка на складе">
@@ -51,9 +45,7 @@
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
         </InputField>
         }
         else
@@ -64,34 +56,22 @@
                                    @bind-Value="_model.PlaceOnStorage"
                                    Placeholder="Введите название новой ячейки"/>
                 </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
-                </Validation>
+                <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
             </InputField>
         }
         <InputField Title="Количество">
             <Controls>
                 <RadzenNumeric style="width: 100%;" 
-                               Placeholder="..."
                                @bind-Value="_model.Count"
                                ShowUpDown="false"
                                Min="1"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Count)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
         </InputField>
         
         <InputField Title="Цена за еденицу">
-            <Controls>
-                <RadzenNumeric style="width: 100%;" 
-                               Placeholder="..."
-                               ShowUpDown="false"
-                               @bind-Value="_model.Price"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Price)" />
-            </Validation>
+            <Controls><RadzenNumeric style="width: 100%;" ShowUpDown="false" @bind-Value="_model.Price"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
         </InputField>
 
         <RadzenButton type="submit"
@@ -99,15 +79,7 @@
                       ButtonStyle="ButtonStyle.Primary"
                       Style="width: 100%" />
     </EditForm>
-}
-else
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
+</LoadingContent>
 
 @code
 {
@@ -139,26 +111,18 @@ else
     {
         var moviesModal = Modal.Show<StorageItemsCreate>("Новое изделие");
         await moviesModal.Result;
-        await GetAllStorageItems();
+        StorageItems = await GetAllStorageItems();
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new GetAllStorageItemsRequest(RequestManager, HttpClient, new GetAllStorageItemsQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
     private async Task StorageItemChanged()
     {
         _model.PlaceOnStorage = "";
-        Warehouse = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = _model.StorageItemId,
-                UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
-            })
-            .Send())
-            .Contains
-            .ToList();
+        Warehouse =  (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
         _model.Price = (double) StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).PurchasePrice;
     }
 }

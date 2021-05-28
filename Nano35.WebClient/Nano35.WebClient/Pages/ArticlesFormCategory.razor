@@ -1,11 +1,11 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
-@inject ISessionProvider SessionProvider
-@inject IRequestManager RequestManager
-@inject HttpClient HttpClient
+@inject ISessionProvider _sessionProvider
+@inject IRequestManager _requestManager
+@inject HttpClient _httpClient
 
-@if (!_isLoading)
-{
+<LoadingContent IsLoaded="_isLoading">
+    
     <div style="width: 100%;">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -50,7 +50,7 @@
             </Tabs>
         </RadzenTabs>
     </div>
-}
+</LoadingContent>
 
 @code
 {
@@ -66,10 +66,7 @@
     
     protected override async Task OnInitializedAsync()
     {            
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = Guid.Empty};
-
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-        
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(_httpClient, $"{_requestManager.StorageServer}/ArticleCategories?InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoading = false;
     }
 
@@ -79,8 +76,8 @@
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = selected.Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(_httpClient, 
+            $"{_requestManager.StorageServer}/ArticleCategories?InstanceId={await _sessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}").GetAsync()).Data;
         Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
@@ -92,15 +89,14 @@
         var body = new CreateCategoryHttpBody()
         {
             Name = _name,
-            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            InstanceId = await _sessionProvider.GetCurrentInstanceId(),
             NewId = Guid.NewGuid(),
             ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
         };
-        _ = await new CreateCategoryRequest(RequestManager, HttpClient, body).Send();
+        await new HttpPostRequest<CreateCategoryHttpBody,CreateCategorySuccessHttpResponse>(_httpClient, $"{_requestManager.StorageServer}/Category").PostAsync(body);
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
-        Value = _selectedCategories.Last().Id;
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(_httpClient, 
+            $"{_requestManager.StorageServer}/ArticleCategories?InstanceId={await _sessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
 
@@ -109,8 +105,8 @@
         _isLoading = true;
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-        var request = new GetAllArticlesCategoriesHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId(), ParentId = _selectedCategories.Last().Id };
-        _categories = (await new GetAllArticleCategoriesRequest(RequestManager, HttpClient, request).Send()).Data.ToList();
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(_httpClient, 
+            $"{_requestManager.StorageServer}/ArticleCategories?InstanceId={await _sessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
         Value = _selectedCategories.Last().Id;
         StateHasChanged();

@@ -27,9 +27,8 @@
     {
         try
         {
-            await new HttpRequestWrapper<CreateCancellationHttpBody, CreateCancellationSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations").PostAsync(_model);
+            await new HttpPostRequest<CreateCancellationHttpBody,CreateCancellationSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations").PostAsync(_model);
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
-
         }
         catch (Exception e)
         {

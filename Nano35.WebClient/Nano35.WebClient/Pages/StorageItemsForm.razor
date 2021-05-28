@@ -172,8 +172,8 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        _conditions = (await new GetAllStorageItemConditionsRequest(RequestManager, HttpClient, new GetAllStorageItemConditionsHttpQuery()).Send()).Data.ToList();
-        _articles = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        _conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data.ToList();
+        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
         _loaded = true;
     }
     
@@ -187,7 +187,7 @@ else
     {
         var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование");
         await moviesModal.Result;
-        _articles = (await new GetAllArticlesRequest(RequestManager, HttpClient, new GetAllArticlesHttpQuery() {InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data.ToList();
+        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
     }
     
     private async Task OnInputFileChange(InputFileChangeEventArgs e)

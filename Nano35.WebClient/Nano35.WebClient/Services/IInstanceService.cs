@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Nano35.Contracts.Instance.Models;
 using Nano35.HttpContext.instance;
 
 namespace Nano35.WebClient.Services
@@ -35,7 +36,7 @@ namespace Nano35.WebClient.Services
 
         public async Task SetInstanceById(Guid id)
         {
-            Instance = (await new GetInstanceByIdRequest(_requestManager, _httpClient, new GetInstanceByIdHttpQuery() {Id = id}).Send()).Data;
+            Instance = (await new HttpGetRequest<GetInstanceByIdHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Instances/{id}").GetAsync()).Data;
         }
 
         public async Task<bool> IsInstanceExist()

@@ -73,10 +73,13 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+        _data = await GetAllRepairOrders();
         _isLoaded = true;
     }
 
+    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders() =>
+        (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+    
     private async Task DetailsOpen(Guid id)
     {
         var parameters = new ModalParameters();
@@ -84,7 +87,7 @@
         var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+        _data = await GetAllRepairOrders();
         _isLoaded = true;
     }
     
@@ -93,7 +96,7 @@
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд на ремонт");
         await modal.Result;
         _isLoaded = false;
-        _data = (await new GetAllRepairOrdersRequest(RequestManager, HttpClient, new GetAllRepairOrdersHttpQuery() { InstanceId = await SessionProvider.GetCurrentInstanceId()}).Send()).Data;
+        _data = await GetAllRepairOrders();
         _isLoaded = true;
 
     }

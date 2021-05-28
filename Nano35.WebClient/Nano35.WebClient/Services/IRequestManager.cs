@@ -26,9 +26,9 @@ namespace Nano35.WebClient.Services
         public string IdentityServer => $"https://192.168.100.125/identity";
         public string InstanceServer => "https://192.168.100.125/instance";
         public string StorageServer => "https://192.168.100.125/storage";
-        public string RepairOrdersServer => "https://192.168.100.125/repairorder";
-        public string FileServer => "https://192.168.100.125:30005";
-        public string CashboxServer => "https://192.168.100.125/cashbox";
+        public string RepairOrdersServer => "http://192.168.100.125:5004";
+        public string FileServer => "http://192.168.100.125:30005";
+        public string CashboxServer => "http://192.168.100.125:30007";
 
 
         public async Task<bool> HealthCheck(string serverUrl)

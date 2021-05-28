@@ -106,9 +106,8 @@ else
         _model.RepairOrderId = RepairOrderId;
         _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-
-        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpQuery() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
-        _storageItems = (await (new GetAllStorageItemsOnUnitRequest(RequestManager, HttpClient, new GetAllStorageItemsOnUnitHttpQuery() {UnitId = await SessionProvider.GetCurrentUnitId()})).Send()).Contains;
+        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _storageItems = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
         _isLoaded = true;
     }
 
@@ -125,8 +124,8 @@ else
                 PlaceOnStorage = PlaceOnStorage
             };
         }
-
-            await (new UpdateRepairOrderWorkRequest(RequestManager, HttpClient, _model)).Send();
+        await new HttpPatchRequest<CreateRepairOrderWorkBody, CreateRepairOrderWorkSuccessResponse>(HttpClient, 
+            $"{RequestManager.RepairOrdersServer}/RepairOrders/Work").PatchAsync(_model);
         await ModalInstance.CloseAsync();
     }
 
@@ -134,7 +133,8 @@ else
     {
         var modal = Modal.Show<CreateWork>($"Новая работа");
         await modal.Result;
-        _works = (await (new GetAllWorksRequest(RequestManager, HttpClient,new GetAllWorksHttpQuery() { InstanceId =  await SessionProvider.GetCurrentInstanceId() })).Send()).Data;
+        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, 
+            $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
     }
 
     private async Task WorkChanged()
@@ -144,18 +144,9 @@ else
     
     private async Task StorageItemChanged()
     {
-        _places = (await new GetAllPlacesOfStorageItemOnUnitRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllPlacesOfStorageItemOnUnitHttpQuery()
-            {
-                StorageItemId = StorageItemId,
-                UnitContainsStorageItemId = await SessionProvider.GetCurrentUnitId()
-            })
-            .Send())
-            .Contains
-            .ToList();
-        
+        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.RepairOrdersServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
+
         _model.Price = _works.First(a=> a.Id == _model.WorkId).Price;
         _model.Price += _storageItems.First(a => a.Item.Id == StorageItemId).Item.PurchasePrice;
     }

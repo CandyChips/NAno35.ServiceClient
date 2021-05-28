@@ -117,12 +117,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {        
-        _roles = (await AuthService.GetCurrentRoles()).Roles;
-        _data = (await (new GetAllStorageItemsOnInstanceRequest(
-            RequestManager,
-            HttpClient, 
-            new GetAllStorageItemsOnInstanceHttpQuery() 
-            { InstanceId = await SessionProvider.GetCurrentInstanceId()})).Send()).Contains;
+        _roles = await AuthService.GetCurrentRoles();
+        _data = (await new HttpGetRequest<GetAllStorageItemsOnInstanceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnInstance?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Contains;
         _loading = false;
     }
 

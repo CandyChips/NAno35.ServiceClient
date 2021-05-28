@@ -26,7 +26,7 @@
     {
         try
         {
-            await new CreateMoveRequest(RequestManager, HttpClient, _model).Send();
+            await new HttpPostRequest<CreateMoveHttpBody,CreateMoveSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Moves").PostAsync(_model);
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)

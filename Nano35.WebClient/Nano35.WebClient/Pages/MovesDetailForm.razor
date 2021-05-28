@@ -127,7 +127,11 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        FromPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(RequestManager, HttpClient, new GetAllPlacesOfStorageItemOnUnitHttpQuery(){StorageItemId = _model.StorageItemId, UnitContainsStorageItemId = FromUnitId}).Send()).Contains.ToList();ToPlaceOnStorage = (await new GetAllPlacesOfStorageItemOnUnitRequest(RequestManager, HttpClient, new GetAllPlacesOfStorageItemOnUnitHttpQuery(){StorageItemId = _model.StorageItemId, UnitContainsStorageItemId = ToUnitId}).Send()).Contains.ToList();
+        FromPlaceOnStorage = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
+            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}").GetAsync()).Contains.ToList();
+        
+        ToPlaceOnStorage =   (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}").GetAsync()).Contains.ToList();
     }
     
     private async Task HandleValidSubmit() 
@@ -136,16 +140,8 @@
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new GetAllStorageItemsRequest(
-            RequestManager, 
-            HttpClient, 
-            new GetAllStorageItemsQuery()
-            {
-                InstanceId = await SessionProvider.GetCurrentInstanceId()
-            })
-            .Send())
-            .Data
-            .ToList();
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    
 
     private async Task PlaceOnStorageChanged()
     {

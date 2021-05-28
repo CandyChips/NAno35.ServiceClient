@@ -1,80 +1,66 @@
 ﻿@page "/log-in"
 @using Nano35.WebClient.Services
+@using Microsoft.AspNetCore.Components
 @using Nano35.HttpContext.identity
-@inject IAuthService AuthService           
-@inject NavigationManager NavigationManager
-@inject IRequestManager RequestManager     
+@inject IAuthService _authService           
+@inject NavigationManager _navigationManager
+@inject HttpClient _httpClient
+@inject IRequestManager _requestManager     
 
-<div class="col-md-6 offset-md-3 mt-5">
-    <div class="card">
-        @if (_loading)
-        {
-            <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden"></span>
-                </div>
-            </div>
-        }
-        else
-        {
-            <RadzenPanel>
-                <ChildContent>
-                    <h1>Авторизация</h1>
-                    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator />
-        
-                        <InputField Title="Номер телефона">
-                            <Controls>
-                                <InputText @bind-Value="_model.Login" 
-                                            class="form-control"/>
-                            </Controls>
-                            <Validation>
-                                <ValidationMessage For="@(() => _model.Login)" />
-                            </Validation>
-                        </InputField>
-        
-                        <InputField Title="Пароль">
-                            <Controls>
-                                <InputText @bind-Value="_model.Password"
-                                            type="password" 
-                                            class="form-control"/>
-                            </Controls>
-                            <Validation>
-                                <ValidationMessage For="@(() => _model.Password)" />
-                            </Validation>
-                        </InputField>
+<div class="col-md-4 offset-md-4 mt-5">
+    <LoadingContent IsLoaded="_isLoaded">
+        <RadzenPanel>
+            <ChildContent>
+                <h1>Авторизация</h1>
+                <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <InputField Title="Номер телефона">
+                        <Controls><InputText @bind-Value="_model.Login" class="form-control"/></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Login)" /></Validation>
+                    </InputField>
+    
+                    <InputField Title="Пароль">
+                        <Controls><InputText @bind-Value="_model.Password" type="password" class="form-control"/></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Password)" /></Validation>
+                    </InputField>
+                    
+                    <RadzenButton type="submit"
+                                  Text="Войти"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                    <NavLink href="registration">
+                        <RadzenButton type="button"
+                                      Text="Регистрация"
+                                      ButtonStyle="ButtonStyle.Secondary"/>
+                    </NavLink>
                         
-                        <button class="btn btn-primary">Войти</button>
-                        <NavLink class="btn btn-secondary" href="registration">Регистрация</NavLink>
-                            
-                        @if (!string.IsNullOrEmpty(_error))
-                        {
-                            <div class="alert alert-danger mt-3 mb-0">@_error</div>
-                        }
-                    </EditForm>
-                </ChildContent>
-            </RadzenPanel>
-        }
-    </div>
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0">@_error</div>
+                    }
+                </EditForm>
+            </ChildContent>
+        </RadzenPanel>
+    </LoadingContent>
 </div>
 
 @code
 {
     private GenerateUserTokenHttpBody _model = new();
-    private bool _loading = true;
+    private bool _isLoaded = true;
     private string _error;
 
     protected override async Task OnInitializedAsync()
     {
-        _loading = false;
+        _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
         try
         {
-            await AuthService.Login(_model);
-            NavigationManager.NavigateTo("/");
+            var response = await new HttpPostRequest<GenerateUserTokenHttpBody,GenerateUserTokenHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model); 
+            await _authService.Login(response.Token);
+            _navigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {

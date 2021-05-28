@@ -4,7 +4,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<InstancesForm FormSubmitted="Submit" Model="_model" Error="@Error"/>
+<InstancesForm FormSubmitted="Submit"
+            Model="_model" 
+            Error="@Error"/>
 
 @code
 {
@@ -15,7 +17,7 @@
     {
         try
         {
-            await new HttpRequestWrapper<CreateInstanceHttpBody, CreateInstanceHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").PostAsync(_model);
+            await new HttpPostRequest<CreateInstanceHttpBody,CreateInstanceHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances").PostAsync(_model);
         }
         catch (Exception e)
         {

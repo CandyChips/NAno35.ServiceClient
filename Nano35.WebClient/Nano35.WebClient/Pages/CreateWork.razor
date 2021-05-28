@@ -1,6 +1,5 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.Repair
-@using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -21,22 +20,14 @@
     
     private async Task Submit()
     {
-        //try
-        //{
-        //    var typesResponse = await new HttpRequestWrapper<CreateWorkBody, CreateWorkSuccessResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync();
-        //    if (typesResponse.IsSuccess())
-        //    {
-        //        
-        //    }
-        //    else
-        //    {
-        //        
-        //    }
-        //}
-        //catch (Exception e)
-        //{
-        //    Error = e.Message;
-        //}
+        try
+        {   
+            await new HttpPostRequest<CreateWorkBody,CreateWorkSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works").PostAsync(_model);
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
     }
     
     protected override async Task OnInitializedAsync()

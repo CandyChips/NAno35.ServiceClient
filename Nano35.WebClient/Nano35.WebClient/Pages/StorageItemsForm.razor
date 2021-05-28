@@ -4,16 +4,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 
-@if (!_loaded)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_loaded">
+    
     <EditForm Model="@Model" OnValidSubmit="Create">
         <DataAnnotationsValidator />
 
@@ -151,7 +143,7 @@ else
                       ButtonStyle="ButtonStyle.Primary"
                       Style="width: 100%" />
     </EditForm>
-}
+</LoadingContent>
 
 @code
 {
@@ -167,7 +159,6 @@ else
     private IList<File> _files = new List<File>();
     private IList<UploadResult> _uploadResults = new List<UploadResult>();
     private int _maxAllowedFiles = 3;
-    private bool _shouldRender;
 
     protected override async Task OnInitializedAsync()
     {
@@ -192,7 +183,6 @@ else
     
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
-        _shouldRender = false;
         long maxFileSize = 1024 * 1024 * 15;
         var upload = false;
 
@@ -242,8 +232,6 @@ else
 
             _uploadResults = _uploadResults.Concat(newUploadResults).ToList();
         }
-
-        _shouldRender = true;
     }
 
     private static bool FileUpload(IList<UploadResult> uploadResults,

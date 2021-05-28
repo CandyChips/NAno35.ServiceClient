@@ -15,24 +15,13 @@
 <div style="margin-top:20px">Поставщик:</div>
 <b>@Selle.Client</b>
 
-<RadzenFieldset Text="Оприходуемые товары"
-                Style="width: 60rem">
-    <RadzenGrid Data="@Details"
-                EmptyText="Добавте оприходуемые товары..."
-                TItem="SelleDetailViewModel">
+<RadzenFieldset Text="Оприходуемые товары" Style="width: 60rem">
+    <RadzenGrid Data="@Details" EmptyText="Добавте оприходуемые товары..." TItem="SelleDetailViewModel">
         <Columns>
-            <RadzenGridColumn TItem="SelleDetailViewModel"
-                              Property="StorageItem" 
-                              Title="Товар" />
-            <RadzenGridColumn TItem="SelleDetailViewModel" 
-                              Property="PlaceOnStorage" 
-                              Title="Место на складе" />
-            <RadzenGridColumn TItem="SelleDetailViewModel"
-                              Property="Count"
-                              Title="Количество" />
-            <RadzenGridColumn TItem="SelleDetailViewModel"
-                              Property="Price" 
-                              Title="Цена" />
+            <RadzenGridColumn TItem="SelleDetailViewModel" Property="StorageItem" Title="Товар" />
+            <RadzenGridColumn TItem="SelleDetailViewModel" Property="PlaceOnStorage"Title="Место на складе" />
+            <RadzenGridColumn TItem="SelleDetailViewModel" Property="Count" Title="Количество" />
+            <RadzenGridColumn TItem="SelleDetailViewModel" Property="Price" Title="Цена" />
         </Columns>
     </RadzenGrid>
 </RadzenFieldset>

@@ -76,9 +76,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _loading = true;
-        _data = await GetAllCancellations();
         _loading = false;
+        _data = await GetAllCancellations();
+        _loading = true;
     }
 
     private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>

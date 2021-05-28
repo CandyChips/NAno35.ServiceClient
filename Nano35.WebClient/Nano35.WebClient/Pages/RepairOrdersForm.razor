@@ -185,7 +185,7 @@
     }
 
     private async Task<List<ClientViewModel>> LoadClients() =>
-        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ClientTypeId={Guid.Parse("5E9FFC4F-4A52-4C49-0CF2-08D8D1D70D30")}").GetAsync()).Data.ToList();
+        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
     private async Task<List<ArticleViewModel>> LoadArticles() =>
         (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();

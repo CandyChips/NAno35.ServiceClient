@@ -2,7 +2,6 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Helpers
 @using Nano35.HttpContext.instance
-@using System.Web.Mvc
 @using Nano35.Contracts.Repair.Artifacts
 @using Nano35.Contracts.Repair.Models
 @using Nano35.HttpContext.storage
@@ -21,45 +20,45 @@
         };
         case 1:
         {
-            <RadzenButton Text="Продиагностировано" Click="@( () => SetAsDiagnosted())"/>
+            <RadzenButton Text="Отметить как продиагностированный" Click="@(SetAsDiagnosted)"/>
             break;
         };
         case 2:
         {
-            <RadzenButton Text="Согласовано" Click="@( () => SetAsAgreement())"/>
+            <RadzenButton Text="Отметить как согласованный" Click="@(SetAsAgreement)"/>
             break;
         };
         case 3:
         {
-            <RadzenButton Text="Ожидание" Click="@( () => SetAsOnWait())"/>
-            <RadzenButton Text="В работе" Click="@( () => SetAsOnWork())"/>
-            <RadzenButton Text="Готово" Click="@( () => SetAsReady())"/>
+            <RadzenButton Text="Ожидание" Click="@(SetAsOnWait)"/>
+            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+            <RadzenButton Text="Готово" Click="@(SetAsReady)"/>
             break;
         };
         case 4:
         {
-            <RadzenButton Text="В работе" Click="@( () => SetAsOnWork())"/>
+            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
             break;
         };
         case 5:
         {
-            <RadzenButton Text="Ожидание" Click="@( () => SetAsOnWait())"/>
-            <RadzenButton Text="Готово" Click="@( () => SetAsReady())"/>
+            <RadzenButton Text="Ожидание" Click="@(SetAsOnWait)"/>
+            <RadzenButton Text="Готово" Click="@(SetAsReady)"/>
             break; 
         };
         case 6:
         {
-            <RadzenButton Text="Завершено" Click="@( () => SetAsCompleted())"/>
+            <RadzenButton Text="Завершено" Click="@(SetAsCompleted)"/>
             break; 
         };
         case 7:
         {
-            <RadzenButton Text="Закрыто" Click="@( () => SetAsCompleted())"/>
+            <RadzenButton Text="Закрыто" Click="@(SetAsCompleted)"/>
             break; 
         };
         case 8:
         {
-            <RadzenButton Text="Закрыто" Click="@( () => SetAsClosed())"/>
+            <RadzenButton Text="Закрыто" Click="@(SetAsClosed)"/>
             break; 
         };
     }
@@ -78,16 +77,16 @@
             <RadzenFieldset Text="Информация"
                             Style="width: 100%;">
                 <ul class="list-group">
-                    <li class="list-group-item" role="alert">
+                    <li class="list-group-item">
                         <b>Клиент: @_model.Client</b>
                     </li>
-                    <li class="list-group-item" role="alert">
+                    <li class="list-group-item">
                         <b>Менеджер: @_model.Manager</b>
                     </li>
-                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                    <li class="list-group-item" style="width: 100%; display: flex;">
                         <b style="display: flex;  width: 85%; align-items: center">Устройство: @_model.Device</b>
                     </li>
-                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                    <li class="list-group-item" style="width: 100%; display: flex;">
                         @if (TroubleEdit == null)
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Неисправность со слов клиента: @_model.Trouble</b>
@@ -477,9 +476,7 @@
 
     private async Task SetAsDiagnosted()
     {
-        var modal = Modal.Show<DiagnosticResult>($"Результат диагностики");
-        var res = await modal.Result;
-        await new HttpPostRequest<SetRepairOrderAsDiagnosedBody,SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id,Result = res.Data.ToString()});
+        await new HttpPostRequest<SetRepairOrderAsDiagnosedBody,SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id});
         await Update();
     }
 

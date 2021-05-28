@@ -1,0 +1,73 @@
+@using Nano35.WebClient.Services
+@using Nano35.Contracts.Instance.Models
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<ConditionalContent IsLoaded="_isNewShown">
+    <AllowedContent>
+        <RadzenButton Click=@(_ => NewUnit()) 
+                      Text="Создать"
+                      Style="width: 100%"
+                      ButtonStyle="ButtonStyle.Primary"/>
+    </AllowedContent>
+    <RejectedContent>
+        <LoadingContent IsLoaded="_isLoaded">
+            <InputField Title="Подразделение*">
+                <Controls>
+                    <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
+                                    TextProperty="Name" 
+                                    ValueProperty="Id"
+                                    TValue="Guid" 
+                                    @bind-Value="SelectedUnitId"
+                                    Disabled="@(!_units.Any())"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите текущее подразделение..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+                <Validation>
+                </Validation>
+            </InputField>
+        </LoadingContent>
+    </RejectedContent>
+</ConditionalContent>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private List<UnitViewModel> _units = new();
+    private bool _isLoaded;
+    private bool _isNewShown;
+    private Guid _selectedUnitId { get; set; }
+    private Guid SelectedUnitId
+    {
+        get => _selectedUnitId;
+        set
+        {
+            _selectedUnitId = value;
+            ModalInstance.CloseAsync(ModalResult.Ok(value));
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        if (!_units.Any()) _isNewShown = true;
+        _isLoaded = true;
+    }
+    
+    private async Task NewUnit()
+    {
+        _isLoaded = false;
+        var modal = Modal.Show<UnitsCreate>("Новое подразделение");
+        await modal.Result;
+        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        if (!_units.Any()) _isNewShown = true;
+        _isLoaded = true;
+    }
+}

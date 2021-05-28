@@ -1,16 +1,16 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
+@using System.Globalization
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
 <LoadingContent IsLoaded="_isLoaded">
-    <LoadedContent>
         <FieldList Title="Информация">
             <FieldListItem Title="Артикул">
                 <EditableField OnCancel="@(() => ArticleEdit = null)"
                                OnEdit="@(() => ArticleEdit = new UpdateStorageItemArticleHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdateArticle())">
+                               OnSave="@(async () => await UpdateArticle())">
                     <View>@StorageItem.Article</View>
                     <Edit>
                         <RadzenDropDown AllowClear="true"
@@ -41,13 +41,13 @@
             <FieldListItem Title="Закупочная цена">
                 <EditableField OnCancel="@(() => PurchasePriceEdit = null)"
                                OnEdit="@(() => PurchasePriceEdit = new UpdateStorageItemPurchasePriceHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdatePurchasePrice())">
-                    <View>@StorageItem.PurchasePrice</View>
+                               OnSave="@(async () => await UpdatePurchasePrice())">
+                    <View>@StorageItem.PurchasePrice.ToString(CultureInfo.InvariantCulture)</View>
                     <Edit>
                         <RadzenNumeric style="display: flex; "
                                        @bind-Value="PurchasePriceEdit.PurchasePrice"
                                        ShowUpDown="false"
-                                       Placeholder="@StorageItem.PurchasePrice.ToString()"
+                                       Placeholder="@StorageItem.PurchasePrice.ToString(CultureInfo.InvariantCulture)"
                                        Min="0"/>
                     </Edit>
                 </EditableField>
@@ -56,13 +56,13 @@
             <FieldListItem Title="Цена продажи">
                 <EditableField OnCancel="@(() => RetailPriceEdit = null)"
                                OnEdit="@(() => RetailPriceEdit = new UpdateStorageItemRetailPriceHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdateRetailPrice())">
+                               OnSave="@(async () => await UpdateRetailPrice())">
                     <View>@StorageItem.RetailPrice</View>
                     <Edit>
                         <RadzenNumeric style="display: flex; align-items: center"
                                        @bind-Value="RetailPriceEdit.RetailPrice"
                                        ShowUpDown="false"
-                                       Placeholder="@StorageItem.RetailPrice.ToString()"
+                                       Placeholder="@StorageItem.RetailPrice.ToString(CultureInfo.InvariantCulture)"
                                        Min="0"/>
                     </Edit>
                 </EditableField>
@@ -71,13 +71,13 @@
             <FieldListItem Title="Состояние">
                 <EditableField OnCancel="@(() => ConditionEdit = null)"
                                OnEdit="@(() => ConditionEdit = new UpdateStorageItemConditionHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdateCondition())">
+                               OnSave="@(async () => await UpdateCondition())">
                     <View>@StorageItem.Condition</View>
                     <Edit>
                         <RadzenDropDown style="display: flex; "
                                         AllowClear="true"
                                         TValue="Guid"
-                                        Data=@(Conditions.Select(g => new {Id = g.Id, Name = g.Name}))
+                                        Data=@(Conditions.Select(g => new {g.Id, g.Name}))
                                         TextProperty="Name"
                                         ValueProperty="Id"
                                         @bind-Value="ConditionEdit.ConditionId"/>
@@ -88,7 +88,7 @@
             <FieldListItem Title="Комментарий">
                 <EditableField OnCancel="@(() => CommentEdit = null)"
                                OnEdit="@(() => CommentEdit = new UpdateStorageItemCommentHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdateComment())">
+                               OnSave="@(async () => await UpdateComment())">
                     <View>@StorageItem.Comment</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -101,7 +101,7 @@
             <FieldListItem Title="Скрытый комментарий">
                 <EditableField OnCancel="@(() => HiddenCommentEdit = null)"
                                OnEdit="@(() => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(() => UpdateHiddenComment())">
+                               OnSave="@(async () => await UpdateHiddenComment())">
                     <View>@StorageItem.HiddenComment</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -127,7 +127,6 @@
             </Columns>
         </RadzenGrid>
     </RadzenFieldset>
-    </LoadedContent>
 </LoadingContent>
 
 @code

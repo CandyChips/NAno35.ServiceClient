@@ -18,57 +18,32 @@
                                     TValue="Guid"
                                     @bind-Value="_model.StorageItemId"
                                     Style="width: 100%;"
-                                    Placeholder="..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"
                                     Change="StorageItemSelected"/>
-                    <RadzenButton Click=@(_ => OpenCreateStorageItem())
-                                  Text="Добавить"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => OpenCreateStorageItem()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.StorageItemId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
         </InputField>
         
         <InputField Title="Ячейка на складе">
-            <Controls>
-                <SelectComingDetailPlaceOnStorage
-                    @bind-PlaceOnStorage="_model.PlaceOnStorage"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
-            </Validation>
+            <Controls><SelectComingDetailPlaceOnStorage @bind-PlaceOnStorage="_model.PlaceOnStorage"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
         </InputField>
         
         <InputField Title="Количество">
-            <Controls>
-                <RadzenNumeric style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Count"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Count)" />
-            </Validation>
+            <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Count"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
         </InputField>
         
         <InputField Title="Цена за еденицу">
-            <Controls>
-                <RadzenNumeric style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Price"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Price)" />
-            </Validation>
+            <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Price"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
         </InputField>
 
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     }
 </EditForm>
 

@@ -11,95 +11,93 @@
 
    
 <LoadingContent IsLoaded="_isLoaded">
-    <LoadedContent>
-        <FieldList Title="Информация">
-            <FieldListItem Title="Фио Клинта">
-                <EditableField OnCancel="@(() => NameEdit = null)"
-                               OnEdit="@(() => NameEdit = new UpdateClientsNameHttpBody() {ClientId = Client.Id})"
-                               OnSave="@(() => UpdateName())">
-                    <View>
-                        <p>@Client.Name</p></View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="NameEdit.Name"
-                                       Placeholder="@Client.Name"/>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            <FieldListItem Title="Телефон клиента">
-                <EditableField OnCancel="@(() => PhoneEdit = null)"
-                               OnEdit="@(() => PhoneEdit = new UpdateClientsPhoneHttpBody() {ClientId = Client.Id})"
-                               OnSave="@(() => UpdatePhone())">
-                    <View>
-                        <p>@Client.Phone</p></View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="PhoneEdit.Phone"
-                                       Placeholder="@Client.Phone"/>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            <FieldListItem Title="Email клиента">
-                <EditableField OnCancel="@(() => EmailEdit = null)"
-                               OnEdit="@(() => EmailEdit = new UpdateClientsEmailHttpBody() {ClientId = Client.Id})"
-                               OnSave="@(() => UpdateEmail())">
-                    <View>
-                        <p>@Client.Email</p></View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="EmailEdit.Email"
-                                       Placeholder="@Client.Email"/>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            <FieldListItem Title="Статус клиента">
-                <EditableField OnCancel="@(() => StateEdit = null)"
-                               OnEdit="@(() => StateEdit = new UpdateClientsStateHttpBody() {ClientId = Client.Id})"
-                               OnSave="@(() => UpdateState())">
-                    <View>
-                        <p>@Client.ClientState</p></View>
-                    <Edit>
-                        <RadzenDropDown style="display: flex; "
-                                        AllowClear="true"
-                                        TValue="Guid"
-                                        Data=@(States.Select(g => new {Id = g.Id, Name = g.Name}))
-                                        TextProperty="Name"
-                                        ValueProperty="Id"
-                                        @bind-Value="StateEdit.StateId">
-                        </RadzenDropDown>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            <FieldListItem Title="Тип клиента">
-                <EditableField OnCancel="@(() => TypeEdit = null)"
-                               OnEdit="@(() => TypeEdit = new UpdateClientsTypeHttpBody() {ClientId = Client.Id})"
-                               OnSave="@(() => UpdateType())">
-                    <View>
-                        <p>@Client.ClientType</p></View>
-                    <Edit>
-                        <RadzenDropDown style="display: flex; "
-                                        AllowClear="true"
-                                        TValue="Guid"
-                                        Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
-                                        TextProperty="Name"
-                                        ValueProperty="Id"
-                                        @bind-Value="TypeEdit.TypeId">
-                        </RadzenDropDown>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            <RadzenButton Click="@(() => ConfirmDelete())"
-                          Text="Удалить"
-                          Size="ButtonSize.Small"
-                          ButtonStyle="ButtonStyle.Danger"
-                          Style="display: flex;
-                                 align-items: end;
-                                 width: 50px;
-                                 justify-content: center;
-                                 align-self: flex-end;
-                                 margin-top: 10px;"/>
-        </FieldList>
-    </LoadedContent>
+    <FieldList Title="Информация">
+        <FieldListItem Title="Фио Клинта">
+            <EditableField OnCancel="@(() => NameEdit = null)"
+                           OnEdit="@(() => NameEdit = new UpdateClientsNameHttpBody() {ClientId = Client.Id})"
+                           OnSave="@(() => UpdateName())">
+                <View>
+                    <p>@Client.Name</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="NameEdit.Name"
+                                   Placeholder="@Client.Name"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        <FieldListItem Title="Телефон клиента">
+            <EditableField OnCancel="@(() => PhoneEdit = null)"
+                           OnEdit="@(() => PhoneEdit = new UpdateClientsPhoneHttpBody() {ClientId = Client.Id})"
+                           OnSave="@(() => UpdatePhone())">
+                <View>
+                    <p>@Client.Phone</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="PhoneEdit.Phone"
+                                   Placeholder="@Client.Phone"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        <FieldListItem Title="Email клиента">
+            <EditableField OnCancel="@(() => EmailEdit = null)"
+                           OnEdit="@(() => EmailEdit = new UpdateClientsEmailHttpBody() {ClientId = Client.Id})"
+                           OnSave="@(() => UpdateEmail())">
+                <View>
+                    <p>@Client.Email</p></View>
+                <Edit>
+                    <RadzenTextBox style="display: flex;align-items: center"
+                                   @bind-Value="EmailEdit.Email"
+                                   Placeholder="@Client.Email"/>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        <FieldListItem Title="Статус клиента">
+            <EditableField OnCancel="@(() => StateEdit = null)"
+                           OnEdit="@(() => StateEdit = new UpdateClientsStateHttpBody() {ClientId = Client.Id})"
+                           OnSave="@(() => UpdateState())">
+                <View>
+                    <p>@Client.ClientState</p></View>
+                <Edit>
+                    <RadzenDropDown style="display: flex; "
+                                    AllowClear="true"
+                                    TValue="Guid"
+                                    Data=@(States.Select(g => new {Id = g.Id, Name = g.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    @bind-Value="StateEdit.StateId">
+                    </RadzenDropDown>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        <FieldListItem Title="Тип клиента">
+            <EditableField OnCancel="@(() => TypeEdit = null)"
+                           OnEdit="@(() => TypeEdit = new UpdateClientsTypeHttpBody() {ClientId = Client.Id})"
+                           OnSave="@(() => UpdateType())">
+                <View>
+                    <p>@Client.ClientType</p></View>
+                <Edit>
+                    <RadzenDropDown style="display: flex; "
+                                    AllowClear="true"
+                                    TValue="Guid"
+                                    Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    @bind-Value="TypeEdit.TypeId">
+                    </RadzenDropDown>
+                </Edit>
+            </EditableField>
+        </FieldListItem>
+        <RadzenButton Click="@(() => ConfirmDelete())"
+                      Text="Удалить"
+                      Size="ButtonSize.Small"
+                      ButtonStyle="ButtonStyle.Danger"
+                      Style="display: flex;
+                             align-items: end;
+                             width: 50px;
+                             justify-content: center;
+                             align-self: flex-end;
+                             margin-top: 10px;"/>
+    </FieldList>
 </LoadingContent>
 
 @code

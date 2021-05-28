@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
-@using System.Web.Razor.Parser.SyntaxTree
 @using Nano35.WebClient.Helpers
 @attribute [Authorize]
 @layout InstanceLayout
@@ -11,16 +10,8 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
+    
     <RadzenHeading Text="Наличие"/>
     
     <RadzenGrid AllowFiltering="true"
@@ -30,7 +21,7 @@ else
                 PageSize="10"
                 AllowSorting="true"
                 Data="@_data"
-                TItem="StorageItemOnInstanceViewModel">
+                TItem="StorageItemOnUnitViewModel">
         <Template Context="item">
             @if (item.Item.Images.Count == 0)
             {
@@ -52,11 +43,11 @@ else
             }
         </Template>
         <Columns>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
                               Property="Item.Name"
                               Sortable="false"
                               Title="Изделие"/>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
                               Filterable="false"
                               Sortable="false"
                               Width="130px"
@@ -65,7 +56,7 @@ else
                     @item.Item.RetailPrice руб.
                 </Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
                               Filterable="false"
                               Sortable="false"
                               Width="130px"
@@ -74,7 +65,7 @@ else
                     @item.Item.PurchasePrice руб.
                 </Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
                               Filterable="false"
                               Sortable="false"
                               Width="100px"
@@ -83,12 +74,12 @@ else
                     @item.Count шт.
                 </Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnInstanceViewModel"
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
                               Context="coming"
                               Bubble="false"
                               Sortable="false"
                               Filterable="false"
-                              Width="auto"
+                              Width="200px"
                               TextAlign="TextAlign.Center">
                 <Template Context="item">
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
@@ -105,24 +96,25 @@ else
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
 
 @code
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    private IEnumerable<StorageItemOnInstanceViewModel> _data;
+    private IEnumerable<StorageItemOnUnitViewModel> _data;
     private List<Guid> _roles = new();
-    private bool _loading = true;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {        
+        _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
-        _data = (await new HttpGetRequest<GetAllStorageItemsOnInstanceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnInstance?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Contains;
-        _loading = false;
+        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        _isLoaded = true;
     }
 
-    private async Task OpenStorageItem(StorageItemOnInstanceViewModel value)
+    private async Task OpenStorageItem(StorageItemOnUnitViewModel value)
     {
         var parameters = new ModalParameters();
         parameters.Add(nameof(StorageItemsDetails.Item), value);

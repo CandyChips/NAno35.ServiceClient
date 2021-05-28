@@ -1,6 +1,6 @@
 ﻿@using Nano35.WebClient.Services
-@inject IAuthService _authService 
-@inject NavigationManager _navigationManager 
+@inject IAuthService AuthService 
+@inject NavigationManager NavigationManager 
 
 <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
     <NavLink class="navbar-brand" href="" Match="NavLinkMatch.All">
@@ -22,8 +22,8 @@
                         </NavLink>
                     </li>
                     <li class="nav-item">
-                        <NavLink class="nav-link" href="log-out">
-                            <RadzenButton type="button" Text="Выход" Click="BeginSignOut" ButtonStyle="ButtonStyle.Secondary"/>
+                        <NavLink class="nav-link" href="#" @onclick="BeginSignOut">
+                            Выход
                         </NavLink>
                     </li>
                 </Authorized>
@@ -48,7 +48,7 @@
 @code{
     async Task BeginSignOut()
     {
-        await _authService.LogOut();
-        _navigationManager.NavigateTo("/log-in");
+        await AuthService.LogOut();
+        NavigationManager.NavigateTo("/log-in");
     }
 }

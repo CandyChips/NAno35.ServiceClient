@@ -8,16 +8,8 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_loading">
+    
     <RadzenHeading Text="Оприходования"/>
     
     <RadzenButton Click=@(_ => NewComing()) 
@@ -71,18 +63,19 @@ else
             
         </Columns>
     </RadzenGrid>
-    
-}
+</LoadingContent>
 
 @code
 {
     private IEnumerable<ComingViewModel> _data;
-    private bool _loading = true;
+    private bool _loading;
     [CascadingParameter] public IModalService Modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        _loading = false;
         _data = await GetAllComings();
+        _loading = true;
     }
     
     private async Task<IEnumerable<ComingViewModel>> GetAllComings() =>

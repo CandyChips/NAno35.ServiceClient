@@ -2,23 +2,22 @@
 @using Nano35.HttpContext.instance
 @using UnitViewModel = Nano35.Contracts.Instance.Models.UnitViewModel
 @using UnitTypeViewModel = Nano35.Contracts.Instance.Models.UnitTypeViewModel
-@inject HttpClient _httpClient
-@inject IRequestManager _requestManager
-@inject ISessionProvider _sessionProvider
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
 
 <LoadingContent IsLoaded="_isLoaded">
-    <LoadedContent>
         <FieldList Title="Информация">
             <FieldListItem Title="Тип подразделения">
                 <EditableField OnCancel="@(() => TypeEdit = null)"
                                OnEdit="@(() => TypeEdit = new UpdateUnitsTypeHttpBody(){UnitId = Unit.Id})"
-                               OnSave="@(() => UpdateType())">
+                               OnSave="@(async () => await UpdateType())">
                     <View>@Unit.UnitType</View>
                     <Edit>
                         <RadzenDropDown style="display: flex; "
                                         AllowClear="true"
                                         TValue="Guid"
-                                        Data=@(UnitTypes.Select(g => new {Id = g.Id, Name = g.Name}))
+                                        Data=@(UnitTypes.Select(g => new {g.Id, g.Name}))
                                         TextProperty="Name"
                                         ValueProperty="Id"
                                         @bind-Value="TypeEdit.TypeId">
@@ -30,7 +29,7 @@
             <FieldListItem Title="Имя подразделения">
                 <EditableField OnCancel="@(() => NameEdit = null)"
                                OnEdit="@(() => NameEdit = new UpdateUnitsNameHttpBody(){UnitId = Unit.Id})"
-                               OnSave="@(() => UpdateName())">
+                               OnSave="@(async () => await UpdateName())">
                     <View>@Unit.Name</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -43,7 +42,7 @@
             <FieldListItem Title="Телефон подразделенияи">
                 <EditableField OnCancel="@(() => PhoneEdit = null)"
                                OnEdit="@(() => PhoneEdit = new UpdateUnitsPhoneHttpBody(){UnitId = Unit.Id})"
-                               OnSave="@(() => UpdatePhone())">
+                               OnSave="@(async () => await UpdatePhone())">
                     <View>@Unit.Phone</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -56,7 +55,7 @@
             <FieldListItem Title="Адресс подразделения">
                 <EditableField OnCancel="@(() => AddressEdit = null)"
                                OnEdit="@(() => AddressEdit = new UpdateUnitsAddressHttpBody(){UnitId = Unit.Id})"
-                               OnSave="@(() => UpdateAddress())">
+                               OnSave="@(async () => await UpdateAddress())">
                     <View>@Unit.Address</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -69,7 +68,7 @@
             <FieldListItem Title="Формат работы">
                 <EditableField OnCancel="@(() => WorkingFormatEdit = null)"
                                OnEdit="@(() => WorkingFormatEdit = new UpdateUnitsWorkingFormatHttpBody(){UnitId = Unit.Id})"
-                               OnSave="@(() => UpdateWorkingFormat())">
+                               OnSave="@(async () => await UpdateWorkingFormat())">
                     <View>@Unit.WorkingFormat</View>
                     <Edit>
                         <RadzenTextBox style="display: flex;align-items: center"
@@ -79,59 +78,56 @@
                 </EditableField>
             </FieldListItem>
         </FieldList>
-    </LoadedContent>
 </LoadingContent>
 
 @code
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-
     [Parameter] public UnitViewModel Unit { get; set; }
-    
     private List<UnitTypeViewModel> UnitTypes { get; set; }
-    
     private UpdateUnitsNameHttpBody NameEdit { get; set; }
     private UpdateUnitsPhoneHttpBody PhoneEdit { get; set; }
     private UpdateUnitsAddressHttpBody AddressEdit { get; set; }
     private UpdateUnitsTypeHttpBody TypeEdit { get; set; }
     private UpdateUnitsWorkingFormatHttpBody WorkingFormatEdit { get; set; }
     
-    
-    private bool _isLoaded = false;
+    private bool _isLoaded;
 
-    
     protected override async Task OnInitializedAsync()
     {
-        UnitTypes = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
+        UnitTypes = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
         _isLoaded = true;
     }
 
-
     private async Task UpdateName()
     {
-        await new HttpPatchRequest<UpdateUnitsNameHttpBody, UpdateUnitsNameHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{NameEdit.UnitId}/Name").PatchAsync(NameEdit);
+        await new HttpPatchRequest<UpdateUnitsNameHttpBody, UpdateUnitsNameHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{NameEdit.UnitId}/Name").PatchAsync(NameEdit);
         NameEdit = null;
     }
+    
     private async Task UpdatePhone()
     {
-        await new HttpPatchRequest<UpdateUnitsPhoneHttpBody, UpdateUnitsPhoneHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{PhoneEdit.UnitId}/Phone").PatchAsync(PhoneEdit);
+        await new HttpPatchRequest<UpdateUnitsPhoneHttpBody, UpdateUnitsPhoneHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{PhoneEdit.UnitId}/Phone").PatchAsync(PhoneEdit);
 
         PhoneEdit = null;
     }
+    
     private async Task UpdateAddress()
     {
-        await new HttpPatchRequest<UpdateUnitsAddressHttpBody, UpdateUnitsAddressHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{AddressEdit.UnitId}/Address").PatchAsync(AddressEdit);
+        await new HttpPatchRequest<UpdateUnitsAddressHttpBody, UpdateUnitsAddressHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{AddressEdit.UnitId}/Address").PatchAsync(AddressEdit);
         AddressEdit = null;
     }
+    
     private async Task UpdateType()
     {
-        await new HttpPatchRequest<UpdateUnitsTypeHttpBody, UpdateUnitsTypeHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{TypeEdit.UnitId}/Type").PatchAsync(TypeEdit);
+        await new HttpPatchRequest<UpdateUnitsTypeHttpBody, UpdateUnitsTypeHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{TypeEdit.UnitId}/Type").PatchAsync(TypeEdit);
         TypeEdit = null;
     }
+    
     private async Task UpdateWorkingFormat()
     {
-        await new HttpPatchRequest<UpdateUnitsWorkingFormatHttpBody, UpdateUnitsWorkingFormatHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Units/{WorkingFormatEdit.UnitId}/WorkingFormat").PatchAsync(WorkingFormatEdit);
+        await new HttpPatchRequest<UpdateUnitsWorkingFormatHttpBody, UpdateUnitsWorkingFormatHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{WorkingFormatEdit.UnitId}/WorkingFormat").PatchAsync(WorkingFormatEdit);
         WorkingFormatEdit = null;
     }
 }

@@ -8,7 +8,6 @@
 @inject ISessionProvider SessionProvider
 
 <LoadingContent IsLoaded="_loading">
-    <LoadedContent>
         <FieldListItem Title="Наследуемая категория">
             <EditableField OnCancel="@(() => ParentEdit = null)"
                            OnEdit="@(() => ParentEdit = new UpdateCategoryParentCategoryHttpBody() {Id = Category.Id})"
@@ -41,7 +40,6 @@
                         </Edit>
         	</EditableField>
         </FieldListItem>
-    </LoadedContent>
 </LoadingContent>
 
 @code

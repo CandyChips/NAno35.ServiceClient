@@ -67,7 +67,7 @@ namespace Nano35.WebClient.Services
         }
     }
     
-    public class HttpDeleteRequest< TResponse>
+    public class HttpDeleteRequest<TResponse>
         where TResponse : IHttpResponse
         {
             private readonly HttpClient _httpClient;

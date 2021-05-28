@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <NameOfLastUsedPublishProfile>C:\Users\user\RiderProjects\123\Nano35.ServiceClient\Nano35.WebClient\Nano35.WebClient\Properties\PublishProfiles\registry.hub.docker.com_bushemi2021.pubxml</NameOfLastUsedPublishProfile>
+    <ActiveDebugProfile>Nano35.WebClient</ActiveDebugProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
+  </PropertyGroup>
+</Project>

@@ -2,6 +2,7 @@
 @using Nano35.WebClient.Services
 @using Microsoft.AspNetCore.Components
 @using Nano35.HttpContext.identity
+@using System.Text.RegularExpressions
 @inject IAuthService _authService           
 @inject NavigationManager _navigationManager
 @inject HttpClient _httpClient
@@ -15,7 +16,7 @@
                 <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
                     <InputField Title="Номер телефона">
-                        <Controls><InputText @bind-Value="_model.Login" class="form-control"/></Controls>
+                         <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
                         <Validation><ValidationMessage For="@(() => _model.Login)" /></Validation>
                     </InputField>
     
@@ -48,6 +49,7 @@
     private GenerateUserTokenHttpBody _model = new();
     private bool _isLoaded = true;
     private string _error;
+    private string Phone { get ; set ; } = "+7";
 
     protected override async Task OnInitializedAsync()
     {
@@ -66,5 +68,31 @@
         {
             _error = ex.Message;
         }
+    }
+    
+    private async Task PhoneMask()
+    {
+
+        Phone = Regex.Replace(Phone, @"[^\d]", "");
+        
+        var countryCode = "+7";
+        
+        if (Phone.StartsWith("7"))
+            Phone = Phone.Remove(0,1);
+        
+        if (Phone.StartsWith("8"))
+            Phone = Phone.Remove(0,1);
+        
+        _model.Login = Phone;
+        
+        if (Phone.Length < 10)
+            Phone = Phone.PadRight(10);
+
+        if (Phone.Length > 10)
+            Phone = Phone.Substring(0, 10);
+
+        Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
+        
+        
     }
 }

@@ -1,6 +1,7 @@
 ﻿@page "/Registration"
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.identity
+@using System.Text.RegularExpressions
 @inject IAuthService _authService 
 @inject NavigationManager _navigationManager
 
@@ -18,7 +19,7 @@
                     </InputField>
 
                     <InputField Title="Номер телефона">
-                        <Controls><InputText @bind-Value="_model.Phone" class="form-control" /></Controls>
+                         <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
                         <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
                     </InputField>
 
@@ -62,7 +63,9 @@
     private readonly RegisterHttpBody _model = new();
     private bool _isLoaded;
     private string _error;
+    private string Phone { get ; set ; } = "+7";
 
+    
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = true;
@@ -79,5 +82,29 @@
         {
             _error = ex.Message;
         }
+    }
+    
+    private async Task PhoneMask()
+    {
+
+        Phone = Regex.Replace(Phone, @"[^\d]", "");
+        
+        var countryCode = "+7";
+        
+        if (Phone.StartsWith("7"))
+            Phone = Phone.Remove(0,1);
+        
+        if (Phone.StartsWith("8"))
+            Phone = Phone.Remove(0,1);
+        
+        if (Phone.Length < 10)
+            Phone = Phone.PadRight(10);
+
+        if (Phone.Length > 10)
+            Phone = Phone.Substring(0, 10);
+
+        Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
+        
+        _model.Phone = Phone;
     }
 }

@@ -8,23 +8,12 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Списания"/>
-    
-    <RadzenButton Click=@(_ => NewCancellation()) 
+    <RadzenButton Click="@(_ => NewCancellation())" 
                   Text="Создать"
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
-    
     <RadzenGrid AllowFiltering="true" 
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced" 
@@ -71,7 +60,7 @@ else
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
 
 @code
 {

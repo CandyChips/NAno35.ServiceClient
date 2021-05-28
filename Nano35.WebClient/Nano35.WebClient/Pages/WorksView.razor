@@ -5,22 +5,12 @@
 @using Nano35.Contracts.Repair.Models
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Services
-@inject IRequestManager RequestManager
-@inject ISessionProvider SessionProvider
-@inject HttpClient HttpClient
+@inject IRequestManager _requestManager
+@inject ISessionProvider _sessionProvider
+@inject HttpClient _httpClient
 
-@if (_isLoaded)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Мои активные заказы на ремонт"/>
-    
     <RadzenGrid AllowFiltering="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced"
@@ -60,7 +50,7 @@ else
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
 
 @code {
     private bool _isLoaded = true;
@@ -70,7 +60,7 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(_httpClient, $"{_requestManager.RepairOrdersServer}/RepairOrders?InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = false;
     }
 
@@ -85,7 +75,7 @@ else
     {
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
         await modal.Result;
-        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(_httpClient, $"{_requestManager.RepairOrdersServer}/RepairOrders?InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
 
     }
 

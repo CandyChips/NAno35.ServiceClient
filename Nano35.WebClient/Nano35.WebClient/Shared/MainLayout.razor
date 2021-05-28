@@ -29,12 +29,12 @@ else
 
 @code
 {
-    private bool _serverAvailable = false;
+    private bool _serverAvailable = true;
     private bool _loading = true;
         
     protected override async Task OnInitializedAsync()
     {
-        _serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
+        //_serverAvailable = await RequestManager.HealthCheck(RequestManager.IdentityServer);
         _loading = false;
     }
 }

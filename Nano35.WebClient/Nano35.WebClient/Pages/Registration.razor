@@ -1,77 +1,59 @@
 ﻿@page "/Registration"
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.identity
-@inject IAuthService AuthService 
-@inject NavigationManager NavigationManager
+@inject IAuthService _authService 
+@inject NavigationManager _navigationManager
 
-<div class="col-md-6 offset-md-3 mt-5">
-    <div class="card">
-        <LoadingContent IsLoaded="_isLoaded">
-            <LoadedContent>
-                <RadzenPanel>
-                    <ChildContent>
-                        <h1>Регистрация</h1>
-                        <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-                            <DataAnnotationsValidator />
+<div class="col-md-4 offset-md-4 mt-5">
+    <LoadingContent IsLoaded="_isLoaded">
+        <RadzenPanel>
+            <ChildContent>
+                <h1>Регистрация</h1>
+                <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
 
-                            <InputField Title="Ф.И.О.">
-                                <Controls>
-                                    <InputText @bind-Value="_model.Name" class="form-control" />
-                                </Controls>
-                                <Validation>
-                                    <ValidationMessage For="@(() => _model.Name)" />
-                                </Validation>
-                            </InputField>
+                    <InputField Title="Ф.И.О.">
+                        <Controls><InputText @bind-Value="_model.Name" class="form-control" /></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Name)" /></Validation>
+                    </InputField>
 
-                            <InputField Title="Номер телефона">
-                                <Controls>
-                                    <InputText @bind-Value="_model.Phone" class="form-control" />
-                                </Controls>
-                                <Validation>
-                                    <ValidationMessage For="@(() => _model.Phone)" />
-                                </Validation>
-                            </InputField>
+                    <InputField Title="Номер телефона">
+                        <Controls><InputText @bind-Value="_model.Phone" class="form-control" /></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
+                    </InputField>
 
-                            <InputField Title="Электронная почта">
-                                <Controls>
-                                    <InputText @bind-Value="_model.Email" class="form-control" />
-                                </Controls>
-                                <Validation>
-                                    <ValidationMessage For="@(() => _model.Email)" />
-                                </Validation>
-                            </InputField>
+                    <InputField Title="Электронная почта">
+                        <Controls><InputText @bind-Value="_model.Email" class="form-control" /></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Email)" /></Validation>
+                    </InputField>
 
-                            <InputField Title="Пароль">
-                                <Controls>
-                                    <InputText @bind-Value="_model.Password" class="form-control" />
-                                </Controls>
-                                <Validation>
-                                    <ValidationMessage For="@(() => _model.Password)" />
-                                </Validation>
-                            </InputField>
+                    <InputField Title="Пароль">
+                        <Controls><InputText @bind-Value="_model.Password" type="password" class="form-control" /></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.Password)" /></Validation>
+                    </InputField>
 
-                            <InputField Title="Подтверждение пароля">
-                                <Controls>
-                                    <InputText @bind-Value="_model.PasswordConfirm" class="form-control" />
-                                </Controls>
-                                <Validation>
-                                    <ValidationMessage For="@(() => _model.PasswordConfirm)" />
-                                </Validation>
-                            </InputField>
-                            
-                            <button class="btn btn-primary">Зарегитрироваться</button>
-                            <NavLink class="btn btn-secondary" href="log-in">Авторизация</NavLink>
-                            
-                            @if (!string.IsNullOrEmpty(_error))
-                            {
-                                <div class="alert alert-danger mt-3 mb-0">@_error</div>
-                            }
-                        </EditForm>
-                    </ChildContent>
-                </RadzenPanel>
-            </LoadedContent>
-        </LoadingContent>
-    </div>
+                    <InputField Title="Подтверждение пароля">
+                        <Controls><InputText @bind-Value="_model.PasswordConfirm" type="password" class="form-control" /></Controls>
+                        <Validation><ValidationMessage For="@(() => _model.PasswordConfirm)" /></Validation>
+                    </InputField>
+                    
+                    <RadzenButton type="submit"
+                                  Text="Зарегитрироваться"
+                                  ButtonStyle="ButtonStyle.Primary"/>
+                    <NavLink href="log-in">
+                        <RadzenButton type="button"
+                                      Text="Вход"
+                                      ButtonStyle="ButtonStyle.Secondary"/>
+                    </NavLink>
+                    
+                    @if (!string.IsNullOrEmpty(_error))
+                    {
+                        <div class="alert alert-danger mt-3 mb-0">@_error</div>
+                    }
+                </EditForm>
+            </ChildContent>
+        </RadzenPanel>
+    </LoadingContent>
 </div>
 
 
@@ -90,8 +72,8 @@
     {
         try
         {
-            await AuthService.Register(_model);
-            NavigationManager.NavigateTo("/log-in");
+            await _authService.Register(_model);
+            _navigationManager.NavigateTo("/log-in");
         }
         catch (Exception ex)
         {

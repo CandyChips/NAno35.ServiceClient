@@ -1,12 +1,11 @@
 ﻿@page "/log-in"
 @using Nano35.WebClient.Services
-@using Microsoft.AspNetCore.Components
 @using Nano35.HttpContext.identity
 @using System.Text.RegularExpressions
-@inject IAuthService _authService           
-@inject NavigationManager _navigationManager
-@inject HttpClient _httpClient
-@inject IRequestManager _requestManager     
+@inject IAuthService AuthService
+@inject IRequestManager RequestManager
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
 
 <div class="col-md-4 offset-md-4 mt-5">
     <LoadingContent IsLoaded="_isLoaded">
@@ -16,24 +15,17 @@
                 <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
                     <DataAnnotationsValidator />
                     <InputField Title="Номер телефона">
-                         <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
+                        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
                         <Validation><ValidationMessage For="@(() => _model.Login)" /></Validation>
                     </InputField>
-    
                     <InputField Title="Пароль">
                         <Controls><InputText @bind-Value="_model.Password" type="password" class="form-control"/></Controls>
                         <Validation><ValidationMessage For="@(() => _model.Password)" /></Validation>
                     </InputField>
-                    
-                    <RadzenButton type="submit"
-                                  Text="Войти"
-                                  ButtonStyle="ButtonStyle.Primary"/>
+                    <RadzenButton type="submit" Text="Войти" ButtonStyle="ButtonStyle.Primary"/>
                     <NavLink href="registration">
-                        <RadzenButton type="button"
-                                      Text="Регистрация"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton type="button" Text="Регистрация" ButtonStyle="ButtonStyle.Secondary"/>
                     </NavLink>
-                        
                     @if (!string.IsNullOrEmpty(_error))
                     {
                         <div class="alert alert-danger mt-3 mb-0">@_error</div>
@@ -51,7 +43,7 @@
     private string _error;
     private string Phone { get ; set ; } = "+7";
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         _isLoaded = true;
     }
@@ -60,9 +52,9 @@
     {
         try
         {
-            var response = await new HttpPostRequest<GenerateUserTokenHttpBody,GenerateUserTokenHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model); 
-            await _authService.Login(response.Token);
-            _navigationManager.NavigateTo("/");
+            var response = await new HttpPostRequest<GenerateUserTokenHttpBody,GenerateUserTokenHttpResponse>(HttpClient, $"{RequestManager.IdentityServer}/Identity/Authenticate").PostAsync(_model); 
+            await AuthService.Login(response.Token);
+            NavigationManager.NavigateTo("/");
         }
         catch (Exception ex)
         {
@@ -70,7 +62,7 @@
         }
     }
     
-    private async Task PhoneMask()
+    private void PhoneMask()
     {
 
         Phone = Regex.Replace(Phone, @"[^\d]", "");

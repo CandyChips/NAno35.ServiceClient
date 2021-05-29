@@ -11,57 +11,6 @@
 @inject IAuthService AuthService
 
 <LoadingContent IsLoaded="_isLoaded">
-    @switch (_model.CurrentState)
-    {
-        case 0:
-        {
-            <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
-            break;
-        };
-        case 1:
-        {
-            <RadzenButton Text="Отметить как продиагностированный" Click="@(SetAsDiagnosted)"/>
-            break;
-        };
-        case 2:
-        {
-            <RadzenButton Text="Отметить как согласованный" Click="@(SetAsAgreement)"/>
-            break;
-        };
-        case 3:
-        {
-            <RadzenButton Text="Ожидание" Click="@(SetAsOnWait)"/>
-            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
-            <RadzenButton Text="Готово" Click="@(SetAsReady)"/>
-            break;
-        };
-        case 4:
-        {
-            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
-            break;
-        };
-        case 5:
-        {
-            <RadzenButton Text="Ожидание" Click="@(SetAsOnWait)"/>
-            <RadzenButton Text="Готово" Click="@(SetAsReady)"/>
-            break; 
-        };
-        case 6:
-        {
-            <RadzenButton Text="Завершено" Click="@(SetAsCompleted)"/>
-            break; 
-        };
-        case 7:
-        {
-            <RadzenButton Text="Закрыто" Click="@(SetAsCompleted)"/>
-            break; 
-        };
-        case 8:
-        {
-            <RadzenButton Text="Закрыто" Click="@(SetAsClosed)"/>
-            break; 
-        };
-    }
     
     <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
         @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
@@ -137,7 +86,7 @@
                             </EditForm>
                         }
                     </li>
-                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                    <li class="list-group-item" style="width: 100%; display: flex;">
                         @if (ConditionEdit == null)
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Внешний вид: @_model.Condition</b>
@@ -196,7 +145,7 @@
                          </EditForm>
                         }
                     </li>
-                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                    <li class="list-group-item" style="width: 100%; display: flex;">
                         @if (ComplicationEdit == null)
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Комплектация: @_model.Complication</b>
@@ -256,7 +205,7 @@
                         }
                     </li>
                 
-                    <li class="list-group-item" role="alert" style="width: 100%; display: flex;">
+                    <li class="list-group-item" style="width: 100%; display: flex;">
                         @if (SerialEdit == null)
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Серийный номер/IMEI: @_model.Serial</b>
@@ -315,27 +264,73 @@
                             </EditForm>
                         }
                     </li>
-                    <li class="list-group-item " role="alert">
-                        <b>Исполнитель: @_model.Performer</b>
-                    </li>
+                    @if (_model.Performer != "")
+                    {
+                        <li class="list-group-item ">
+                            <b>Исполнитель: @_model.Performer</b>
+                        </li>
+                    }
                 </ul>
             </RadzenFieldset>
             <RadzenFieldset Text="Состояние"
                             Style="width: 70%;">
                 <ul class="list-group">
+                    <li class="list-group-item alert alert-primary">
+                    @switch (_model.CurrentState)
+                    {
+                        case 0:
+                        {
+                            <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                            break;
+                        };
+                        case 1:
+                        {
+                            <RadzenButton Text="На диагностике" Click="@(SetAsDiagnosted)"/>
+                            break;
+                        };
+                        case 2:
+                        {
+                            <RadzenButton Text="Согласован с клиентом " Click="@(SetAsAgreement)"/>
+                            break;
+                        };
+                        case 3:
+                        {
+                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
+                            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                            break;
+                        };
+                        case 4:
+                        {
+                            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                            break;
+                        };
+                        case 5:
+                        {
+                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
+                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                            break; 
+                        };
+                        case 6:
+                        {
+                            <RadzenButton Text="Завершен" Click="@(SetAsCompleted)"/>
+                            break; 
+                        };
+                        case 7:
+                        {
+                            <RadzenButton Text="Закрыт" Click="@(SetAsCompleted)"/>
+                            break; 
+                        };
+                        case 8:
+                        {
+                            <RadzenButton Text="Закрыто" Click="@(SetAsClosed)"/>
+                            break; 
+                        };
+                    }
+                    </li>
                     @foreach (var state in _states)
                     {
-                        <li class="list-group-item alert alert-primary" role="alert">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>
-                    }
-                    @if (!(_states.Select(e => e.Type).Contains(2) ||
-                           _states.Select(e => e.Type).Contains(6)))
-                    {
-                        <li class="list-group-item">
-                            <RadzenButton Click=@(_ => UpdateState(_model.Id))
-                                          Text="Изменить"
-                                          Style="width: 100%;"
-                                          ButtonStyle="ButtonStyle.Info"/>
-                        </li>
+                        <li class="list-group-item alert alert-primary">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>
                     }
                 </ul>
             </RadzenFieldset>
@@ -378,11 +373,11 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid Id { get; set; }
 
-    private RepairOrderViewModel _model = null;
+    private RepairOrderViewModel _model;
     private List<RepairOrdersStateViewModel> _states = new();
     private List<RepairOrderWorkViewModel> _works = new();
     private List<ArticleViewModel> _devices { get; set; }
-    private bool _isLoaded = false;
+    private bool _isLoaded;
     
     private UpdateRepairOrdersDeviceBody DeviceEdit { get; set; }
     private UpdateRepairOrdersSerialBody SerialEdit { get; set; }
@@ -398,6 +393,7 @@
     {   
         _model = (await new HttpGetRequest<GetRepairOrderByIdHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}").GetAsync()).Data;
         _states = (await new HttpGetRequest<GetAllRepairOrderStatesHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States").GetAsync()).Data;
+        _states.Reverse();
         _works = (await new HttpGetRequest<GetAllRepairOrderWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works").GetAsync()).Data;
         _devices = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").GetAsync()).Data;
         
@@ -416,17 +412,6 @@
         var parameters = new ModalParameters();
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
-        await modal.Result;
-        _isLoaded = false;
-        await Update();
-        _isLoaded = true;
-    }
-    
-    private async Task UpdateState(Guid modelId)
-    {
-        var parameters = new ModalParameters();
-        parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
-        var modal = Modal.Show<UpdateRepairOrderStateForm>($"Изменение статуса заказ наряда", parameters);
         await modal.Result;
         _isLoaded = false;
         await Update();

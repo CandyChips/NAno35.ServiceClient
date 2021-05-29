@@ -8,12 +8,10 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@Model"
-          OnValidSubmit="Create">
+<EditForm Model="@Model" OnValidSubmit="Create">
     <FluentValidationValidator/>
     <ValidationSummary/>
-    @if (_isLoaded)
-    {
+    <LoadingContent IsLoaded="_isLoaded">
         <InputField Title="Клиент*">
             <Controls>
                 <div style="display: flex; width: 100%;">
@@ -23,17 +21,13 @@
                                     TValue="Guid"
                                     @bind-Value="Model.ClientId"
                                     Style="width: 100%;"
-                                    Placeholder="Выберите клиента..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(_ => OpenCreateClient())
-                                  Text="Добавить"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => OpenCreateClient()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
         </InputField>
-        
         <InputField Title="Устройство*">
             <Controls>
                 <div style="display: flex; width: 100%;">
@@ -43,97 +37,48 @@
                                     TValue="Guid"
                                     @bind-Value="Model.DeviceId"
                                     Style="width: 100%;"
-                                    Placeholder="Выберите артикул..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click=@(_ => OpenCreateArticle())
-                                  Text="Добавить"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => OpenCreateArticle()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.DeviceId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.DeviceId)" /></Validation>
         </InputField>
-        
         <InputField Title="SN/IMEI">
-            <Controls>
-                <RadzenTextBox style="width: 100%;"
-                               Placeholder="Введите серийный номер"
-                               @bind-Value="Model.Serial"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Serial)" />
-            </Validation>
+            <Controls><RadzenTextBox style="width: 100%;" @bind-Value="Model.Serial"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Serial)" /></Validation>
         </InputField>
-
         <InputField Title="Внешний вид*">
             <Controls>
                 <div style="width: 100%; display: flex;">
-                    <RadzenTextBox Style="width: 100%;"
-                                   Placeholder="Опишите внешний вид устройства"
-                                   @bind-Value="Model.Condition"/>
-                    <RadzenButton Text="Царапины"
-                                  Click="@(_ => { Model.Condition += "Царапины "; })"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Text="Потертости"
-                                  Click="@(_ => { Model.Condition += "Потертости "; })"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Condition"/>
+                    @if(_isCond1Shown) { <RadzenButton Text="БУ" Click="@(_ => { Model.Condition += "БУ "; _isCond1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                    @if(_isCond2Shown) { <RadzenButton Text="Царапины" Click="@(_ => { Model.Condition += "Царапины "; _isCond2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                    @if(_isCond3Shown) { <RadzenButton Text="Потертости" Click="@(_ => { Model.Condition += "Потертости "; _isCond3Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Condition)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.Condition)" /></Validation>
         </InputField>
-
         <InputField Title="Неисправность со слов клиента*">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;"
-                               Placeholder="Опишите неисправность со слов клиента"
-                               @bind-Value="Model.Trouble"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Trouble)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Trouble"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Trouble)" /></Validation>
         </InputField>
-        
         <InputField Title="Комплектация*">
             <Controls>
                 <div style="width: 100%; display: flex;">
-                    <RadzenTextBox Placeholder="Опишите Комплектацию"
-                                   Style="width: 100%;"
-                                   @bind-Value="Model.Complication"/>
-                    <RadzenButton Text="ЗУ"
-                                  Click="@(_ => { Model.Complication += "З.У. "; })"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Text="Блок питания"
-                                  Click="@(_ => { Model.Complication += "Блок питания "; })"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Complication"/>
+                    @if(_isComplect1Shown) { <RadzenButton Text="ЗУ" Click="@(_ => { Model.Complication += "З.У. "; _isComplect1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                    @if(_isComplect2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания "; _isComplect2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Complication)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.Complication)" /></Validation>
         </InputField>
-    }
-    else
-    {
-        <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden"></span>
-            </div>
-        </div>
-    }
-    @if (!string.IsNullOrEmpty(Error))
-    {
-        <div class="alert alert-danger mt-3 mb-0">@Error</div>
-    }
-
-    <RadzenButton type="submit"
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%"/>
+    </LoadingContent>
+    <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
+        <AllowedContent><div class="alert alert-danger mt-3 mb-0">@Error</div></AllowedContent>
+    </ConditionalContent>
+    <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%"/>
 </EditForm>
 
 @code
@@ -144,13 +89,21 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
+    private bool _isCond1Shown = true;
+    private bool _isCond2Shown = true;
+    private bool _isCond3Shown = true;
+    private bool _isComplect1Shown = true;
+    private bool _isComplect2Shown = true;
     private bool _isLoaded;
     private List<ClientViewModel> _clients = new();
     private List<ArticleViewModel> _articles = new();
+    
 
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        Model.Condition = "";
+        Model.Complication = "";
         _clients = await LoadClients();
         _articles = await LoadArticles();
         _isLoaded = true;
@@ -184,9 +137,7 @@
         _isLoaded = true;
     }
 
-    private async Task<List<ClientViewModel>> LoadClients() =>
-        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<ClientViewModel>> LoadClients() => (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
-    private async Task<List<ArticleViewModel>> LoadArticles() =>
-        (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<ArticleViewModel>> LoadArticles() => (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 }

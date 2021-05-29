@@ -8,12 +8,11 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-@if (_isLoaded)
-{
+<LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" 
               OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <InputField Title="Выбор исполнителя">
+        <InputField Title="Назначен исполнитель">
             <Controls>
                 <RadzenDropDown Data=@(_workers.Select(a => new {a.Id, a.Name}))
                                 TextProperty="Name"
@@ -30,7 +29,8 @@
                       Size="ButtonSize.Small"
                       Style="width: 100%" />
     </EditForm>
-}
+</LoadingContent>
+
 @code
 {
     [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
@@ -52,6 +52,5 @@
     private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
     }
 }

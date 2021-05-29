@@ -8,33 +8,20 @@
     <RadzenTabs>
         <Tabs>
             <RadzenTabsItem Text="Продажа со склада">
-                <SellesForm FormSubmitted="SendCreateSelleRequest"
-                            Model="_model"
-                            Error="@Error"/>
+                <SellesForm FormSubmitted="SendCreateSelleRequest" Model="_model" Error="@Error"/>
             </RadzenTabsItem>
             <RadzenTabsItem Text="Прочий приход">
                 <EditForm Model="@model" OnValidSubmit="@(_ => {})">
                     <DataAnnotationsValidator />
-                    <InputField Title="Наименование">
+                    <InputField Title="Наименование прочего прихода">
+                        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="model.Name"/></Controls>
+                    </InputField>
+                    <InputField Title="Сумма прочего прихода">
                         <Controls>
-                            <RadzenTextBox Style="width: 100%;" 
-                                           Placeholder="Укажите наименование прочего прихода"
-                                           @bind-Value="model.Name"/>
+                            <RadzenNumeric Style="width: 100%;" @bind-Value="model.Price"/>
                         </Controls>
                     </InputField>
-                                
-                    <InputField Title="Сумма">
-                        <Controls>
-                            <RadzenNumeric Style="width: 100%;" 
-                                           Placeholder="Укажите сумму прочего прихода"
-                                           @bind-Value="model.Price"/>
-                        </Controls>
-                    </InputField>
-    
-                    <RadzenButton type="submit"
-                                  Text="Провести"
-                                  ButtonStyle="ButtonStyle.Primary"
-                                  Style="width: 100%" />
+                    <RadzenButton type="submit" Text="Провести" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
                 </EditForm>
             </RadzenTabsItem>
         </Tabs>

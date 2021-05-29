@@ -5,43 +5,34 @@
 @inject ISessionProvider SessionProvider
 
 <LoadingContent IsLoaded="_isLoaded">
-    
     <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        
         <RadzenFieldset Text="Категория">    
             <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
             <ValidationMessage For="@(() => Model.CategoryId)" />
         </RadzenFieldset>
-        
         <InputField Title="Бренд">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Brand"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Brand)" /></Validation>
         </InputField>
-        
         <InputField Title="Модель">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Model"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Model)" /></Validation>
         </InputField>
-        
         <ConditionalContent IsLoaded="IsExpandedView">
             <AllowedContent>
                 <InputField Title="Описание">
                     <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Info"/></Controls>
                     <Validation><ValidationMessage For="@(() => Model.Info)" /></Validation>
                 </InputField>
-            
                 <InputField Title="Харрактеристики">
                     <Controls><ArticlesFormSpecification @bind-Value="Model.Specs"/></Controls>
                     <Validation><ValidationMessage For="@(() => Model.Specs)"/></Validation>
                 </InputField>
-            
-                <ul class="list-group">
-                    @foreach (var item in Model.Specs)
-                    {
-                        <li class="list-group-item">@item.Key : @item.Value</li>
-                    }
-                </ul>
+                @foreach (var item in Model.Specs)
+                {
+                    <li class="list-group-item">@item.Key : @item.Value</li>
+                }
             </AllowedContent>
         </ConditionalContent>
         <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
@@ -49,8 +40,11 @@
                 <div class="alert alert-danger mt-3 mb-0">@Error</div>
             </AllowedContent>
         </ConditionalContent>
-        
         <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">@Error</div>
+        }
     </EditForm>
 </LoadingContent>
 

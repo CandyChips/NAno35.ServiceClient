@@ -4,9 +4,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<UnitsForm FormSubmitted="OnSubmit"
-           Model="_model" 
-           Error="@Error"/>
+<div style="width: 40rem;">
+    <UnitsForm FormSubmitted="OnSubmit" Model="_model" Error="@Error"/>
+</div>
 
 @code
 {

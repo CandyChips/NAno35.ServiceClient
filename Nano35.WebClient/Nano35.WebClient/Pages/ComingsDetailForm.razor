@@ -4,79 +4,81 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<LoadingContent IsLoaded="_isLoaded">
-    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator/>
-        <InputField Title="Товар">
-            <Controls>
-                <div style="display: flex; width: 100%">
-                    <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
-                                    TextProperty="Name"
-                                    ValueProperty="Id"
-                                    TValue="Guid"
-                                    @bind-Value="_model.StorageItemId"
-                                    Style="width: 100%;"
-                                    Disabled="@(!StorageItems.Any())"
-                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                    FilterOperator="StringFilterOperator.Contains"
-                                    AllowFiltering="true"
-                                    Change="StorageItemChanged"/>
-                    <RadzenButton Click=@(_ => OpenCreateStorageItem()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
-                </div>
-            </Controls>
-            <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
-        </InputField>
-        <ConditionalContent IsLoaded="Warehouse.Any()">
-            <AllowedContent>
-                <InputField Title="Ячейка на складе">
-                    <Controls>
-                        <RadzenDropDown Data=@(Warehouse.Select(a => new { Name = a.Name}))
+<BoxedContent Width="40">
+    <LoadingContent IsLoaded="_isLoaded">
+        <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator/>
+            <InputField Title="Товар">
+                <Controls>
+                    <div style="display: flex; width: 100%">
+                        <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id, Name = $"{a.Article + " " + a.Condition}"}))
                                         TextProperty="Name"
-                                        ValueProperty="Name"
-                                        TValue="string"
-                                        @bind-Value="_model.PlaceOnStorage"
+                                        ValueProperty="Id"
+                                        TValue="Guid"
+                                        @bind-Value="_model.StorageItemId"
                                         Style="width: 100%;"
                                         Disabled="@(!StorageItems.Any())"
-                                        Placeholder="Выберите из доступных ячеек"
                                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         FilterOperator="StringFilterOperator.Contains"
-                                        AllowFiltering="true"/>
-                    </Controls>
-                    <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
-                </InputField>
-            </AllowedContent>
-            <RejectedContent>
-                <InputField Title="Ячейка на складе">
-                    <Controls>
-                        <RadzenTextBox style="display: flex; width: 100%"
-                                       @bind-Value="_model.PlaceOnStorage"
-                                       Placeholder="Введите название новой ячейки"/>
-                    </Controls>
-                    <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
-                </InputField>
-            </RejectedContent>
-        </ConditionalContent>
-        <InputField Title="Количество">
-            <Controls>
-                <RadzenNumeric style="width: 100%;" 
-                               @bind-Value="_model.Count"
-                               ShowUpDown="false"
-                               Min="1"/>
-            </Controls>
-            <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
-        </InputField>
-        
-        <InputField Title="Цена за еденицу">
-            <Controls><RadzenNumeric style="width: 100%;" ShowUpDown="false" @bind-Value="_model.Price"/></Controls>
-            <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
-        </InputField>
-
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
-    </EditForm>
-</LoadingContent>
+                                        AllowFiltering="true"
+                                        Change="StorageItemChanged"/>
+                        <RadzenButton Click=@(_ => OpenCreateStorageItem()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
+                    </div>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
+            </InputField>
+            <ConditionalContent IsLoaded="Warehouse.Any()">
+                <AllowedContent>
+                    <InputField Title="Ячейка на складе">
+                        <Controls>
+                            <RadzenDropDown Data=@(Warehouse.Select(a => new { Name = a.Name}))
+                                            TextProperty="Name"
+                                            ValueProperty="Name"
+                                            TValue="string"
+                                            @bind-Value="_model.PlaceOnStorage"
+                                            Style="width: 100%;"
+                                            Disabled="@(!StorageItems.Any())"
+                                            Placeholder="Выберите из доступных ячеек"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            FilterOperator="StringFilterOperator.Contains"
+                                            AllowFiltering="true"/>
+                        </Controls>
+                        <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
+                    </InputField>
+                </AllowedContent>
+                <RejectedContent>
+                    <InputField Title="Ячейка на складе">
+                        <Controls>
+                            <RadzenTextBox style="display: flex; width: 100%"
+                                           @bind-Value="_model.PlaceOnStorage"
+                                           Placeholder="Введите название новой ячейки"/>
+                        </Controls>
+                        <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
+                    </InputField>
+                </RejectedContent>
+            </ConditionalContent>
+            <InputField Title="Количество">
+                <Controls>
+                    <RadzenNumeric style="width: 100%;" 
+                                   @bind-Value="_model.Count"
+                                   ShowUpDown="false"
+                                   Min="1"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
+            </InputField>
+            
+            <InputField Title="Цена за еденицу">
+                <Controls><RadzenNumeric style="width: 100%;" ShowUpDown="false" @bind-Value="_model.Price"/></Controls>
+                <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
+            </InputField>
+    
+            <RadzenButton type="submit"
+                          Text="Создать"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Style="width: 100%" />
+        </EditForm>
+    </LoadingContent>
+</BoxedContent>
 
 @code
 {
@@ -106,7 +108,11 @@
 
     private async Task OpenCreateStorageItem()
     {
-        var moviesModal = Modal.Show<StorageItemsCreate>("Новое изделие");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var moviesModal = Modal.Show<StorageItemsCreate>("Новое изделие", modalOpts);
         await moviesModal.Result;
         StorageItems = await GetAllStorageItems();
     }

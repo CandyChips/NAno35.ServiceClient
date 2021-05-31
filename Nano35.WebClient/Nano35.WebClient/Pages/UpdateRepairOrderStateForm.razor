@@ -67,12 +67,12 @@ else
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid RepairOrderId { get; set; }
     private bool _isLoaded;
-    private CreateRepairOrderStateBody _model;
+    private CreateRepairOrderStateHttpBody _model;
     private List<Tuple<int, string>> StateTypes { get; set; } = new();
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateRepairOrderStateBody()
+        _model = new CreateRepairOrderStateHttpBody()
         {
             NewId = Guid.NewGuid(),
             RepairOrderId = RepairOrderId
@@ -88,7 +88,7 @@ else
     private async Task HandleValidSubmit()
     {
         var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/State", _model);
-        await response.Content.ReadFromJsonAsync<CreateRepairOrderStateSuccessResponse>();
+        await response.Content.ReadFromJsonAsync<CreateRepairOrderStateHttpResponse>();
         await ModalInstance.CloseAsync();
     }
 }

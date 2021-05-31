@@ -11,17 +11,18 @@ namespace Nano35.WebClient.Shared
         [Inject] private IInstanceService InstanceService { get; set; }
         
         private bool _serverAvailable = false;
-        private bool _loading = true;
+        private bool _loading;
         
         protected override async Task OnInitializedAsync()
         {
+            _loading = false;
             _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
             if(!_serverAvailable)
                 NavigationManager.NavigateTo("/instances");
             if(!await SessionProvider.IsCurrentSessionIdExist())
                 NavigationManager.NavigateTo("/instances");
             await InstanceService.IsInstanceExist();
-            _loading = false;
+            _loading = true;
         }
     }
 }

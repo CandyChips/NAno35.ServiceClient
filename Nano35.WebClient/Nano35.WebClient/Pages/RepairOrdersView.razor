@@ -6,18 +6,18 @@
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
+@using Append.Blazor.Printing
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject IPrintingService PrintingService
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Активные заказы на ремонт"/>
-    
     <RadzenButton Click=@(_ => NewOrder()) 
                   Text="Создать"
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
-    
     <RadzenGrid AllowFiltering="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced"
@@ -52,11 +52,22 @@
                               Filterable="false"
                               Sortable="false"
                               TextAlign="TextAlign.Center" 
-                              Width="200px">
+                              Width="400px">
                 <Template Context="item">
                     <RadzenButton Click=@(_ => DetailsOpen(item.Id))
+                                  Size="ButtonSize.Small"
                                   Text="Информация"
-                                  ButtonStyle="ButtonStyle.Info"/>
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://192.168.100.125/docs/StorageItems/RepairOrderReceipt/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                                  Text="Акт приема"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://192.168.100.125/docs/StorageItems/RepairOrderDetails/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                                  Text="Акт выполненых работ"
+                                  Size="ButtonSize.Small"
+                                  Style="margin: 1rem 0;"
+                                  ButtonStyle="ButtonStyle.Secondary"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -79,9 +90,13 @@
     
     private async Task DetailsOpen(Guid id)
     {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
         var parameters = new ModalParameters();
         parameters.Add(nameof(RepairOrdersDetail.Id), id);
-        var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters);
+        var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters, modalOpts);
         await modal.Result;
         _isLoaded = false;
         _data = await GetAllRepairOrders();
@@ -90,7 +105,11 @@
     
     private async Task NewOrder()
     {
-        var modal = Modal.Show<RepairOrdersCreate>("Новый наряд на ремонт");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<RepairOrdersCreate>("Новый наряд на ремонт", modalOpts);
         await modal.Result;
         _isLoaded = false;
         _data = await GetAllRepairOrders();

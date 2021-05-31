@@ -68,8 +68,8 @@
             <Controls>
                 <div style="width: 100%; display: flex;">
                     <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Complication"/>
-                    @if(_isComplect1Shown) { <RadzenButton Text="ЗУ" Click="@(_ => { Model.Complication += "З.У. "; _isComplect1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
-                    @if(_isComplect2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания "; _isComplect2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                    @if(_isComplected1Shown) { <RadzenButton Text="ЗУ" Click="@(_ => { Model.Complication += "З.У. "; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                    @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания "; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
                 </div>
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.Complication)" /></Validation>
@@ -83,7 +83,7 @@
 
 @code
 {
-    [Parameter] public CreateRepairOrderBody Model { get; set; }
+    [Parameter] public CreateRepairOrderHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
@@ -92,8 +92,8 @@
     private bool _isCond1Shown = true;
     private bool _isCond2Shown = true;
     private bool _isCond3Shown = true;
-    private bool _isComplect1Shown = true;
-    private bool _isComplect2Shown = true;
+    private bool _isComplected1Shown = true;
+    private bool _isComplected2Shown = true;
     private bool _isLoaded;
     private List<ClientViewModel> _clients = new();
     private List<ArticleViewModel> _articles = new();
@@ -118,8 +118,12 @@
 
     private async Task OpenCreateClient()
     {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
         var parameters = new ModalParameters();
-        var modal = Modal.Show<ClientsCreate>($"Новый клиент", parameters);
+        var modal = Modal.Show<ClientsCreate>($"Новый клиент", parameters, modalOpts);
         await modal.Result;
         _isLoaded = false;
         _clients = await LoadClients();
@@ -128,9 +132,13 @@
 
     private async Task OpenCreateArticle()
     {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
         var parameters = new ModalParameters();
         parameters.Add(nameof(ArticlesCreate.IsExpandedView), false);
-        var modal = Modal.Show<ArticlesCreate>($"Новое устройство", parameters);
+        var modal = Modal.Show<ArticlesCreate>($"Новое устройство", parameters, modalOpts);
         await modal.Result;
         _isLoaded = false;
         _articles = await LoadArticles();

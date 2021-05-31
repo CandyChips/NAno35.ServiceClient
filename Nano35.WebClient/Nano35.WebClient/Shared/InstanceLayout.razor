@@ -1,25 +1,15 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.WebClient.Pages
+@using Nano35.WebClient.Helpers
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @layout MainLayout
 @inject  ISessionProvider SessionProvider
 @inject  IRequestManager RequestManager
 @inject  IInstanceService InstanceService
+@inject IAuthService AuthService
 
-@if (_loading)
-    {
-        <div class="col-md-6 offset-md-3 mt-5">
-            <div class="card">
-                <h4 class="card-header">Загрузка</h4>
-                <div class="card-body">
-                    ...
-                </div>
-            </div>
-        </div>
-    }
-else
-{
+<LoadingContent IsLoaded="_loading">
     <div class="page">
         <div class="sidebar bg-dark">
             <NavMenu/>
@@ -28,16 +18,19 @@ else
             @Body
         </div>
     </div>
-}
+</LoadingContent>
 
 @code
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     private bool _serverAvailable = false;
-    private bool _loading = true;
+    private bool _loading;
+    private List<Guid> _roles = new();
         
     protected override async Task OnInitializedAsync()
     {
+        _loading = false;
+        _roles = await AuthService.GetCurrentRoles();
         _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
         if(!_serverAvailable)
             NavigationManager.NavigateTo("/instances");
@@ -47,10 +40,14 @@ else
 
         if (await SessionProvider.GetCurrentUnitId() == Guid.Empty)
         {
-            var modal = Modal.Show<SelectCurrentUnit>("Выберите текущее подразделение.", new ModalOptions() { DisableBackgroundCancel = true, HideCloseButton = true });
+            var modalOpts = new ModalOptions()
+            {
+                DisableBackgroundCancel = true, FocusFirstElement = true, HideCloseButton = true
+            };
+            var modal = Modal.Show<SelectCurrentUnit>("Выберите текущее подразделение.", modalOpts);
             var result = await modal.Result;
             await SessionProvider.SetCurrentUnitId((Guid) result.Data);
         }
-        _loading = false;
+        _loading = true;
     }
 }

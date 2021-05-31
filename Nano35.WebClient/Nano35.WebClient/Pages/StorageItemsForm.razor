@@ -117,7 +117,7 @@
                             <li>
                                 @if (FileUpload(_uploadResults, file.Name, out var result))
                                 {
-                                    <img src="http://localhost:5006/StorageItems/@result.StoredFileName" alt="Image" style="width: 100px;"/>
+                                    <img src="https://192.168.100.125/files/StorageItems/@result.StoredFileName" alt="Image" style="width: 100px;"/>
                                 }
                                 else
                                 {
@@ -176,7 +176,11 @@
 
     private async Task OpenCreateArticle()
     {
-        var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование", modalOpts);
         await moviesModal.Result;
         _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
     }
@@ -225,7 +229,7 @@
 
         if (upload)
         {
-            var response = await HttpClient.PostAsync($"http://192.168.100.124:5000/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
+            var response = await HttpClient.PostAsync($"https://192.168.100.125/files/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
 
             var newUploadResults = await response.Content
                 .ReadFromJsonAsync<IList<UploadResult>>();

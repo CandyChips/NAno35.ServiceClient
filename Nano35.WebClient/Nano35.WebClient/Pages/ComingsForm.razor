@@ -2,9 +2,11 @@
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
+@using Nano35.WebClient.Helpers
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
 
 <EditForm Model="@(Model)" 
           OnSubmit="Create">
@@ -12,50 +14,53 @@
         <ValidationSummary/>
         <LoadingContent IsLoaded="_isLoaded"> 
             <InputField Title="Поставщик*">
-                    <Controls>
-                        <div style="display: flex; width: 100%;">
-                            <RadzenDropDown Data=@(_clients.Select(a => new {a.Id, Name = $"{a.Name} - {a.Phone}"}))
-                                            TextProperty="Name"
-                                            ValueProperty="Id"
-                                            TValue="Guid"
-                                            @bind-Value="Model.ClientId"
-                                            Style="width: 100%;"
-                                            Disabled="@(!_clients.Any())"
-                                            Placeholder="Выберите поставщика..."
-                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                            FilterOperator="StringFilterOperator.Contains"
-                                            AllowFiltering="true"/>
-                            <RadzenButton Click=@(_ => NewClient())
-                                          Text="Добавить"
-                                          ButtonStyle="ButtonStyle.Secondary"/>
-                        </div>
-                    </Controls>
-                    <Validation>
-                        <ValidationMessage For="@(() => Model.ClientId)" />
-                    </Validation>
-                </InputField>
-                
-                
-                <InputField Title="Подразделение*">
-                    <Controls>
-                        <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
-                                        TextProperty="Name" 
+                <Controls>
+                    <div style="display: flex; width: 100%;">
+                        <RadzenDropDown Data=@(_clients.Select(a => new {a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                        TextProperty="Name"
                                         ValueProperty="Id"
-                                        TValue="Guid" 
-                                        @bind-Value="Model.UnitId"
-                                        Disabled="@(!_units.Any())"
+                                        TValue="Guid"
+                                        @bind-Value="Model.ClientId"
                                         Style="width: 100%;"
-                                        Placeholder="Выберите целевое подразделение..."
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                        Disabled="@(!_clients.Any())"
+                                        Placeholder="Выберите поставщика..."
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         FilterOperator="StringFilterOperator.Contains"
                                         AllowFiltering="true"/>
-                    </Controls>
-                    <Validation>
-                        <ValidationMessage For="@(() => Model.UnitId)" />
-                    </Validation>
-                </InputField>
-                
-                <InputField Title="Комментарий">
+                        <RadzenButton Click=@(_ => NewClient())
+                                      Text="Добавить"
+                                      ButtonStyle="ButtonStyle.Secondary"/>
+                    </div>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => Model.ClientId)" />
+                </Validation>
+            </InputField>
+            
+            <ConditionalContent IsLoaded="_roles.Contains(RolesHelper.Admin) || _roles.Contains(RolesHelper.Manager)">
+                <AllowedContent>
+                    <InputField Title="Подразделение*">
+                        <Controls>
+                            <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
+                                            TextProperty="Name" 
+                                            ValueProperty="Id"
+                                            TValue="Guid" 
+                                            @bind-Value="Model.UnitId"
+                                            Disabled="@(!_units.Any())"
+                                            Style="width: 100%;"
+                                            Placeholder="Выберите целевое подразделение..."
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                            FilterOperator="StringFilterOperator.Contains"
+                                            AllowFiltering="true"/>
+                        </Controls>
+                        <Validation>
+                            <ValidationMessage For="@(() => Model.UnitId)" />
+                        </Validation>
+                    </InputField>
+                </AllowedContent>
+            </ConditionalContent>
+
+            <InputField Title="Комментарий">
                     <Controls>
                         <RadzenTextBox Style="width: 100%;" 
                                        Placeholder="Введите коментарий к оприходованию..."
@@ -124,6 +129,7 @@
     [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private List<Guid> _roles = new();
 
     private List<ClientViewModel> _clients = new();
     private List<UnitViewModel> _units = new();
@@ -145,6 +151,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        _roles = await AuthService.GetCurrentRoles();
         _clients = await LoadClients();
         _units = await LoadUnits();
         Model.NewId = Guid.NewGuid();
@@ -163,7 +170,11 @@
     
     private async Task AddDetail()
     {
-        var modal = Modal.Show<ComingsDetailForm>($"Новая позиция к оприходованию");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<ComingsDetailForm>($"Новая позиция к оприходованию", modalOpts);
         var result = await modal.Result;
         
         if (result.Data is CreateComingDetailViewModel success)
@@ -176,7 +187,13 @@
     
     private async Task NewClient()
     {
-        Modal.Show<ClientsCreate>($"Новый клиент");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<ClientsCreate>($"Новый клиент", modalOpts);
+        await modal.Result;
+        _clients = await LoadClients();
     }
         
 }

@@ -4,8 +4,8 @@
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @inject HttpClient _httpClient
-@inject IRequestManager _requestManager
-@inject IInstanceService _instanceService
+@inject IRequestManager RequestManager
+@inject IInstanceService InstanceService
 
 
 <LoadingContent IsLoaded="_isLoaded">
@@ -93,10 +93,8 @@
     {
         _isLoaded = false;
         
-        _state = new List<ClientStateViewModel>(
-            (await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
-        _types = new List<ClientTypeViewModel>(
-            (await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/ClientsTypes").GetAsync()).Data);
+        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
+        _types = new List<ClientTypeViewModel>((await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data);
         
         _isLoaded = true;
     }

@@ -13,7 +13,7 @@
 
 @code
 {
-    private CreateRepairOrderBody _model = new()
+    private CreateRepairOrderHttpBody _model = new()
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
@@ -24,7 +24,7 @@
     {
         try
         {
-            await new HttpPostRequest<CreateRepairOrderBody,CreateRepairOrderSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders").PostAsync(_model);
+            await new HttpPostRequest<CreateRepairOrderHttpBody,CreateRepairOrderHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders").PostAsync(_model);
         }
         catch (Exception e)
         {
@@ -34,7 +34,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateRepairOrderBody
+        _model = new CreateRepairOrderHttpBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId(),

@@ -40,7 +40,7 @@
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Неисправность со слов клиента: @_model.Trouble</b>
                                                                
-                            <RadzenButton Click="@(_ => TroubleEdit = new UpdateRepairOrdersTroubleBody()
+                            <RadzenButton Click="@(_ => TroubleEdit = new UpdateRepairOrdersTroubleHttpBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -91,7 +91,7 @@
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Внешний вид: @_model.Condition</b>
                                                                
-                            <RadzenButton Click="@(_ => ConditionEdit = new UpdateRepairOrdersConditionBody()
+                            <RadzenButton Click="@(_ => ConditionEdit = new UpdateRepairOrdersConditionHttpBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -150,7 +150,7 @@
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Комплектация: @_model.Complication</b>
                                                                
-                            <RadzenButton Click="@(_ => ComplicationEdit = new UpdateRepairOrdersComplicationBody()
+                            <RadzenButton Click="@(_ => ComplicationEdit = new UpdateRepairOrdersComplicationHttpBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -210,7 +210,7 @@
                         {
                             <b style="display: flex;  width: 85%; align-items: center">Серийный номер/IMEI: @_model.Serial</b>
                                                                
-                            <RadzenButton Click="@(_ => SerialEdit = new UpdateRepairOrdersSerialBody()
+                            <RadzenButton Click="@(_ => SerialEdit = new UpdateRepairOrdersSerialHttpBody()
                                                  {
                                                      RepairOrderId = _model.Id
                                                  })"
@@ -379,11 +379,11 @@
     private List<ArticleViewModel> _devices { get; set; }
     private bool _isLoaded;
     
-    private UpdateRepairOrdersDeviceBody DeviceEdit { get; set; }
-    private UpdateRepairOrdersSerialBody SerialEdit { get; set; }
-    private UpdateRepairOrdersConditionBody ConditionEdit { get; set; }
-    private UpdateRepairOrdersTroubleBody TroubleEdit { get; set; }
-    private UpdateRepairOrdersComplicationBody ComplicationEdit { get; set; }
+    private UpdateRepairOrdersDeviceHttpBody DeviceEdit { get; set; }
+    private UpdateRepairOrdersSerialHttpBody SerialEdit { get; set; }
+    private UpdateRepairOrdersConditionHttpBody ConditionEdit { get; set; }
+    private UpdateRepairOrdersTroubleHttpBody TroubleEdit { get; set; }
+    private UpdateRepairOrdersComplicationHttpBody ComplicationEdit { get; set; }
     
     private string DiagnosticResult { get; set; }
     
@@ -409,9 +409,13 @@
 
     private async Task AddWork()
     {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
         var parameters = new ModalParameters();
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
-        var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters);
+        var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters, modalOpts);
         await modal.Result;
         _isLoaded = false;
         await Update();
@@ -430,71 +434,71 @@
 
     private async Task UpdateDevice()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersDeviceBody, UpdateRepairOrdersDeviceSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Device").PatchAsync(DeviceEdit);
+        await new HttpPatchRequest<UpdateRepairOrdersDeviceHttpBody, UpdateRepairOrdersDeviceHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Device").PatchAsync(DeviceEdit);
         DeviceEdit = null;
         await Update();
     }
     private async Task UpdateSerial()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersSerialBody, UpdateRepairOrdersSerialSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Serial").PatchAsync(SerialEdit);
+        await new HttpPatchRequest<UpdateRepairOrdersSerialHttpBody, UpdateRepairOrdersSerialHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Serial").PatchAsync(SerialEdit);
         SerialEdit = null;
         await Update();
     }
     private async Task UpdateCondition()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersConditionBody, UpdateRepairOrdersConditionSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Condition").PatchAsync(ConditionEdit);
+        await new HttpPatchRequest<UpdateRepairOrdersConditionHttpBody, UpdateRepairOrdersConditionHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Condition").PatchAsync(ConditionEdit);
         ConditionEdit = null;
         await Update();
     }
     private async Task UpdateTrouble()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersTroubleBody, UpdateRepairOrdersTroubleSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Trouble").PatchAsync(TroubleEdit);
+        await new HttpPatchRequest<UpdateRepairOrdersTroubleHttpBody, UpdateRepairOrdersTroubleHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Trouble").PatchAsync(TroubleEdit);
         TroubleEdit = null;
         await Update();
     }
     private async Task UpdateComplication()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersComplicationBody, UpdateRepairOrdersComplicationSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Complication").PatchAsync(ComplicationEdit);
+        await new HttpPatchRequest<UpdateRepairOrdersComplicationHttpBody, UpdateRepairOrdersComplicationHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Complication").PatchAsync(ComplicationEdit);
         ComplicationEdit = null;
         await Update();
     }
 
     private async Task SetAsDiagnosted()
     {
-        await new HttpPostRequest<SetRepairOrderAsDiagnosedBody,SetRepairOrderAsDiagnosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsDiagnosedHttpBody,SetRepairOrderAsDiagnosedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
 
     private async Task SetAsAgreement()
     {
-        await new HttpPostRequest<SetRepairOrderAsAgreementBody,SetRepairOrderAsAgreementSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Agreement").PostAsync(new SetRepairOrderAsAgreementBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsAgreementHttpBody,SetRepairOrderAsAgreementHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Agreement").PostAsync(new SetRepairOrderAsAgreementHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
     private async Task SetAsReady()
     {
         var modal = Modal.Show<ReadyResult>($"Оплата за заказ наряд");
         var res = await modal.Result;
-        await new HttpPostRequest<SetRepairOrderAsReadyBody,SetRepairOrderAsReadySuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0});
+        await new HttpPostRequest<SetRepairOrderAsReadyHttpBody,SetRepairOrderAsReadyHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyHttpBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0});
         await Update();
     }
     private async Task SetAsOnWait()
     {        
-        await new HttpPostRequest<SetRepairOrderAsOnWaitBody,SetRepairOrderAsOnWaitSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWait").PostAsync(new SetRepairOrderAsOnWaitBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsOnWaitHttpBody,SetRepairOrderAsOnWaitHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWait").PostAsync(new SetRepairOrderAsOnWaitHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
     private async Task SetAsOnWork()
     {
-        await new HttpPostRequest<SetRepairOrderAsOnWorkBody,SetRepairOrderAsOnWorkSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWork").PostAsync(new SetRepairOrderAsOnWorkBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsOnWorkHttpBody,SetRepairOrderAsOnWorkHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWork").PostAsync(new SetRepairOrderAsOnWorkHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
     private async Task SetAsCompleted()
     {
-        await new HttpPostRequest<SetRepairOrderAsCompletedBody,SetRepairOrderAsCompletedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Completed").PostAsync(new SetRepairOrderAsCompletedBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsCompletedHttpBody,SetRepairOrderAsCompletedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Completed").PostAsync(new SetRepairOrderAsCompletedHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
     private async Task SetAsClosed()
     {
-        await new HttpPostRequest<SetRepairOrderAsClosedBody,SetRepairOrderAsClosedSuccessResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Close").PostAsync(new SetRepairOrderAsClosedBody(){RepairOrderId = _model.Id});
+        await new HttpPostRequest<SetRepairOrderAsClosedHttpBody,SetRepairOrderAsClosedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Close").PostAsync(new SetRepairOrderAsClosedHttpBody(){RepairOrderId = _model.Id});
         await Update();
     }
 }

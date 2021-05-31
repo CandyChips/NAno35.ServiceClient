@@ -1,0 +1,9 @@
+
+<div style="width: @(Width)rem;">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public int Width { get; set; } = 40;
+}

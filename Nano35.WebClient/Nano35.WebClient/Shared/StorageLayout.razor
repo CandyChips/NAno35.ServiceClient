@@ -2,19 +2,7 @@
 @inject NavigationManager NavigationManager
 @layout InstanceLayout
 
-@if (_loading)
-    {
-        <div class="col-md-6 offset-md-3 mt-5">
-            <div class="card">
-                <h4 class="card-header">Загрузка</h4>
-                <div class="card-body">
-                    ...
-                </div>
-            </div>
-        </div>
-    }
-else
-{
+<LoadingContent IsLoaded="_loading">
     <div class="page">
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -45,4 +33,4 @@ else
         </ul>
         @Body
     </div>
-}
+</LoadingContent>

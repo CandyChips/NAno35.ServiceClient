@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Append.Blazor.Printing;
 using Blazored.LocalStorage;
 using Blazored.Modal;
 using Radzen;
@@ -27,6 +28,7 @@ namespace Nano35.WebClient
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<IRequestManager, ClusterRequestManager>();
+            builder.Services.AddScoped<IPrintingService, PrintingService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();

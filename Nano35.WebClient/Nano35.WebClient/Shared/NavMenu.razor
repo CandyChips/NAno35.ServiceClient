@@ -1,5 +1,7 @@
 ﻿@using Nano35.WebClient.Services
+@using Nano35.WebClient.Helpers
 @inject IInstanceService InstanceService
+@inject IAuthService AuthService
 
 <div class="top-row pl-4 navbar navbar-dark">
     <NavLink class="navbar-brand" href="/instance-view">
@@ -8,9 +10,14 @@
 </div>
 <div>
     <RadzenPanelMenu>
+        @if(_roles.Contains(RolesHelper.Admin))
+        {
             <RadzenPanelMenuItem Text="Подразделения" Path="/instance/units" Icon="account_circle"></RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Сотрудники" Path="/instance/workers" Icon="account_circle"></RadzenPanelMenuItem>
             <RadzenPanelMenuItem Text="Клиенты" Path="/instance/clients" Icon="account_circle"></RadzenPanelMenuItem>
+        }
+        @if(_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin))
+        {
             <RadzenPanelMenuItem Text="Склад" Icon="payment">
                 <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage/warehouse" Icon="input"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Оприходования" Path="/instance/storage/coming" Icon="description"></RadzenPanelMenuItem>
@@ -18,20 +25,26 @@
                 <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells" Icon="aspect_ratio"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves" Icon="date_range"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
+        }
+        @if(_roles.Contains(RolesHelper.Master) || _roles.Contains(RolesHelper.Admin))
+        {
             <RadzenPanelMenuItem Text="Заказы на ремонт" Icon="payment">
                 <RadzenPanelMenuItem Text="Заказ наряды" Path="/instance/repairs" Icon="input"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Мои ремонты" Path="/instance/repairs/my" Icon="description"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="История" Path="/instance/repairs/story" Icon="payment"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
+        }
     </RadzenPanelMenu>
 </div>
 
 @code
 {
     private string OrgName { get; set; }
+    private List<Guid> _roles = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        _roles = await AuthService.GetCurrentRoles();
         OrgName = InstanceService.GetCurrentInstance().OrgName;
     }
     

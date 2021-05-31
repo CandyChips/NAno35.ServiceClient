@@ -3,26 +3,26 @@
 @using System.Text.RegularExpressions
 @inject HttpClient HttpClient
 
-<EditForm Model="@_model" OnSubmit="HandleValidSubmit">
+<EditForm Model="@Model" OnSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     
     <InputField Title="Фио*">
         <Controls>
-            <InputText @bind-Value="_model.Name" 
+            <InputText @bind-Value="Model.Name" 
                         class="form-control"/>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.Name)" />
+            <ValidationMessage For="@(() => Model.Name)" />
         </Validation>
     </InputField>
     
     <InputField Title="Эл почта">
         <Controls>
-            <InputText @bind-Value="_model.Email" 
+            <InputText @bind-Value="Model.Email" 
                         class="form-control"/>
         </Controls>
         <Validation>
-                    <ValidationMessage For="@(() => _model.Email)" />
+                    <ValidationMessage For="@(() => Model.Email)" />
         </Validation>
     </InputField>
     
@@ -35,37 +35,37 @@
                            Change=@(PhoneMask) />
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.Phone)" />
+            <ValidationMessage For="@(() => Model.Phone)" />
         </Validation>
     </InputField>
     
     <InputField Title="Пароль*">
         <Controls>
-            <InputText @bind-Value="_model.Password" 
+            <InputText @bind-Value="Model.Password" 
                         class="form-control"/>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.Password)" />
+            <ValidationMessage For="@(() => Model.Password)" />
         </Validation>
     </InputField>
     
     <InputField Title="Подтверждение пароля*">
         <Controls>
-            <InputText @bind-Value="_model.PasswordConfirm" 
+            <InputText @bind-Value="Model.PasswordConfirm" 
                         class="form-control"/>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.PasswordConfirm)" />
+            <ValidationMessage For="@(() => Model.PasswordConfirm)" />
         </Validation>
     </InputField>
     
     <InputField Title="Примечание">
         <Controls>
-            <InputText @bind-Value="_model.Comment" 
+            <InputText @bind-Value="Model.Comment" 
                         class="form-control"/>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.Comment)" />
+            <ValidationMessage For="@(() => Model.Comment)" />
         </Validation>
     </InputField>
     
@@ -82,13 +82,13 @@
             </RadzenCheckBoxList>
         </Controls>
         <Validation>
-            <ValidationMessage For="@(() => _model.Roles)"/>
+            <ValidationMessage For="@(() => Model.Roles)"/>
         </Validation>
     </InputField>
     
-    @if (!string.IsNullOrEmpty(_error))
+    @if (!string.IsNullOrEmpty(Error))
     {
-        <div class="alert alert-danger mt-3 mb-0">@_error</div>
+        <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
     
     <RadzenButton type="submit"
@@ -101,28 +101,28 @@
 {
     [Inject] private IRequestManager RequestManager { get; set; }
     [Inject] private IInstanceService InstanceService { get; set; }
-    [Parameter] public EventCallback OnHideModalNewWorker { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    
+    [Parameter] public CreateWorkerHttpBody Model { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+    
     private IEnumerable<Guid> roles = new Guid[] {};
-    private CreateWorkerHttpBody _model = new();
-    private string _error = "";
-
     private string Phone { get; set; } = "+7";
 
     protected override async Task OnInitializedAsync()
     {
-        _model.NewId = Guid.NewGuid();
-        _model.InstanceId = InstanceService.GetCurrentInstance().Id;
+        
     }
 
     private async Task HandleValidSubmit()
     {
-        _model.Roles = roles.ToList();
-        await new HttpPostRequest<CreateWorkerHttpBody,CreateWorkerHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers").PostAsync(_model);
-        //await new HttpRequestWrapper<CreateWorkerHttpBody, CreateWorkerSuccessHttpResponse>(HttpClient).PostAsync($"{RequestManager.InstanceServer}/Workers", _model);
-        await OnHideModalNewWorker.InvokeAsync();
+        
+        Model.Roles = roles.ToList();
+        await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync(ModalResult.Ok(""));
     }
+    
     
     private async Task PhoneMask()
     {
@@ -137,6 +137,8 @@
         if (Phone.StartsWith("8"))
             Phone = Phone.Remove(0,1);
         
+        Model.Phone = Phone;
+        
         if (Phone.Length < 10)
             Phone = Phone.PadRight(10);
 
@@ -144,7 +146,5 @@
             Phone = Phone.Substring(0, 10);
 
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
-        
-        _model.Phone = Phone;
     }
 }

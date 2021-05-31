@@ -1,23 +1,23 @@
-﻿@using Nano35.WebClient.Services
+@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
 <div style="width: 40rem;">
-    <UnitsForm FormSubmitted="OnSubmit" Model="@_model" Error="@Error"/>
+    <WorkerForm FormSubmitted="OnSubmit" Model="_model" Error="@Error"/>
 </div>
 
 @code
 {
-    private CreateUnitHttpBody _model = new();
+    private CreateWorkerHttpBody _model = new();
     private string Error { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        _model = new CreateUnitHttpBody
+        _model = new CreateWorkerHttpBody
         {
-            Id = Guid.NewGuid(),
+            NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId()
         };
     }
@@ -26,7 +26,7 @@
     {
         try
         {
-            await new HttpPostRequest<CreateUnitHttpBody,CreateUnitHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units").PostAsync(_model);
+            await new HttpPostRequest<CreateWorkerHttpBody,CreateWorkerHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers").PostAsync(_model);
         }
         catch (Exception e)
         {

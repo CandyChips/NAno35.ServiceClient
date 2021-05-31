@@ -134,7 +134,7 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
 
-    [Parameter] public StorageItemOnInstanceViewModel Item { get; set; }
+    [Parameter] public StorageItemOnUnitViewModel Item { get; set; }
     private StorageItemViewModel StorageItem { get; set; } = new ();
     private List<PlaceWithStorageItemOnUnit> Places { get; set; } = new();
 

@@ -26,7 +26,8 @@ namespace Nano35.WebClient
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddAuthorizationCore();
             builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
             builder.Services.AddScoped<IRequestManager, ClusterRequestManager>();
             builder.Services.AddScoped<IPrintingService, PrintingService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();

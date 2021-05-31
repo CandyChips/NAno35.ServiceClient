@@ -30,13 +30,13 @@
 
 @code
 {
-    private class FreeSalle
+    private class FreeSelle
     {
         public string Name { get; set; }
         public double Price { get; set; }
     }
 
-    private FreeSalle model = new();
+    private FreeSelle model = new();
     private CreateSelleHttpBody _model = new() { NewId = Guid.NewGuid(), InstanceId = Guid.Empty };
     private string Error { get; set; }
     private async Task SendCreateSelleRequest()

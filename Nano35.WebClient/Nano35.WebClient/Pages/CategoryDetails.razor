@@ -46,10 +46,9 @@
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-
-    [Parameter] public ArticleCategoryViewModel Category { get; set; }
     
-    private List<ArticleCategoryViewModel> Categories { get; set; }
+    [Parameter]public ArticleCategoryViewModel Category { get; set; } = new();
+    private List<ArticleCategoryViewModel> Categories { get; set; } = new();
     
     private UpdateCategoryNameHttpBody NameEdit { get; set; }
     private UpdateCategoryParentCategoryHttpBody ParentEdit { get; set; }
@@ -76,7 +75,4 @@
         await new HttpPatchRequest<UpdateCategoryParentCategoryHttpBody, UpdateCategoryParentCategoryIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/ParentCategoryId").PatchAsync(ParentEdit);
         ParentEdit = null;
     }
-    
-    
-    
 }

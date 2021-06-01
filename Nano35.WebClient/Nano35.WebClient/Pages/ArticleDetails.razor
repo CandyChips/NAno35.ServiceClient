@@ -27,7 +27,7 @@
                             <div style="display: flex; flex-direction: row">
                                 <div style="width: 90%;">@(data.Name)</div>
                                 <RadzenButton 
-                                    Click="@(_ => OpenCategoryDetails(Categories.First(h=> h.Id == data.Id), data.Name))"
+                                    Click="@(_ => OpenCategoryDetails(data.Id, data.Name))"
                                     Size="ButtonSize.Small"
                                     Text="🖉"
                                     Style="height: 20px; display: flex; padding-left: revert; padding-right: revert; align-items: center;"/>
@@ -132,8 +132,11 @@
     
     private async Task UpdateInfo(){await new HttpPatchRequest<UpdateArticleInfoHttpBody, UpdateArticleInfoSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Info").PatchAsync(InfoEdit);ModelEdit = null;}
     
-    private async Task OpenCategoryDetails(ArticleCategoryViewModel item, string name)
+    private async Task OpenCategoryDetails(Guid id, string name)
     {
+        var item = Categories.First(g => g.Id == id);
+        Console.WriteLine(item.Id);
+        Console.WriteLine(item.Name);
         var parameters = new ModalParameters();
         parameters.Add(nameof(CategoryDetails.Category), item);
         var modal = Modal.Show<CategoryDetails>($"{name}", parameters);

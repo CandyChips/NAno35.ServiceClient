@@ -40,7 +40,7 @@
             
             <FieldListItem Title="Закупочная цена">
                 <EditableField OnCancel="@(() => PurchasePriceEdit = null)"
-                               OnEdit="@(() => PurchasePriceEdit = new UpdateStorageItemPurchasePriceHttpBody(){Id = StorageItem.Id})"
+                               OnEdit="@(() => PurchasePriceEdit = new UpdateStorageItemPurchasePriceHttpBody(){Id = StorageItem.Id, PurchasePrice = StorageItem.PurchasePrice})"
                                OnSave="@(async () => await UpdatePurchasePrice())">
                     <View>@StorageItem.PurchasePrice.ToString(CultureInfo.InvariantCulture)</View>
                     <Edit>
@@ -55,7 +55,7 @@
             
             <FieldListItem Title="Цена продажи">
                 <EditableField OnCancel="@(() => RetailPriceEdit = null)"
-                               OnEdit="@(() => RetailPriceEdit = new UpdateStorageItemRetailPriceHttpBody(){Id = StorageItem.Id})"
+                               OnEdit="@(() => RetailPriceEdit = new UpdateStorageItemRetailPriceHttpBody(){Id = StorageItem.Id, RetailPrice = StorageItem.RetailPrice})"
                                OnSave="@(async () => await UpdateRetailPrice())">
                     <View>@StorageItem.RetailPrice</View>
                     <Edit>
@@ -158,7 +158,12 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        
+        await Update();
+        _isLoaded = true;
+    }
+
+    private async Task Update()
+    {
         StorageItem = (await new HttpGetRequest<GetStorageItemByIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/{Item.Item.Id}").GetAsync()).Data;
         
         Places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
@@ -166,42 +171,46 @@
         Conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data;
         
         Articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
-        
-        _isLoaded = true;
     }
     private async Task UpdateArticle()
     {
         await new HttpPatchRequest<UpdateStorageItemArticleHttpBody, UpdateStorageItemArticleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Article").PatchAsync(ArticleEdit);
         ArticleEdit = null;
+        await Update();
     }
 
     private async Task UpdatePurchasePrice()
     {
         await new HttpPatchRequest<UpdateStorageItemPurchasePriceHttpBody, UpdateStorageItemPurchasePriceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/PurchasePrice").PatchAsync(PurchasePriceEdit);
         PurchasePriceEdit = null;
+        await Update();
     }
 
     private async Task UpdateRetailPrice() 
     {
         await new HttpPatchRequest<UpdateStorageItemRetailPriceHttpBody, UpdateStorageItemRetailPriceSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/RetailPrice").PatchAsync(RetailPriceEdit);
         RetailPriceEdit = null;
+        await Update();
     }
     
     private async Task UpdateCondition() 
     {
         await new HttpPatchRequest<UpdateStorageItemConditionHttpBody, UpdateStorageItemConditionSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Condition").PatchAsync(ConditionEdit);
         ConditionEdit = null;
+        await Update();
     }    
     private async Task UpdateComment()
     {
         await new HttpPatchRequest<UpdateStorageItemCommentHttpBody, UpdateStorageItemCommentSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/Comment").PatchAsync(CommentEdit);
         CommentEdit = null;
+        await Update();
     }
     
     private async Task UpdateHiddenComment()
     {
         await new HttpPatchRequest<UpdateStorageItemHiddenCommentHttpBody, UpdateStorageItemHiddenCommentSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems/HiddenComment").PatchAsync(HiddenCommentEdit);
         HiddenCommentEdit = null;
+        await Update();
     }
 
     private async Task OpenArticleDetails(Guid id, string name)

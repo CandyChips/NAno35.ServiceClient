@@ -17,7 +17,7 @@
              !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
              _roles.Any(c => c == RolesHelper.Manager || c == RolesHelper.Admin))
         {
-            <RadzenButton Click=@(_ => AddWork())
+            <RadzenButton
                           Text="Закрыть заказ наряд и напечатать акт выполненых работ"
                           Style="width: 100%;"
                           ButtonStyle="ButtonStyle.Danger"/>
@@ -318,7 +318,7 @@
                         };
                         case 7:
                         {
-                            <RadzenButton Text="Закрыт" Click="@(SetAsCompleted)"/>
+                            <RadzenButton Text="Закрыт" Click="@(SetAsClosed)"/>
                             break; 
                         };
                         case 8:

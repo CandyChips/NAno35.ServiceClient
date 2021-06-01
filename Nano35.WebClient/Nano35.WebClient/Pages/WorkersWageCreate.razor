@@ -5,9 +5,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<WorkersWageForm FormSubmitted="OnSubmit"
-                 Model="@_model" 
-                 Error="@Error"/>
+<BoxedContent Width="40">
+    <WorkersWageForm FormSubmitted="OnSubmit" Model="@_model" Error="@Error"/>
+</BoxedContent>
 
 @code {
     private CreateWageOperationHttpBody _model;

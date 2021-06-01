@@ -5,7 +5,7 @@
 @inject IAuthService AuthService 
 @inject NavigationManager NavigationManager
 
-<div class="col-md-4 offset-md-4 mt-5">
+<CenterContent>
     <LoadingContent IsLoaded="_isLoaded">
         <RadzenPanel>
             <ChildContent>
@@ -44,8 +44,7 @@
             </ChildContent>
         </RadzenPanel>
     </LoadingContent>
-</div>
-
+</CenterContent>
 
 @code
 {

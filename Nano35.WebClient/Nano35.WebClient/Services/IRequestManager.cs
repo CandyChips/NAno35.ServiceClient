@@ -17,17 +17,13 @@ namespace Nano35.WebClient.Services
     public class ClusterRequestManager : IRequestManager
     {
         private readonly HttpClient _httpClient;
-        public ClusterRequestManager(HttpClient httpClient) => 
-            _httpClient = httpClient;
-        public string IdentityServer => $"https://192.168.100.125/identity";
-        //public string InstanceServer => "https://192.168.100.125/instance";
-        public string InstanceServer => "http://localhost:5002";
-        //public string StorageServer => "https://192.168.100.125/storage";
-        public string StorageServer => "http://localhost:5003";
-        public string RepairOrdersServer => "https://192.168.100.125/repairorders";
-        public string FileServer => "https://192.168.100.125:30005";
-        public string CashboxServer => "https://192.168.100.125/Cashbox";
-        public async Task<bool> HealthCheck(string serverUrl) => 
-            (await _httpClient.GetAsync($"{serverUrl}/health")).IsSuccessStatusCode;
+        public ClusterRequestManager(HttpClient httpClient) => _httpClient = httpClient;
+        public string IdentityServer => "https://nano35.ru/api/identity";
+        public string InstanceServer => "https://nano35.ru/api/instance";
+        public string StorageServer => "https://nano35.ru/api/storage";
+        public string RepairOrdersServer => "https://nano35.ru/api/repairorders";
+        public string FileServer => "https://nano35.ru/api/storage";
+        public string CashboxServer => "https://nano35.ru/api/Cashbox";
+        public async Task<bool> HealthCheck(string serverUrl) => (await _httpClient.GetAsync($"{serverUrl}/health")).IsSuccessStatusCode;
     }
 }

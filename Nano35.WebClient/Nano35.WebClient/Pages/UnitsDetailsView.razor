@@ -7,17 +7,16 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-@if (_isLoaded)
-{
+<LoadingContent IsLoaded="_isLoaded">
     <h3>Текущее подразделение: @(Unit.Name)</h3>
     <h3>Аддресс: @(Unit.Address)</h3>
     <h3>График работы: @(Unit.WorkingFormat)</h3>
     <h3>В кассе: @(Unit.Cashbox) руб.</h3>
-}
+</LoadingContent>
 
 @code {
     private UnitViewModel Unit { get; set; }
-    private bool _isLoaded = false;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {

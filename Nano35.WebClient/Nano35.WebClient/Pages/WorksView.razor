@@ -5,9 +5,9 @@
 @using Nano35.Contracts.Repair.Models
 @using Nano35.HttpContext.Repair
 @using Nano35.WebClient.Services
-@inject IRequestManager _requestManager
-@inject ISessionProvider _sessionProvider
-@inject HttpClient _httpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject HttpClient HttpClient
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Мои активные заказы на ремонт"/>
@@ -60,7 +60,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(_httpClient, $"{_requestManager.RepairOrdersServer}/RepairOrders?InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = false;
     }
 
@@ -75,7 +75,7 @@
     {
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
         await modal.Result;
-        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(_httpClient, $"{_requestManager.RepairOrdersServer}/RepairOrders?InstanceId={await _sessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
 
     }
 

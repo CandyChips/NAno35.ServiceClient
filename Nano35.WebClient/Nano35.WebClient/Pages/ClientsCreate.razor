@@ -4,11 +4,9 @@
 @inject IRequestManager _requestManager
 @inject ISessionProvider _sessionProvider
 
-<div style="width: 40rem;">
-    <ClientsForm FormSubmitted="Submit"
-                 Model="_model" 
-                 Error="@Error"/>
-</div>
+<BoxedContent Width="40">
+    <ClientsForm FormSubmitted="Submit" Model="_model" Error="@Error"/>
+</BoxedContent>
 
 @code
 {
@@ -27,7 +25,8 @@
     {
         try
         {
-            var response = await new HttpPostRequest<CreateClientHttpBody, CreateClientHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Clients").PostAsync(_model);
+            Console.WriteLine("tre");
+            await new HttpPostRequest<CreateClientHttpBody, CreateClientHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Clients").PostAsync(_model);
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)

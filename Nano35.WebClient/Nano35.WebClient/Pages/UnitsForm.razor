@@ -5,15 +5,12 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
-<EditForm Model="@Model"
-          OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
 
     <InputField Title="Название подразделения*">
         <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Name"/>
+            <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/>
         </Controls>
         <Validation>
             <ValidationMessage For="@(() => Model.Name)" />
@@ -22,9 +19,7 @@
 
     <InputField Title="Адресс*">
         <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Address"/>
+            <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Address"/>
         </Controls>
         <Validation>
             <ValidationMessage For="@(() => Model.Address)" />
@@ -33,9 +28,7 @@
 
     <InputField Title="Формат работы">
         <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.WorkingFormat"/>
+            <RadzenTextBox Style="width: 100%;" @bind-Value="Model.WorkingFormat"/>
         </Controls>
         <Validation>
             <ValidationMessage For="@(() => Model.WorkingFormat)" />
@@ -44,9 +37,7 @@
 
     <InputField Title="Номер телефона*">
         <Controls>
-            <RadzenTextBox Style="width: 100%;" 
-                           Placeholder="..."
-                           @bind-Value="Model.Phone"/>
+            <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/>
         </Controls>
         <Validation>
             <ValidationMessage For="@(() => Model.Phone)" />
@@ -60,8 +51,7 @@
                             ValueProperty="Id"
                             TValue="Guid"
                             @bind-Value="Model.UnitTypeId"
-                            style="width: 100%"
-                            Placeholder="Выберите статус клиента..."/>
+                            style="width: 100%"/>
         </Controls>
         <Validation>
             <ValidationMessage For="@(() => Model.UnitTypeId)" />
@@ -73,10 +63,7 @@
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
     
-    <RadzenButton type="submit"
-                  Text="Создать"
-                  ButtonStyle="ButtonStyle.Primary"
-                  Style="width: 100%" />
+    <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
 </EditForm>
 
 @code

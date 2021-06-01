@@ -11,9 +11,7 @@
             <InputText @bind-Value="Model.Name" 
                         class="form-control"/>
         </Controls>
-        <Validation>
-            <ValidationMessage For="@(() => Model.Name)" />
-        </Validation>
+        <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
     </InputField>
     
     <InputField Title="Эл почта">
@@ -21,9 +19,7 @@
             <InputText @bind-Value="Model.Email" 
                         class="form-control"/>
         </Controls>
-        <Validation>
-                    <ValidationMessage For="@(() => Model.Email)" />
-        </Validation>
+        <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
     </InputField>
     
     <InputField Title="Номер телефона*">

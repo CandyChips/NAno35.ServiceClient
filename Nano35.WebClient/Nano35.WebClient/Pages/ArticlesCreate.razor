@@ -5,9 +5,9 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 
-<div style="width: 40rem;">
+<BoxedContent Width="40">
     <ArticlesForm FormSubmitted="Submit" Model="@_model" Error="@Error" IsExpandedView="@IsExpandedView"/>
-</div>
+</BoxedContent>
 
 @code
 {

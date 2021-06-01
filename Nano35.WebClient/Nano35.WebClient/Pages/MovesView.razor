@@ -9,23 +9,9 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden"></span>
-        </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Перемещения"/>
-    
-    <RadzenButton Click=@(_ => NewMove()) 
-                  Text="Создать"
-                  Style="margin: 1rem 0;"
-                  ButtonStyle="ButtonStyle.Primary"/>
-    
+    <RadzenButton Click=@(_ => NewMove()) Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
     <RadzenGrid AllowFiltering="true" 
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                 FilterMode="FilterMode.Advanced" 
@@ -35,22 +21,11 @@ else
                 Data="@_data"
                 TItem="MoveViewModel">
         <Columns>
-            <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="Number" 
-                              Title="Номер" />
-            <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="Date" 
-                              Title="Дата" />
-            <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="ToUnit"
-                              Title="Подразделение получатель" />
-            <RadzenGridColumn TItem="MoveViewModel" 
-                              Property="FromUnit" 
-                              Title="Подразделение отправитель" />
-            <RadzenGridColumn TItem="MoveViewModel" 
-                              Filterable="false"
-                              Sortable="false"
-                              Width="130px">
+            <RadzenGridColumn TItem="MoveViewModel" Property="Number" Title="Номер" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="Date" Title="Дата" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="ToUnit" Title="Подразделение получатель" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="FromUnit" Title="Подразделение отправитель" />
+            <RadzenGridColumn TItem="MoveViewModel" Filterable="false" Sortable="false" Width="130px">
                 <Template Context="item">
                     <RadzenButton Click=@(_ => OpenMove(item)) 
                                   Text="Информация"
@@ -61,18 +36,19 @@ else
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
 
 @code
 {
     private List<MoveViewModel> _data;
-    private bool _loading = true;
+    private bool _loading;
     [CascadingParameter] public IModalService Modal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _data = await GetAllMoves();
         _loading = false;
+        _data = await GetAllMoves();
+        _loading = true;
     }
 
     private async Task<List<MoveViewModel>> GetAllMoves() =>
@@ -82,7 +58,9 @@ else
     {
         var modal = Modal.Show<MovesCreate>("Новое списание");
         await modal.Result;
+        _loading = false;
         _data = await GetAllMoves();
+        _loading = true;
     }
 
     private async Task OpenMove(MoveViewModel value)
@@ -91,6 +69,8 @@ else
         parameters.Add(nameof(MovesDetails.Move), value);
         var modal = Modal.Show<MovesDetails>($"Перемещение", parameters);
         await modal.Result;
+        _loading = false;
         _data = await GetAllMoves();
+        _loading = true;
     }
 }

@@ -48,22 +48,13 @@
                 </AllowedContent>
                 <RejectedContent>
                     <InputField Title="Ячейка на складе">
-                        <Controls>
-                            <RadzenTextBox style="display: flex; width: 100%"
-                                           @bind-Value="_model.PlaceOnStorage"
-                                           Placeholder="Введите название новой ячейки"/>
-                        </Controls>
+                        <Controls><RadzenTextBox style="display: flex; width: 100%" @bind-Value="_model.PlaceOnStorage" Placeholder="Введите название новой ячейки"/></Controls>
                         <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
                     </InputField>
                 </RejectedContent>
             </ConditionalContent>
             <InputField Title="Количество">
-                <Controls>
-                    <RadzenNumeric style="width: 100%;" 
-                                   @bind-Value="_model.Count"
-                                   ShowUpDown="false"
-                                   Min="1"/>
-                </Controls>
+                <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Count"ShowUpDown="false"Min="1"/></Controls>
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
             
@@ -72,10 +63,7 @@
                 <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
             </InputField>
     
-            <RadzenButton type="submit"
-                          Text="Создать"
-                          ButtonStyle="ButtonStyle.Primary"
-                          Style="width: 100%" />
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         </EditForm>
     </LoadingContent>
 </BoxedContent>

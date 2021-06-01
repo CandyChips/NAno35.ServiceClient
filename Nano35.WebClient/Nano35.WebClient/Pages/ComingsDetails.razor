@@ -1,52 +1,34 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@inject HttpClient _httpClient
-@inject IRequestManager _requestManager
-@inject ISessionProvider _sessionProvider
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
 
-<RadzenFieldset Text="Информация"
-            Style="width: 100%;">
+<RadzenFieldset Text="Информация" Style="width: 100%;">
     <ul class="list-group">
-        <li class="list-group-item" role="alert">
+        <li class="list-group-item">
             <b>Номер оприходования: @Coming.Number</b>
         </li>
-        <li class="list-group-item" role="alert">
+        <li class="list-group-item">
             <b>Дата: @Coming.Date</b>
         </li>
-        <li class="list-group-item " role="alert">
+        <li class="list-group-item">
             <b>Целевое подразделение: @Coming.Unit</b>
         </li>
-        <li class="list-group-item " role="alert">
+        <li class="list-group-item">
             <b>Поставщик: @Coming.Client</b>
         </li>
     </ul>
 </RadzenFieldset>
-
-<RadzenFieldset Text="Оприходуемые товары"
-                Style="width: 60rem">
-    <RadzenGrid Data="@(Details)"
-                EmptyText="Добавте оприходуемые товары..."
-                TItem="ComingDetailViewModel">
+<RadzenFieldset Text="Оприходуемые товары" Style="width: 60rem">
+    <RadzenGrid Data="@(Details)" EmptyText="Добавте оприходуемые товары..." TItem="ComingDetailViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="StorageItem" 
-                              Title="Товар" />
-            <RadzenGridColumn TItem="ComingDetailViewModel" 
-                              Property="PlaceOnStorage" 
-                              Title="Место на складе" />
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="Count"
-                              Title="Количество" />
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Property="Price" 
-                              Title="Цена" />
-            <RadzenGridColumn TItem="ComingDetailViewModel"
-                              Bubble="false"
-                              Sortable="false"
-                              Filterable="false"
-                              Width="250px"
-                              TextAlign="TextAlign.Center">
+            <RadzenGridColumn TItem="ComingDetailViewModel" Property="StorageItem" Title="Товар" />
+            <RadzenGridColumn TItem="ComingDetailViewModel" Property="PlaceOnStorage" Title="Место на складе" />
+            <RadzenGridColumn TItem="ComingDetailViewModel" Property="Count" Title="Количество" />
+            <RadzenGridColumn TItem="ComingDetailViewModel" Property="Price" Title="Цена" />
+            <RadzenGridColumn TItem="ComingDetailViewModel" Bubble="false" Sortable="false" Filterable="false" Width="250px" TextAlign="TextAlign.Center">
                 <Template Context="item">
                     <a href="http://192.168.100.124:5002/StorageItems/Ticket?storageItemId=@item.StorageItemId.ToString()" target="_blank">Этикетка</a>
                 </Template>
@@ -62,6 +44,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllComingDetailsSuccessHttpResponse>(_httpClient, $"{_requestManager.StorageServer}/Comings/{Coming.Id}/Details").GetAsync()).Data;
+        Details = (await new HttpGetRequest<GetAllComingDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings/{Coming.Id}/Details").GetAsync()).Data;
     }
 }

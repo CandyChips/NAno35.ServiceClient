@@ -3,20 +3,17 @@
 @using Nano35.Contracts.Instance.Models
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
-@inject HttpClient _httpClient
+@inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
 
 
 <LoadingContent IsLoaded="_isLoaded">
-    
-    <EditForm Model="@Model" 
-          OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="@Model" OnSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        
         <InputField Title="Статус клиента">
             <Controls>
-                <RadzenDropDown Data=@(_state.Select(a => new {a.Id, a.Name}))
+                <RadzenDropDown Data="@(_state.Select(a => new {a.Id, a.Name}))"
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
@@ -26,10 +23,9 @@
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.ClientStateId)" /></Validation>
         </InputField>
-        
         <InputField Title="Тип клиента">
             <Controls>
-                <RadzenDropDown Data=@(_types.Select(a => new {a.Id, a.Name}))
+                <RadzenDropDown Data="@(_types.Select(a => new {a.Id, a.Name}))"
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
@@ -39,46 +35,43 @@
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.ClientTypeId)" /></Validation>
         </InputField>
-        
-        <InputField Title="@(Model.ClientStateId != Guid.Empty && 
-                             Model.ClientStateId == _state.First().Id ?
-                               "Название организации" : 
-                               "ФИО клиента")">
-            <Controls><RadzenTextBox Style="width: 100%;" Placeholder="..." @bind-Value="Model.Name"/></Controls>
+        <InputField Title="@(Model.ClientStateId != Guid.Empty && Model.ClientStateId == _state.First().Id ? "Название организации" : "ФИО клиента")">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
         </InputField>
-        
         <InputField Title="Эл почта">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
         </InputField>
-        
         <InputField Title="Номер телефона">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
             <Validation><ValidationMessage For="@(() => Phone)" /></Validation>
         </InputField>
-        
         <InputField Title="Скидка">
             <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Selle"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Selle)" /></Validation>
         </InputField>
-        
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         
         @if (!string.IsNullOrEmpty(Error))
         {
             <div class="alert alert-danger mt-3 mb-0">@Error</div>
         }
+        <FieldList Title="fields">
+            <FieldListItem Title="NewId">@Model.NewId</FieldListItem>
+            <FieldListItem Title="Name">@Model.Name</FieldListItem>
+            <FieldListItem Title="Email">@Model.Email</FieldListItem>
+            <FieldListItem Title="Phone">@Model.Phone</FieldListItem>
+            <FieldListItem Title="Selle">@Model.Selle</FieldListItem>
+            <FieldListItem Title="ClientTypeId">@Model.ClientTypeId</FieldListItem>
+            <FieldListItem Title="ClientStateId">@Model.ClientStateId</FieldListItem>
+            <FieldListItem Title="InstanceId">@Model.InstanceId</FieldListItem>
+        </FieldList>
     </EditForm>
 </LoadingContent>
 
 @code
 {
-    [CascadingParameter] public IModalService Modal { get; set; }
-    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public CreateClientHttpBody Model { get; set; }
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
@@ -92,18 +85,16 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        
-        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(_httpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
-        _types = new List<ClientTypeViewModel>((await new HttpGetRequest<GetAllClientTypesHttpResponse>(_httpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data);
-        
+        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
+        _types = new List<ClientTypeViewModel>((await new HttpGetRequest<GetAllClientTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data);
         _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
+        Console.WriteLine("zxc");
         Model.Phone = Phone;
         await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
     }
 
     private async Task PhoneMask()
@@ -111,7 +102,7 @@
 
         Phone = Regex.Replace(Phone, @"[^\d]", "");
         
-        var countryCode = "+7";
+        const string countryCode = "+7";
         
         if (Phone.StartsWith("7"))
             Phone = Phone.Remove(0,1);

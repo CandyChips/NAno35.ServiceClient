@@ -33,6 +33,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<IInstanceService, InstanceService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<NotificationService>();
             builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -12,15 +13,23 @@ namespace Nano35.WebClient.Services
     public class HttpGetRequest<TResponse>
         where TResponse : IHttpResponse
     {
+        private readonly HealthStatus _healthStatusService;
         private readonly HttpClient _httpClient;
         private readonly string _uri;
         public HttpGetRequest(HttpClient httpClient, string uri)
         {
             _httpClient = httpClient;
             _uri = uri;
+            _healthStatusService = new HealthStatus(httpClient);
         }
         public async Task<TResponse> GetAsync()
         {
+            var a = _uri.Split("/");
+            var uri = string.Join("/",a,0,5);
+            var endpoint = string.Join("/", a, 5, a.Length - 5);
+            
+            if (await _healthStatusService.Check(uri, endpoint))
+                throw new Exception();
             var response = await _httpClient.GetAsync(_uri);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<TResponse>();
             else throw new Exception(await response.Content.ReadFromJsonAsync<string>());

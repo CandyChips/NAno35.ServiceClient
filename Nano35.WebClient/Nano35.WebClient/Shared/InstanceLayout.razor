@@ -1,9 +1,9 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.WebClient.Pages
-@using Nano35.WebClient.Helpers
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @layout MainLayout
+@inject NotificationService NotificationService
 @inject  ISessionProvider SessionProvider
 @inject  IRequestManager RequestManager
 @inject  IInstanceService InstanceService
@@ -33,7 +33,10 @@
         _roles = await AuthService.GetCurrentRoles();
         _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
         if(!_serverAvailable)
+        {
             NavigationManager.NavigateTo("/instances");
+            ShowNotification(new NotificationMessage {Severity = NotificationSeverity.Error, Summary = "Ошибка сети", Detail = "Instance сервер не доступен", Duration = 4000});
+        }
         if(!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
         await InstanceService.IsInstanceExist();
@@ -49,5 +52,10 @@
             await SessionProvider.SetCurrentUnitId((Guid) result.Data);
         }
         _loading = true;
+    }
+
+    private async Task ShowNotification(NotificationMessage message)
+    {
+        NotificationService.Notify(message);
     }
 }

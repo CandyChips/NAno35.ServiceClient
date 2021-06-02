@@ -71,20 +71,20 @@
             _error = ex.Message;
         }
     }
-    
+
     private async Task PhoneMask()
     {
 
         Phone = Regex.Replace(Phone, @"[^\d]", "");
-        
+
         var countryCode = "+7";
-        
+
         if (Phone.StartsWith("7"))
-            Phone = Phone.Remove(0,1);
-        
+            Phone = Phone.Remove(0, 1);
+
         if (Phone.StartsWith("8"))
-            Phone = Phone.Remove(0,1);
-        
+            Phone = Phone.Remove(0, 1);
+
         if (Phone.Length < 10)
             Phone = Phone.PadRight(10);
 
@@ -92,7 +92,7 @@
             Phone = Phone.Substring(0, 10);
 
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
-        
+
         _model.Phone = Phone;
     }
 }

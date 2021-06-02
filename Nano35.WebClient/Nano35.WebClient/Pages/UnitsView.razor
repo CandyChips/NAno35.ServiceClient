@@ -100,7 +100,10 @@
     {
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
+        _loading = false;
         _data = await GetAllUnits();
+        _roles = await AuthService.GetCurrentRoles();
+        _loading = true;
     }
 
     private async Task OpenUnit(UnitViewModel value)
@@ -109,5 +112,9 @@
         parameters.Add(nameof(UnitDetails.Unit), value);
         var modal = Modal.Show<UnitDetails>($"{value.Name}", parameters);
         await modal.Result;
+        _loading = false;
+        _data = await GetAllUnits();
+        _roles = await AuthService.GetCurrentRoles();
+        _loading = true;
     }
 }

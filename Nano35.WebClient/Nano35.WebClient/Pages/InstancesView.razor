@@ -75,8 +75,9 @@ else
     {
         var modal = Modal.Show<InstancesCreate>("Новая организация");
         await modal.Result;
+        _loading = true;
         _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
-        
+        _loading = false;
     }
 
     private async Task OpenOrg(Guid id)

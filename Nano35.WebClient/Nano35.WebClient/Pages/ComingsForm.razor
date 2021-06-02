@@ -3,6 +3,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
 @using Nano35.WebClient.Helpers
+@using Microsoft.AspNetCore.Mvc.Filters
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -158,8 +159,14 @@
             DisableBackgroundCancel = true, FocusFirstElement = true
         };
         var modal = Modal.Show<ClientsCreate>($"Новый клиент", modalOpts);
-        await modal.Result;
+        var res = await modal.Result;
+        if (!res.Cancelled)
+        {
+            Model.ClientId = (Guid) res.Data;
+        }
+
         _clients = await LoadClients();
+        
     }
         
 }

@@ -88,7 +88,9 @@
     {
         var modal = Modal.Show<CancellationsCreate>("Новое списание");
         await modal.Result;
+        _loading = false;
         _data = await GetAllCancellations();
+        _loading = true;
     }
 
     private async Task OpenCancellation(CancellationViewModel coming)
@@ -97,6 +99,8 @@
         parameters.Add(nameof(CancellationsDetails.Cancellation), coming);
         var modal = Modal.Show<CancellationsDetails>($"Списание", parameters);
         await modal.Result;
+        _loading = false;
         _data = await GetAllCancellations();
+        _loading = true;
     }
 }

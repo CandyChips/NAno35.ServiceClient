@@ -17,17 +17,23 @@
     public class RepairOrderStateTypesHelper
     {
         public static int Created => 0;
-        public static int InWork => 1;
-        public static int Completed => 2;
-        public static int Stopped => 3;
+        public static int PerformerChanged => 1;
+        public static int Diagnosis => 2;
+        public static int Agreement => 3;
         public static int OnWait => 4;
-        public static int PerformerChanged => 5;
-        public static int Closed => 6;
+        public static int InWork => 5;
+        public static int Ready => 6;
+        public static int Completed => 7;
+        public static int Closed => 8;
+        public static int Stopped => 9;
         
         public static string GetName(int id)
         {
             return 
                 id == Created ? "Заказ на ремонт создан" :
+                id == Ready ? "Заказ на ремонт готов" :
+                id == Diagnosis ? "Заказ на ремонт продиагностирован" :
+                id == Agreement ? "Заказ на ремонт согласован" :
                 id == InWork ? "Заказ на ремонт в работе" :
                 id == Completed ? "Заказ на ремонт выполнен" :
                 id == OnWait ? "Заказ на ремонт ожидает запчасти" :

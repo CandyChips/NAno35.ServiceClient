@@ -99,7 +99,9 @@
         };
         var modal = Modal.Show<ComingsCreate>("Новое оприходование", modalOpts);
         await modal.Result;
+        _loading = false;
         _data = await GetAllComings();
+        _loading = true;
     }
 
     private async Task OpenComing(ComingViewModel coming)
@@ -112,7 +114,9 @@
         parameters.Add(nameof(ComingsDetails.Coming), coming);
         var modal = Modal.Show<ComingsDetails>($"Оприходование", parameters, modalOpts);
         await modal.Result;
+        _loading = false;
         _data = await GetAllComings();
+        _loading = true;
     }
 
     private async Task PrintSaleAsync(Guid saleId)

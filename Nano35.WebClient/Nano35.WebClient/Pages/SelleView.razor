@@ -93,7 +93,9 @@ else
     {
         var modal = Modal.Show<SellesCreate>("Новая продажа");
         await modal.Result;
+        _loading = true;
         _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _loading = false;
     }
 
     private async Task PrintSaleAsync(Guid saleId)

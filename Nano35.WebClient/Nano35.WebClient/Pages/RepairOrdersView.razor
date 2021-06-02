@@ -58,12 +58,12 @@
                                   Size="ButtonSize.Small"
                                   Text="Информация"
                                   ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://192.168.100.125/docs/StorageItems/RepairOrderReceipt/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderReceipt/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                   Text="Акт приема"
                                   Size="ButtonSize.Small"
                                   Style="margin: 1rem 0;"
                                   ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://192.168.100.125/docs/StorageItems/RepairOrderDetails/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderDetails/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                   Text="Акт выполненых работ"
                                   Size="ButtonSize.Small"
                                   Style="margin: 1rem 0;"
@@ -82,6 +82,7 @@
     
     protected override async Task OnInitializedAsync()
     {
+        _isLoaded = false;
         _data = await GetAllRepairOrders();
         _isLoaded = true;
     }
@@ -90,6 +91,7 @@
     
     private async Task DetailsOpen(Guid id)
     {
+        Console.WriteLine("test");
         var modalOpts = new ModalOptions()
         {
             DisableBackgroundCancel = true, FocusFirstElement = true

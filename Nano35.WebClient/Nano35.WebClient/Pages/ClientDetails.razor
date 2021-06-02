@@ -69,24 +69,6 @@
                 </Edit>
             </EditableField>
         </FieldListItem>
-        <FieldListItem Title="Тип клиента">
-            <EditableField OnCancel="@(() => TypeEdit = null)"
-                           OnEdit="@(() => TypeEdit = new UpdateClientsTypeHttpBody() {ClientId = Client.Id})"
-                           OnSave="@(() => UpdateType())">
-                <View>
-                    <p>@Client.ClientType</p></View>
-                <Edit>
-                    <RadzenDropDown style="display: flex; "
-                                    AllowClear="true"
-                                    TValue="Guid"
-                                    Data=@(Types.Select(g => new {Id = g.Id, Name = g.Name}))
-                                    TextProperty="Name"
-                                    ValueProperty="Id"
-                                    @bind-Value="TypeEdit.TypeId">
-                    </RadzenDropDown>
-                </Edit>
-            </EditableField>
-        </FieldListItem>
         <RadzenButton Click="@(() => ConfirmDelete())"
                       Text="Удалить"
                       Size="ButtonSize.Small"
@@ -113,7 +95,6 @@
     private UpdateClientsSelleHttpBody SelleEdit {get;set;}
     private UpdateClientsStateHttpBody StateEdit {get;set;}
     private List<ClientStateViewModel> States { get; set; }
-    private UpdateClientsTypeHttpBody TypeEdit {get;set;}
     private List<ClientTypeViewModel> Types { get; set; }
     
     private DeleteClientHttpBody ClientDelete { get; set; }
@@ -123,7 +104,6 @@
     protected override async Task OnInitializedAsync()
     {
         States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
-        Types = (await new HttpGetRequest<GetAllClientTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data.ToList();
         _isLoaded = true;
     }
 
@@ -171,11 +151,6 @@
     {
         await new HttpPatchRequest<UpdateClientsStateHttpBody, UpdateClientsStateHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{StateEdit.ClientId}/State").PatchAsync(StateEdit);
         StateEdit = null;
-    }
-    private async Task UpdateType()
-    {
-        await new HttpPatchRequest<UpdateClientsTypeHttpBody, UpdateClientsTypeHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{TypeEdit.ClientId}/Type").PatchAsync(TypeEdit);
-        TypeEdit = null;
     }
     
     

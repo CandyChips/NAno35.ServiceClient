@@ -14,20 +14,20 @@
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
-    
-    <RadzenButton Click="@(_ => OpenCreateClient())" 
-                  Text="Создать"
-                  Style="margin: 1rem 0;"
-                  ButtonStyle="ButtonStyle.Primary"/>
-
-    <RadzenGrid Data="@_data"
-                EmptyText="Добавте оприходуемые товары..."
+    <RadzenButton Click="@(_ => OpenCreateClient())" Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
+    <RadzenGrid EmptyText="Добавте оприходуемые товары..."
+                AllowFiltering="true" 
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                FilterMode="FilterMode.Advanced" 
+                AllowPaging="true"
+                PageSize="10"
+                AllowSorting="true" 
+                Data="@_data"
                 TItem="ClientViewModel">
         <Columns>
             <RadzenGridColumn TItem="ClientViewModel" Property="Name" Title="Фио" />
             <RadzenGridColumn TItem="ClientViewModel" Property="Email" Title="Адресс" />
             <RadzenGridColumn TItem="ClientViewModel" Property="Phone" Title="Телефон" />
-            <RadzenGridColumn TItem="ClientViewModel" Property="ClientType" Title="Тип Клиента" />
             <RadzenGridColumn TItem="ClientViewModel" Property="ClientState" Title="Статус Клиента" />
             @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
             {

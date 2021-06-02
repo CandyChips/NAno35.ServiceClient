@@ -4,11 +4,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 
-<LoadingContent IsLoaded="_loaded">
-    
+<LoadingContent IsLoaded="_loaded">    
     <EditForm Model="@Model" OnValidSubmit="Create">
         <DataAnnotationsValidator />
-
         <InputField Title="Наименование*">
             <Controls>
                 <div style="display: flex; width: 100%">
@@ -23,9 +21,7 @@
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click="@(_ => OpenCreateArticle())"
-                                  Text="Добавить"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click="@(_ => OpenCreateArticle())" Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
             <Validation>

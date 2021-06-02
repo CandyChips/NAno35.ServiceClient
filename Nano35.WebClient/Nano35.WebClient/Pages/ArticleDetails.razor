@@ -42,14 +42,8 @@
             <EditableField OnCancel="@(() => BrandEdit = null)"
                            OnEdit="@(() => BrandEdit = new UpdateArticleBrandHttpBody() {Id = Article.Id})"
                            OnSave="@(() => UpdateBrand())">
-                <View>
-                    <p>@Article.Brand</p>
-                </View>
-                <Edit>
-                    <RadzenTextBox style="display: flex;align-items: center"
-                                   @bind-Value="BrandEdit.Brand"
-                                   Placeholder="@Article.Brand"/>
-                </Edit>
+                <View><p>@Article.Brand</p></View>
+                <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="BrandEdit.Brand" Placeholder="@Article.Brand"/></Edit>
             </EditableField>
         </FieldListItem>
         
@@ -58,11 +52,7 @@
                            OnEdit="@(() => ModelEdit = new UpdateArticleModelHttpBody(){Id = Article.Id})"
                            OnSave="@(() => UpdateModel())">
                 <View><p>@Article.Model</p></View>
-                <Edit>
-                    <RadzenTextBox style="display: flex;align-items: center"
-                                   @bind-Value="ModelEdit.Model"
-                                   Placeholder="@Article.Model"/>
-                </Edit>
+                <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="ModelEdit.Model" Placeholder="@Article.Model"/></Edit>
             </EditableField>
         </FieldListItem>
         
@@ -71,28 +61,17 @@
                            OnEdit="@(() => InfoEdit = new UpdateArticleInfoHttpBody(){Id = Article.Id})"
                            OnSave="@(() => UpdateInfo())">
                 <View><p>@Article.Info</p></View>
-                <Edit>
-                    <RadzenTextBox style="display: flex;align-items: center"
-                                   @bind-Value="InfoEdit.Info"
-                                   Placeholder="@Article.Info"/>
-                </Edit>
+                <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="InfoEdit.Info" Placeholder="@Article.Info"/></Edit>
             </EditableField>
         </FieldListItem>
         
     </FieldList>
         
-    <RadzenFieldset Text="Характеристики"
-                    Style="width: 60rem">
-        <RadzenGrid Data="@(Article.Specs)"
-                    EmptyText="Нет указаных характеристик"
-                    TItem="SpecHttpContext">
+    <RadzenFieldset Text="Характеристики" Style="width: 60rem">
+        <RadzenGrid Data="@(Article.Specs)" EmptyText="Нет указаных характеристик" TItem="SpecHttpContext">
             <Columns>
-                <RadzenGridColumn TItem="SpecHttpContext"
-                                  Property="Key"
-                                  Title="Характеристика"/>
-                <RadzenGridColumn TItem="SpecHttpContext"
-                                  Property="Value"
-                                  Title="Значение"/>
+                <RadzenGridColumn TItem="SpecHttpContext" Property="Key" Title="Характеристика"/>
+                <RadzenGridColumn TItem="SpecHttpContext" Property="Value" Title="Значение"/>
             </Columns>
         </RadzenGrid>
     </RadzenFieldset>

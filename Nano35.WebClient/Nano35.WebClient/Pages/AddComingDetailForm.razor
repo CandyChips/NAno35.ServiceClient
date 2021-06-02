@@ -4,11 +4,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
-<EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-    @if (_isLoaded)
-    {
+<LoadingContent IsLoaded="_isLoaded">
+    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
-        
         <InputField Title="Товар">
             <Controls>
                 <div style="display: flex; width: 100%">
@@ -44,8 +42,8 @@
         </InputField>
 
         <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
-    }
-</EditForm>
+    </EditForm>
+</LoadingContent>
 
 @code
 {

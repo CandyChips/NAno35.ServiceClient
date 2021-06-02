@@ -21,26 +21,25 @@
         public static int Diagnosis => 2;
         public static int Agreement => 3;
         public static int OnWait => 4;
-        public static int InWork => 5;
+        public static int OnWork => 5;
         public static int Ready => 6;
         public static int Completed => 7;
         public static int Closed => 8;
-        public static int Stopped => 9;
+        public static int None => 99;
         
         public static string GetName(int id)
         {
             return 
-                id == Created ? "Заказ на ремонт создан" :
-                id == Ready ? "Заказ на ремонт готов" :
-                id == Diagnosis ? "Заказ на ремонт продиагностирован" :
-                id == Agreement ? "Заказ на ремонт согласован" :
-                id == InWork ? "Заказ на ремонт в работе" :
-                id == Completed ? "Заказ на ремонт выполнен" :
-                id == OnWait ? "Заказ на ремонт ожидает запчасти" :
+                id == Created ? "Заказ создан" :
                 id == PerformerChanged ? "Изменен исполнитель" :
-                id == Closed ? "Заказ на ремонт закрыт" :
-                id == Stopped ? "Заказ на ремонт приостановлен" : 
-                "";
+                id == Diagnosis ? "Заказ на диагностике" :
+                id == Agreement ? "Заказ выполнен" :
+                id == OnWait ? "Заказ ожидает запчасти" :
+                id == OnWork ? "Заказ в работе" :
+                id == Ready ? "Заказ готов" :
+                id == Completed ? "Заказ готов к выдаче" : 
+                id == Closed ? "Заказ  закрыт" :
+                "Статус";
         }
     }
 }

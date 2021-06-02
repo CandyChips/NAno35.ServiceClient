@@ -73,12 +73,12 @@
                         <RadzenGridColumn TItem="CreateComingDetailViewModel" Context="order" Bubble="false" TextAlign="TextAlign.Center">
                             <Template Context="item">
                                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"></RadzenButton>
-                                <a href="http://192.168.100.124:5002/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
+                                <a href="https://nano35.ru/api/Docs/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
                             </Template>
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
-                <RadzenButton Click=@(_ => AddDetail()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%" />
+                <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%" />
             </RadzenFieldset>
             <ValidationMessage For="@(() => Model.Details)" />
     </LoadingContent>
@@ -86,7 +86,7 @@
     {
         <div class="alert alert-danger mt-3 mb-0">@Error</div>
     }
-    <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+    <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%; margin-top: 1rem;" />
 </EditForm>
 
 @code

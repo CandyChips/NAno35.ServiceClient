@@ -20,7 +20,6 @@
                                     Disabled="@(!_articles.Any())"
                                     style="width: 100%;"
                                     AllowClear="true"
-                                    Placeholder="Выберите наименование товара"
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
@@ -43,7 +42,6 @@
                                 @bind-Value="Model.ConditionId"
                                 style="flex: auto;"
                                 AllowClear="true"
-                                Placeholder="Выберите состояние товара"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
@@ -54,47 +52,23 @@
         </InputField>
                     
         <InputField Title="Комментарий">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="Укажите комментарий к товару"
-                               @bind-Value="Model.Comment"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.Comment)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Comment"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Comment)" /></Validation>
         </InputField>
                     
         <InputField Title="Скрытый комментарий">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="Укажите скрытый комментарий к товару"
-                               @bind-Value="Model.HiddenComment"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.HiddenComment)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.HiddenComment"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.HiddenComment)" /></Validation>
         </InputField>
                     
         <InputField Title="Закупочная цена">
-            <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="0"
-                               @bind-Value="Model.RetailPrice"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.RetailPrice)" />
-            </Validation>
+            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.RetailPrice"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.RetailPrice)" /></Validation>
         </InputField>
                     
         <InputField Title="Цена продажи">
-            <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="0"
-                               @bind-Value="Model.PurchasePrice"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.PurchasePrice)" />
-            </Validation>
+            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.PurchasePrice"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.PurchasePrice)" /></Validation>
         </InputField>
                     
         <InputField Title="Изображения">
@@ -117,7 +91,7 @@
                             <li>
                                 @if (FileUpload(_uploadResults, file.Name, out var result))
                                 {
-                                    <img src="https://192.168.100.125/files/StorageItems/@result.StoredFileName" alt="Image" style="width: 100px;"/>
+                                    <img src="https://nano35.ru/api/files/StorageItems/@result.StoredFileName" alt="Image" style="width: 100px;"/>
                                 }
                                 else
                                 {
@@ -229,7 +203,7 @@
 
         if (upload)
         {
-            var response = await HttpClient.PostAsync($"https://192.168.100.125/files/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
+            var response = await HttpClient.PostAsync($"https://nano35.ru/api/files/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
 
             var newUploadResults = await response.Content
                 .ReadFromJsonAsync<IList<UploadResult>>();

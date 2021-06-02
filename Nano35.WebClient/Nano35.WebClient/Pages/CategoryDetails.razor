@@ -13,7 +13,7 @@
                            OnEdit="@(() => ParentEdit = new UpdateCategoryParentCategoryHttpBody() {Id = Category.Id})"
                            OnSave="@(() => UpdateParent())">
                 <View>
-                    <p>@Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId).Name</p></View>
+                    <p>@(Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId)?.Name)</p></View>
                 <Edit>
                     <RadzenDropDown style="display: flex; "
                                     AllowClear="true"
@@ -66,13 +66,19 @@
 
     private async Task UpdateName()
     {
+        _loading = true;
         await new HttpPatchRequest<UpdateCategoryNameHttpBody, UpdateCategoryNameSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/Name").PatchAsync(NameEdit);
         NameEdit = null;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _loading = false;
     }
     
     private async Task UpdateParent()
     {
+        _loading = true;
         await new HttpPatchRequest<UpdateCategoryParentCategoryHttpBody, UpdateCategoryParentCategoryIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/ParentCategoryId").PatchAsync(ParentEdit);
         ParentEdit = null;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _loading = false;
     }
 }

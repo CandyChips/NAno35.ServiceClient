@@ -11,31 +11,18 @@
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" OnSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <InputField Title="Статус клиента">
+        <InputField Title="Статус клиента*">
             <Controls>
                 <RadzenDropDown Data="@(_state.Select(a => new {a.Id, a.Name}))"
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
                                 @bind-Value="Model.ClientStateId"
-                                style="width: 100%"
-                                Placeholder="Выберите статус клиента..."/>
+                                style="width: 100%"/>
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.ClientStateId)" /></Validation>
         </InputField>
-        <InputField Title="Тип клиента">
-            <Controls>
-                <RadzenDropDown Data="@(_types.Select(a => new {a.Id, a.Name}))"
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="Model.ClientTypeId"
-                                style="width: 100%"
-                                Placeholder="Выберите тип клиента..."/>
-            </Controls>
-            <Validation><ValidationMessage For="@(() => Model.ClientTypeId)" /></Validation>
-        </InputField>
-        <InputField Title="@(Model.ClientStateId != Guid.Empty && Model.ClientStateId == _state.First().Id ? "Название организации" : "ФИО клиента")">
+        <InputField Title="@(Model.ClientStateId != Guid.Empty && Model.ClientStateId == _state.First().Id ? "ФИО клиента*" : "Название организации*")">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
         </InputField>
@@ -43,7 +30,7 @@
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
         </InputField>
-        <InputField Title="Номер телефона">
+        <InputField Title="Номер телефона*">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
             <Validation><ValidationMessage For="@(() => Phone)" /></Validation>
         </InputField>
@@ -62,13 +49,12 @@
 
 @code
 {
-    [Parameter] public CreateClientHttpBody Model { get; set; }
+    [Parameter]public CreateClientHttpBody Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
     private string Phone { get ; set ; } = "+7";
 
-    private List<ClientTypeViewModel> _types = new();
     private List<ClientStateViewModel> _state = new();
     private bool _isLoaded;
 
@@ -76,12 +62,14 @@
     {
         _isLoaded = false;
         _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
-        _types = new List<ClientTypeViewModel>((await new HttpGetRequest<GetAllClientTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsTypes").GetAsync()).Data);
         _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
+        Console.WriteLine("zxc");
+        Model.Phone = Phone;
+        Model.ClientTypeId = Guid.Parse("a4579665-4592-454e-97e6-08d90bcf665e");
         await FormSubmitted.InvokeAsync();
     }
 
@@ -107,5 +95,7 @@
             Phone = Phone.Substring(0, 10);
 
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
+        
+        
     }
 }

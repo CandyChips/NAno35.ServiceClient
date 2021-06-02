@@ -43,7 +43,8 @@
                            OnEdit="@(() => BrandEdit = new UpdateArticleBrandHttpBody() {Id = Article.Id})"
                            OnSave="@(() => UpdateBrand())">
                 <View>
-                    <p>@Article.Brand</p></View>
+                    <p>@Article.Brand</p>
+                </View>
                 <Edit>
                     <RadzenTextBox style="display: flex;align-items: center"
                                    @bind-Value="BrandEdit.Brand"

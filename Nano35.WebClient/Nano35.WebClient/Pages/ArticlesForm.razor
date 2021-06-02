@@ -7,15 +7,19 @@
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <RadzenFieldset Text="Категория">    
-            <ArticlesFormCategory @bind-Value="Model.CategoryId"/>
-            <ValidationMessage For="@(() => Model.CategoryId)" />
-        </RadzenFieldset>
+        <InputField Title="Категория">
+            <Controls><ArticlesFormCategory @bind-Value="Model.CategoryId"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.CategoryId)" /></Validation>
+        </InputField>
         <InputField Title="Бренд">
+            <Controls></Controls>
+            <Validation></Validation>
+        </InputField>
+        <InputField Title="Модель">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Brand"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Brand)" /></Validation>
         </InputField>
-        <InputField Title="Модель">
+        <InputField Title="Бренд">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Model"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Model)" /></Validation>
         </InputField>
@@ -35,16 +39,12 @@
                 }
             </AllowedContent>
         </ConditionalContent>
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
             <AllowedContent>
                 <div class="alert alert-danger mt-3 mb-0">@Error</div>
             </AllowedContent>
         </ConditionalContent>
-        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="alert alert-danger mt-3 mb-0">@Error</div>
-        }
     </EditForm>
 </LoadingContent>
 

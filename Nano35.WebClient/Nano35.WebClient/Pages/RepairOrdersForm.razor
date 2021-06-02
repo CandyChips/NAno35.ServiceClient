@@ -53,9 +53,9 @@
             <Controls>
                 <div style="width: 100%; display: flex;">
                     <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Condition"/>
-                    @if(_isCond1Shown) { <RadzenButton Text="БУ" Click="@(_ => { Model.Condition += "БУ "; _isCond1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
-                    @if(_isCond2Shown) { <RadzenButton Text="Царапины" Click="@(_ => { Model.Condition += "Царапины "; _isCond2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
-                    @if(_isCond3Shown) { <RadzenButton Text="Потертости" Click="@(_ => { Model.Condition += "Потертости "; _isCond3Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                    @if(_isCond1Shown) { <RadzenButton Text="Б/У" Click="@(_ => { Model.Condition += "Б/У"; _isCond1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                    @if(_isCond2Shown) { <RadzenButton Text="Царапины" Click="@(_ => { Model.Condition += "Царапины"; _isCond2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                    @if(_isCond3Shown) { <RadzenButton Text="Потертости" Click="@(_ => { Model.Condition += "Потертости"; _isCond3Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
                 </div>
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.Condition)" /></Validation>
@@ -68,8 +68,8 @@
             <Controls>
                 <div style="width: 100%; display: flex;">
                     <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Complication"/>
-                    @if(_isComplected1Shown) { <RadzenButton Text="ЗУ" Click="@(_ => { Model.Complication += "З.У. "; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
-                    @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания "; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                    @if(_isComplected1Shown) { <RadzenButton Text="Устройство" Click="@(_ => { Model.Complication += "Устройство"; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                    @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания"; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
                 </div>
             </Controls>
             <Validation><ValidationMessage For="@(() => Model.Complication)" /></Validation>
@@ -124,14 +124,14 @@
         };
         var parameters = new ModalParameters();
         var modal = Modal.Show<ClientsCreate>($"Новый клиент", parameters, modalOpts);
-        var res = await modal.Result;
-        if (!res.Cancelled)
+        var result = await modal.Result;
+        if (result.Cancelled == false)
         {
-            Model.ClientId = (Guid) res.Data;
+            _isLoaded = false;
+            _clients = await LoadClients();
+            Model.ClientId = (Guid) result.Data;
+            _isLoaded = true;
         }
-        _isLoaded = false;
-        _clients = await LoadClients();
-        _isLoaded = true;
     }
 
     private async Task OpenCreateArticle()
@@ -143,10 +143,14 @@
         var parameters = new ModalParameters();
         parameters.Add(nameof(ArticlesCreate.IsExpandedView), false);
         var modal = Modal.Show<ArticlesCreate>($"Новое устройство", parameters, modalOpts);
-        await modal.Result;
-        _isLoaded = false;
-        _articles = await LoadArticles();
-        _isLoaded = true;
+        var result = await modal.Result;
+        if (result.Cancelled == false)
+        {
+            _isLoaded = false;
+            _articles = await LoadArticles();
+            Model.DeviceId = (Guid) result.Data;
+            _isLoaded = true;
+        }
     }
 
     private async Task<List<ClientViewModel>> LoadClients() => (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();

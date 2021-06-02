@@ -21,9 +21,9 @@
             <RadzenPanelMenuItem Text="Склад" Icon="payment">
                 <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage/warehouse" Icon="input"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Оприходования" Path="/instance/storage/coming" Icon="description"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Списания" Path="/instance/storage/cancellations" Icon="payment"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells" Icon="aspect_ratio"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves" Icon="date_range"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Списания" Path="/instance/storage/cancellations" Visible="false" Icon="payment"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells" Visible="false" Icon="aspect_ratio"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves" Visible="false" Icon="date_range"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         }
         @if(_roles.Contains(RolesHelper.Master) || _roles.Contains(RolesHelper.Admin))

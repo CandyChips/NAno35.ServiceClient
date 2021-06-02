@@ -29,7 +29,9 @@ namespace Nano35.WebClient.Services
             var endpoint = string.Join("/", a, 5, a.Length - 5);
             
             if (await _healthStatusService.Check(uri, endpoint))
-                throw new Exception();
+                Console.WriteLine(uri + " Enabled");
+            else
+                Console.WriteLine(uri + " Disabled");
             var response = await _httpClient.GetAsync(_uri);
             if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<TResponse>();
             else throw new Exception(await response.Content.ReadFromJsonAsync<string>());

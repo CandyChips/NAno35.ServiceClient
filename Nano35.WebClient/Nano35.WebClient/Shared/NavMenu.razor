@@ -5,33 +5,33 @@
 
 <div class="top-row pl-4 navbar navbar-dark">
     <NavLink class="navbar-brand" href="/instance-view">
-        <span class="oi oi-list-rich" aria-hidden="true"></span> @OrgName
+        @OrgName
     </NavLink>
 </div>
 <div>
     <RadzenPanelMenu>
         @if(_roles.Contains(RolesHelper.Admin))
         {
-            <RadzenPanelMenuItem Text="Подразделения" Path="/instance/units" Icon="account_circle"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Сотрудники" Path="/instance/workers" Icon="account_circle"></RadzenPanelMenuItem>
-            <RadzenPanelMenuItem Text="Клиенты" Path="/instance/clients" Icon="account_circle"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Подразделения" Path="/instance/units"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Сотрудники" Path="/instance/workers"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Клиенты" Path="/instance/clients"></RadzenPanelMenuItem>
         }
         @if(_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin))
         {
-            <RadzenPanelMenuItem Text="Склад" Icon="payment">
-                <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage/warehouse" Icon="input"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Оприходования" Path="/instance/storage/coming" Icon="description"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Списания" Path="/instance/storage/cancellations" Visible="false" Icon="payment"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells" Visible="false" Icon="aspect_ratio"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves" Visible="false" Icon="date_range"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Склад">
+                <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage/warehouse"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Оприходования" Path="/instance/storage/coming"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Списания" Path="/instance/storage/cancellations"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         }
         @if(_roles.Contains(RolesHelper.Master) || _roles.Contains(RolesHelper.Admin))
         {
-            <RadzenPanelMenuItem Text="Заказы на ремонт" Icon="payment">
-                <RadzenPanelMenuItem Text="Заказ наряды" Path="/instance/repairs" Icon="input"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="Мои ремонты" Path="/instance/repairs/my" Icon="description"></RadzenPanelMenuItem>
-                <RadzenPanelMenuItem Text="История" Path="/instance/repairs/story" Icon="payment"></RadzenPanelMenuItem>
+            <RadzenPanelMenuItem Text="Заказы на ремонт">
+                <RadzenPanelMenuItem Text="Заказ наряды" Path="/instance/repairs"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="Мои ремонты" Path="/instance/repairs/my"></RadzenPanelMenuItem>
+                <RadzenPanelMenuItem Text="История" Path="/instance/repairs/story"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         }
     </RadzenPanelMenu>

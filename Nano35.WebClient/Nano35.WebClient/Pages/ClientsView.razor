@@ -16,15 +16,7 @@
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
     <RadzenButton Click="@(_ => OpenCreateClient())" Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
-    <RadzenGrid EmptyText="Добавте оприходуемые товары..."
-                AllowFiltering="true" 
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                FilterMode="FilterMode.Advanced" 
-                AllowPaging="true"
-                PageSize="10"
-                AllowSorting="true" 
-                Data="@_data"
-                TItem="ClientViewModel">
+    <RadzenGrid EmptyText="Добавте оприходуемые товары..." AllowPaging="true" PageSize="10" Data="@_data" TItem="ClientViewModel">
         <Columns>
             <RadzenGridColumn TItem="ClientViewModel" Property="Name" Title="Фио" />
             <RadzenGridColumn TItem="ClientViewModel" Property="Email" Title="Адресс" />
@@ -32,13 +24,9 @@
             <RadzenGridColumn TItem="ClientViewModel" Property="ClientState" Title="Статус Клиента" />
             @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
             {
-                <RadzenGridColumn TItem="ClientViewModel" Context="order" Bubble="false" TextAlign="TextAlign.Center" Width="160px">
+                <RadzenGridColumn TItem="ClientViewModel" Bubble="false" TextAlign="TextAlign.Center" Width="200px">
                     <Template Context="item">
-                        <RadzenButton Click=@(_ => OpenClient(item)) 
-                                      Text="Изменить"
-                                      Size="ButtonSize.Small"
-                                      Style="margin: 1rem 0;"
-                                      ButtonStyle="ButtonStyle.Primary"/>
+                        <RadzenButton Click=@(_ => OpenClient(item)) Text="Изменить" ButtonStyle="ButtonStyle.Secondary"/>
                     </Template>
                 </RadzenGridColumn>
             }

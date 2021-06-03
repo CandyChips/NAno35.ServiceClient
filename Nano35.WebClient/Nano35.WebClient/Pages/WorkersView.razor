@@ -20,41 +20,22 @@
                   Text="Создать"
                   Style="margin: 1rem 0;"
                   ButtonStyle="ButtonStyle.Primary"/>
-    <RadzenGrid Data="@_data"
-                EmptyText="Добавте новых сотрудников..."
-                TItem="WorkerViewModel">
+    <RadzenGrid Data="@_data" EmptyText="Добавте новых сотрудников..." TItem="WorkerViewModel">
         <Columns>
-            <RadzenGridColumn TItem="WorkerViewModel"
-                              Property="Name" 
-                              Title="ФИО" />
-            <RadzenGridColumn TItem="WorkerViewModel"
-                              Property="Email" 
-                              Title="Почта" 
-                              Width="200px">
+            <RadzenGridColumn TItem="WorkerViewModel" Property="Name" Title="ФИО" />
+            <RadzenGridColumn TItem="WorkerViewModel" Property="Email" Title="Почта" Width="200px">
                 <Template Context="item">
                     @(item.Email == "" ? "Не указан" : item.Email)
                 </Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="WorkerViewModel"
-                              Property="Phone" 
-                              Title="Телефон"
-                              Width="150px">
+            <RadzenGridColumn TItem="WorkerViewModel" Property="Phone" Title="Телефон" Width="150px">
                 <Template Context="item">
                     +7@(item.Phone)
                 </Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="WorkerViewModel"
-                              Context="order"
-                              Bubble="false"
-                              Width="200"
-                              TextAlign="TextAlign.Center">
+            <RadzenGridColumn TItem="WorkerViewModel" Context="order" Bubble="false" Width="200" TextAlign="TextAlign.Center">
                 <Template Context="item">
-                    <RadzenButton Text="Оповестить в мессенджере"
-                                  Size="ButtonSize.Small"
-                                  Disabled="true"
-                                  ButtonType="ButtonType.Button"
-                                  ButtonStyle="ButtonStyle.Info"
-                                  Click="@(_ => { })">
+                    <RadzenButton Text="Оповестить в мессенджере" Size="ButtonSize.Small" Disabled="true" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Info" Click="@(_ => { })">
                     </RadzenButton>
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                     {

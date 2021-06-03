@@ -30,10 +30,6 @@
     [Parameter] public string Error { get; set; }
 
 
-    protected override async Task OnInitializedAsync()
-    {
-    }
-
     private async Task HandleValidSubmit()
     {
         await FormSubmitted.InvokeAsync();

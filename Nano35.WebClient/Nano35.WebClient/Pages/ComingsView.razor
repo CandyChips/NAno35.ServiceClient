@@ -23,6 +23,8 @@
                       ButtonStyle="ButtonStyle.Primary"/>
     }
     <RadzenGrid EmptyText="Нет оприходований."
+                AllowPaging="true"
+                PageSize="9"
                 Data="@_data"
                 TItem="ComingViewModel">
         <Columns>
@@ -32,6 +34,7 @@
                               Width="70px"/>
             
             <RadzenGridColumn TItem="ComingViewModel"
+                              Filterable="false"
                               Title="Дата">
                 <Template Context="item">
                     @item.Date.ToString("dd-MM-yyyy hh:mm")

@@ -6,7 +6,6 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
-@inject NotificationService NotificationService
 
 
 <LoadingContent IsLoaded="_isLoaded">
@@ -32,7 +31,7 @@
             <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
         </InputField>
         <InputField Title="Номер телефона*">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone"/></Controls>
             <Validation><ValidationMessage For="@(() => Phone)" /></Validation>
         </InputField>
         <InputField Title="Скидка">
@@ -54,7 +53,31 @@
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
 
-    private string Phone { get ; set ; } = "+7";
+    private string _phone = "";
+    private string Phone {
+        get
+        {
+            if (string.IsNullOrEmpty(_phone))
+                return "+7";
+            var resp = _phone;
+            if (resp.Length < 10)
+                resp = resp.PadRight(10);
+            if (resp.Length > 10)
+                resp = resp.Substring(0, 10);
+
+            return $"+7 ({resp.Substring(0, 3)}) {resp.Substring(3, 3)}-{resp.Substring(6, 2)}-{resp.Substring(8, 2)}";
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                _phone = "";
+                return;
+            }
+            var tmp = Regex.Replace(value, @"[^\d]", "").Remove(0,1);
+            _phone = tmp;
+        }
+    }
 
     private List<ClientStateViewModel> _state = new();
     private bool _isLoaded;
@@ -62,12 +85,14 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
+        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
         _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
+        Console.WriteLine("zxc");
+        Model.Phone = _phone;
         await FormSubmitted.InvokeAsync();
     }
 
@@ -75,8 +100,6 @@
     {
 
         Phone = Regex.Replace(Phone, @"[^\d]", "");
-        
-        const string countryCode = "+7";
         
         if (Phone.StartsWith("7"))
             Phone = Phone.Remove(0,1);
@@ -86,6 +109,8 @@
         
         Model.Phone = Phone;
         
+        const string countryCode = "+7";
+        
         if (Phone.Length < 10)
             Phone = Phone.PadRight(10);
 
@@ -93,5 +118,7 @@
             Phone = Phone.Substring(0, 10);
 
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
+        
+        
     }
 }

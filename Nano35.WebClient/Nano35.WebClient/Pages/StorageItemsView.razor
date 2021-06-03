@@ -15,88 +15,47 @@
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
-    <RadzenGrid AllowFiltering="true"
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                FilterMode="FilterMode.Advanced"
-                EmptyText="Нет изделий на складе."
+    <RadzenGrid EmptyText="Нет изделий на складе."
                 AllowPaging="true"
                 PageSize="10"
-                AllowSorting="true"
                 Data="@_data"
                 TItem="StorageItemOnUnitViewModel">
         <Template Context="item">
-            @if (item.Item.Images.Count == 0)
-            {
-                <span>Нет изображений</span>
-            }
-            else
-            {
-                <RadzenSteps>
-                    <Steps>
-                    @foreach (var image in item.Item.Images.Select((value, i) => new { i, value }))
-                    {
-                        
-                        <RadzenStepsItem>
-                            <img src="http://192.168.100.124:5000/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="width: 100%"/>
-                        </RadzenStepsItem>
-                    }
-                    </Steps>
-                </RadzenSteps>
-            }
+            <ConditionalContent IsLoaded="item.Item.Images == null || item.Item.Images.Count == 0">
+                <AllowedContent>
+                    <span>Нет изображений</span>
+                </AllowedContent>
+                <RejectedContent>
+                    <RadzenSteps>
+                        <Steps>
+                            @foreach (var image in item.Item.Images.Select((value, i) => new {i, value}))
+                            {
+
+                                <RadzenStepsItem>
+                                    <img src="https://nano35.ru/files/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="width: 100%"/>
+                                </RadzenStepsItem>
+                            }
+                        </Steps>
+                    </RadzenSteps>
+                </RejectedContent>
+            </ConditionalContent>
         </Template>
         <Columns>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
-                              Property="Item.Name"
-                              Sortable="false"
-                              Title="Изделие"/>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="130px"
-                              Title="Цена продажи">
-                <Template Context="item">
-                    @item.Item.RetailPrice руб.
-                </Template>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
+                <Template Context="item">@item.Item.RetailPrice руб.</Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="130px"
-                              Title="Закуп. стоимость">
-                <Template Context="item">
-                    @item.Item.PurchasePrice руб.
-                </Template>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Закуп. стоимость">
+                <Template Context="item">@item.Item.PurchasePrice руб.</Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
-                              Filterable="false"
-                              Sortable="false"
-                              Width="100px"
-                              Title="Наличие">
-                <Template Context="item">
-                    @item.Count шт.
-                </Template>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="100px" Title="Наличие">
+                <Template Context="item">@item.Count шт.</Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel"
-                              Context="coming"
-                              Bubble="false"
-                              Sortable="false"
-                              Filterable="false"
-                              Width="200px"
-                              TextAlign="TextAlign.Center">
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Context="coming" Bubble="false" Width="400px" TextAlign="TextAlign.Center">
                 <Template Context="item">
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
-                    {
-                        <RadzenButton Click=@(_ => OpenStorageItem(item))
-                                      Text="Изменить"
-                                      Size="ButtonSize.Small"
-                                      Style="margin: 1rem 0;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
-                    }
-                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id))
-                                  Text="Этикетка"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    { <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" ButtonStyle="ButtonStyle.Secondary"/> }
+                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" ButtonStyle="ButtonStyle.Secondary"/>
                 </Template>
 
             </RadzenGridColumn>

@@ -34,7 +34,7 @@
             <Validation><ValidationMessage For="@(() => Model.ClientId)" /></Validation>
         </InputField>
         
-        <ConditionalContent IsLoaded="_roles.Contains(RolesHelper.Admin) || _roles.Contains(RolesHelper.Manager)">
+        <ConditionalContent IsLoaded="_roles.Contains(RolesHelper.Manager)">
             <AllowedContent>
                 <InputField Title="Подразделение*">
                     <Controls>

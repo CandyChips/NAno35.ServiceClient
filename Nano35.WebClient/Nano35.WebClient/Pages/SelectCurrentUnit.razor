@@ -4,6 +4,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <ConditionalContent IsLoaded="_isNewShown">
     <AllowedContent>
@@ -56,7 +57,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
         if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }
@@ -66,7 +67,7 @@
         _isLoaded = false;
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
-        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
         if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }

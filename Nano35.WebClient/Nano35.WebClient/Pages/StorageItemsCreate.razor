@@ -12,6 +12,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateStorageItemHttpBody _model = new();
     private string Error { get; set; } = "";
     
@@ -20,7 +22,7 @@
         try
         {
             await new HttpPostRequest<CreateStorageItemHttpBody,CreateStorageItemSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems").PostAsync(_model);
-
+            await ModalInstance.CloseAsync(ModalResult.Ok(_model.NewId));
         }
         catch (Exception e)
         {

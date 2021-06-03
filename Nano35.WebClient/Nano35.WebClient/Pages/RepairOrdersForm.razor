@@ -7,6 +7,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <EditForm Model="@Model" OnValidSubmit="Create">
     <FluentValidationValidator/>
@@ -153,7 +154,7 @@
         }
     }
 
-    private async Task<List<ClientViewModel>> LoadClients() => (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<ClientViewModel>> LoadClients() => (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
-    private async Task<List<ArticleViewModel>> LoadArticles() => (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<ArticleViewModel>> LoadArticles() => (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 }

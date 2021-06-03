@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <EditForm Model="@(_model)"
           OnValidSubmit="HandleValidSubmit">
@@ -105,7 +106,7 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        Warehouse =  (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+        Warehouse =  (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
         
         _model.Price = Decimal.ToDouble(StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).RetailPrice);
@@ -117,7 +118,7 @@
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, 
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
 

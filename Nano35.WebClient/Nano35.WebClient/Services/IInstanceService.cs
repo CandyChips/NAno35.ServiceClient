@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Nano35.Contracts.Instance.Models;
 using Nano35.HttpContext.instance;
+using Radzen;
 
 namespace Nano35.WebClient.Services
 {
@@ -20,12 +21,14 @@ namespace Nano35.WebClient.Services
         private readonly HttpClient _httpClient;
         private readonly IRequestManager _requestManager;
         private readonly ISessionProvider _sessionProvider;
+        private readonly NotificationService _notificationService;
 
-        public InstanceService(HttpClient httpClient, IRequestManager requestManager, ISessionProvider sessionProvider)
+        public InstanceService(HttpClient httpClient, IRequestManager requestManager, ISessionProvider sessionProvider, NotificationService notificationService)
         {
             _httpClient = httpClient;
             _requestManager = requestManager;
             _sessionProvider = sessionProvider;
+            _notificationService = notificationService;
         }
         public InstanceViewModel Instance { get; set; }
         
@@ -36,7 +39,7 @@ namespace Nano35.WebClient.Services
 
         public async Task SetInstanceById(Guid id)
         {
-            Instance = (await new HttpGetRequest<GetInstanceByIdHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Instances/{id}").GetAsync()).Data;
+            Instance = (await new HttpGetRequest<GetInstanceByIdHttpResponse>(_httpClient, _notificationService , $"{_requestManager.InstanceServer}/Instances/{id}").GetAsync()).Data;
         }
 
         public async Task<bool> IsInstanceExist()

@@ -8,6 +8,7 @@
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService 
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 @inject HttpClient HttpClient
 
 <AuthorizeView>
@@ -67,7 +68,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         _loading = false;
     }
     
@@ -76,7 +77,7 @@ else
         var modal = Modal.Show<InstancesCreate>("Новая организация");
         await modal.Result;
         _loading = true;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         _loading = false;
     }
 

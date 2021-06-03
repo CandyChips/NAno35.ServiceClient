@@ -5,6 +5,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <div style="margin-top:20px">Номер оприходования:</div>
 <b>@Selle.Number</b>
@@ -33,6 +34,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllSellDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Sells/{Selle.Id}/details").GetAsync()).Data.ToList();
+        Details = (await new HttpGetRequest<GetAllSellDetailsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Sells/{Selle.Id}/details").GetAsync()).Data.ToList();
     }
 }

@@ -10,7 +10,8 @@
 @inject IRequestManager RequestManager     
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService 
-@inject HttpClient HttpClient              
+@inject HttpClient HttpClient   
+@inject NotificationService NotificationService           
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
@@ -59,7 +60,7 @@
      {        
          _isLoaded = false;
          _roles = await AuthService.GetCurrentRoles();
-         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
          _isLoaded = true;
     }
 
@@ -68,18 +69,18 @@
         var modal = Modal.Show<ClientsCreate>("Новый клиент");
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 
     private async Task OpenClient(ClientViewModel value)
     {
         var parameters = new ModalParameters();
-        parameters.Add(nameof(ClientDetails.Client), value);
+        parameters.Add(nameof(ClientDetails.Item), value);
         var modal = Modal.Show<ClientDetails>($"{value.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 }

@@ -113,7 +113,6 @@
 
     private async Task HandleValidSubmit()
     {
-        
         Model.Roles = roles.ToList();
         await FormSubmitted.InvokeAsync();
         await ModalInstance.CloseAsync(ModalResult.Ok(""));

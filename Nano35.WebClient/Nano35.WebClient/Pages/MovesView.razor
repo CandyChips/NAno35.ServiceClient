@@ -8,6 +8,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Перемещения"/>
@@ -52,7 +53,7 @@
     }
 
     private async Task<List<MoveViewModel>> GetAllMoves() =>
-        (await new HttpGetRequest<GetAllMovesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Moves?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        (await new HttpGetRequest<GetAllMovesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Moves?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
     
     private async Task NewMove()
     {

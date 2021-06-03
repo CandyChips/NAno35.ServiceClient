@@ -11,6 +11,7 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject IPrintingService PrintingService
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
@@ -115,7 +116,7 @@
     {        
         _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
-        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
         _isLoaded = true;
     }
 
@@ -126,7 +127,7 @@
         var modal = Modal.Show<StorageItemsDetails>($"{value.Item.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
         _isLoaded = true;
     }
 

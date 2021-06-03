@@ -11,6 +11,7 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Активные заказы на ремонт"/>
@@ -87,7 +88,7 @@
         _isLoaded = true;
     }
 
-    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders() => (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders() => (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
     
     private async Task DetailsOpen(Guid id)
     {

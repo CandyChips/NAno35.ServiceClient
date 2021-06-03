@@ -4,6 +4,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
+@inject NotificationService NotificationService
 
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -78,7 +79,7 @@
         
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
+        _types = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
     }
 
     private async Task HandleValidSubmit()

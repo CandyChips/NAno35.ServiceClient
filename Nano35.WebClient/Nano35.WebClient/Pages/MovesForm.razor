@@ -5,6 +5,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <EditForm Model="@Model"
           OnValidSubmit="Create">
@@ -143,7 +144,7 @@
     }
     
     private async Task<List<UnitViewModel>> LoadUnits() =>
-        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
 
     private async Task AddDetail()
     {

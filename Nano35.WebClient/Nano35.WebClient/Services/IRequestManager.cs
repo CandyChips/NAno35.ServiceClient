@@ -20,6 +20,8 @@ namespace Nano35.WebClient.Services
         public ClusterRequestManager(HttpClient httpClient) => _httpClient = httpClient;
         public string IdentityServer => "https://nano35.ru/api/identity";
         public string InstanceServer => "https://nano35.ru/api/instance";
+        //public string InstanceServer => "http://localhost:5002";
+
         public string StorageServer => "https://nano35.ru/api/storage";
         public string RepairOrdersServer => "https://nano35.ru/api/repairorders";
         public string FileServer => "https://nano35.ru/api/storage";

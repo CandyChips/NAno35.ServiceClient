@@ -11,6 +11,7 @@
 @inject HttpClient HttpClient
 @inject IAuthService AuthService
 @inject IPrintingService PrintingService
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Оприходования"/>
@@ -88,7 +89,7 @@
         _loading = true;
     }
     
-    private async Task<IEnumerable<ComingViewModel>> GetAllComings() => (await new HttpGetRequest<GetAllComingsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+    private async Task<IEnumerable<ComingViewModel>> GetAllComings() => (await new HttpGetRequest<GetAllComingsSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
 
 
     private async Task NewComing()

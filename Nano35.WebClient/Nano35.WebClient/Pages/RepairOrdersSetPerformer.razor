@@ -7,6 +7,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" 
@@ -45,7 +46,7 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        _workers = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}").GetAsync()).Workers.ToList();
+        _workers = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, NotificationService,$"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}").GetAsync()).Workers.ToList();
         _isLoaded = true;
     }
 

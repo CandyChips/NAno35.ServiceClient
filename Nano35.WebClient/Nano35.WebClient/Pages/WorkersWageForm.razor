@@ -6,6 +6,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
+@inject NotificationService NotificationService
 
 
 <BoxedContent Width="40">
@@ -56,7 +57,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _operations = (await new HttpGetRequest<GetAllWageOperationsHttpResponse>(HttpClient, $"{RequestManager.CashboxServer}/Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}").GetAsync()).Operations;
+        _operations = (await new HttpGetRequest<GetAllWageOperationsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.CashboxServer}/Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}").GetAsync()).Operations;
         _isLoaded = true;
     }
 

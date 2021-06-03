@@ -5,6 +5,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <RadzenFieldset Text="Оприходование"
             Style="width: 100%;">
@@ -54,6 +55,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllMoveDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Moves/{Move.Id}/Details").GetAsync()).Data;
+        Details = (await new HttpGetRequest<GetAllMoveDetailsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Moves/{Move.Id}/Details").GetAsync()).Data;
     }
 }

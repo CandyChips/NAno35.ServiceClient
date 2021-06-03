@@ -8,6 +8,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
+@inject NotificationService NotificationService
 
 <EditForm Model="@(Model)" OnSubmit="Create">
     <DataAnnotationsValidator />
@@ -128,11 +129,11 @@
     }
     
     private async Task<List<ClientViewModel>> LoadClients() => 
-        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, 
+        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
     private async Task<List<UnitViewModel>> LoadUnits() => 
-        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, 
+        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
     
     private async Task AddDetail()

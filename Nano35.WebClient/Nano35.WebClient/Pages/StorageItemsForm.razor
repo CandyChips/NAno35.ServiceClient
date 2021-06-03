@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_loaded">    
     <EditForm Model="@Model" OnValidSubmit="Create">
@@ -133,8 +134,8 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        _conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data.ToList();
-        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+        _conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data.ToList();
+        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
         _loaded = true;
     }
     
@@ -152,7 +153,7 @@
         };
         var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование", modalOpts);
         await moviesModal.Result;
-        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
     }
     
     private async Task OnInputFileChange(InputFileChangeEventArgs e)

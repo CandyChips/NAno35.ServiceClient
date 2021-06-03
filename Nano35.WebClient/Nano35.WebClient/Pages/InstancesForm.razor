@@ -6,6 +6,7 @@
 @using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
+@inject NotificationService NotificationService
 @inject ISessionProvider SessionProvider
 
 <EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
@@ -118,8 +119,8 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
-        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
+        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
+        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
     }
 
     private async Task HandleValidSubmit()

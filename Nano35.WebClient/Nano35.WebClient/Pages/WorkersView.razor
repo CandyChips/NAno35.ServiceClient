@@ -11,6 +11,7 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IAuthService AuthService
+@inject NotificationService NotificationService
 @page "/instance/workers"
 
 <LoadingContent IsLoaded="_loading">
@@ -82,7 +83,7 @@
     {       
         _loading = false;
         _roles = await AuthService.GetCurrentRoles();
-        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
+        await LoadWorkers();
         _loading = true;
     }
     
@@ -95,9 +96,12 @@
         var modal = Modal.Show<WorkerCreate>("Новый Сотрудник", modalOpts);
         await modal.Result;
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
+        await LoadWorkers();
         _loading = true;
     }
+    
+    private async Task LoadWorkers() =>
+        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
     
     private async Task NewWage(WorkerViewModel user)
     {
@@ -107,11 +111,11 @@
         };
         var parameters = new ModalParameters();
         parameters.Add(nameof(WorkersWageCreate.UserId), user.Id);
-        var currentUnit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data.Name;
+        var currentUnit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data.Name;
         var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
         await modal.Result;
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
+        await LoadWorkers();
         _loading = true;    
     }
 }

@@ -7,6 +7,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Списания"/>
@@ -82,7 +83,7 @@
     }
 
     private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
-        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
 
     private async Task NewCancellation()
     {

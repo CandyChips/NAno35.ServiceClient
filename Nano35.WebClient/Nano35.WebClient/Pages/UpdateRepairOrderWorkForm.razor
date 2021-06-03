@@ -7,6 +7,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
@@ -97,8 +98,8 @@
         _model.RepairOrderId = RepairOrderId;
         _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
-        _storageItems = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, NotificationService, $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _storageItems = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
         _isLoaded = true;
     }
 
@@ -124,7 +125,7 @@
     {
         var modal = Modal.Show<CreateWork>($"Новая работа");
         await modal.Result;
-        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, 
+        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, NotificationService, 
             $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
     }
 
@@ -135,7 +136,7 @@
     
     private async Task StorageItemChanged()
     {
-        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, 
+        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.RepairOrdersServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
 
         _model.Price = _works.First(a=> a.Id == _model.WorkId).Price;

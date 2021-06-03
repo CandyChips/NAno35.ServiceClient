@@ -8,6 +8,7 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Мои активные заказы на ремонт"/>
@@ -60,7 +61,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 
@@ -76,7 +77,7 @@
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllMyRepairOrdersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 

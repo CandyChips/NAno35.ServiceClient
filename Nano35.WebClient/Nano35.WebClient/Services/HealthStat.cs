@@ -9,9 +9,11 @@ namespace Nano35.WebClient.Services
     public class HealthStatus
     {
         private readonly IRequestManager RequestManager;
+        private readonly HttpClient _client;
 
         public HealthStatus(HttpClient client)
         {
+            _client = client;
             RequestManager = new ClusterRequestManager(client);
             Availability = new Dictionary<string, bool>();
         }
@@ -27,10 +29,17 @@ namespace Nano35.WebClient.Services
             }
             else
             {
-                Console.WriteLine(uri);
-                var state = await RequestManager.HealthCheck(uri);
-                Availability.Add(uri,state);
-                return state;
+                try
+                {
+                    (await _client.GetAsync($"{uri}/health")).EnsureSuccessStatusCode() ;
+                    Availability.Add(uri,true);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Availability.Add(uri,false);
+                    return false;
+                }
             }
         }
     }

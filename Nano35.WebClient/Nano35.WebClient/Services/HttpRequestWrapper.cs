@@ -1,25 +1,26 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Nano35.Contracts;
 using Nano35.HttpContext;
 using Newtonsoft.Json;
+using Radzen;
 
 namespace Nano35.WebClient.Services
 {
     public class HttpGetRequest<TResponse>
-        where TResponse : IHttpResponse
+        where TResponse : IHttpResponse, new()
     {
         private readonly HealthStatus _healthStatusService;
+        private readonly NotificationService _notificationService;
         private readonly HttpClient _httpClient;
         private readonly string _uri;
-        public HttpGetRequest(HttpClient httpClient, string uri)
+        public HttpGetRequest(HttpClient httpClient, NotificationService notificationService, string uri)
         {
             _httpClient = httpClient;
             _uri = uri;
+            _notificationService = notificationService;
             _healthStatusService = new HealthStatus(httpClient);
         }
         public async Task<TResponse> GetAsync()
@@ -27,14 +28,18 @@ namespace Nano35.WebClient.Services
             var a = _uri.Split("/");
             var uri = string.Join("/",a,0,5);
             var endpoint = string.Join("/", a, 5, a.Length - 5);
-            
             if (await _healthStatusService.Check(uri, endpoint))
-                Console.WriteLine(uri + " Enabled");
+            {
+                var response = await _httpClient.GetAsync(_uri);
+                if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<TResponse>();
+                else throw new Exception(await response.Content.ReadFromJsonAsync<string>());
+            }
             else
-                Console.WriteLine(uri + " Disabled");
-            var response = await _httpClient.GetAsync(_uri);
-            if (response.IsSuccessStatusCode) return await response.Content.ReadFromJsonAsync<TResponse>();
-            else throw new Exception(await response.Content.ReadFromJsonAsync<string>());
+            {
+                _notificationService.Notify(new NotificationMessage { Severity = NotificationSeverity.Error, Summary = "Connection error", Detail = $"{uri} Disabled", Duration = 40000 });
+                throw new Exception("Requested uri in unavailable");
+            }
+            
         }
     }
 

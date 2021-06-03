@@ -6,6 +6,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
+@inject NotificationService NotificationService
 
 
 <LoadingContent IsLoaded="_isLoaded">
@@ -61,14 +62,12 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
+        _state = new List<ClientStateViewModel>((await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data);
         _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
-        Console.WriteLine("zxc");
-        Model.Phone = Phone;
         await FormSubmitted.InvokeAsync();
     }
 
@@ -94,7 +93,5 @@
             Phone = Phone.Substring(0, 10);
 
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
-        
-        
     }
 }

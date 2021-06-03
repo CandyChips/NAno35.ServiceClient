@@ -6,6 +6,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 
 <LoadingContent IsLoaded="_isLoaded">
@@ -97,13 +98,12 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Article = (await new HttpGetRequest<GetArticleByIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/{Id}").GetAsync()).Data;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, 
+        Article = (await new HttpGetRequest<GetArticleByIdSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Articles/{Id}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService,
             $"{RequestManager.StorageServer}/ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}").GetAsync()).Data;
         _isLoaded = true;
     }
-
-
+    
     private async Task UpdateCategory() {await new HttpPatchRequest<UpdateArticleCategoryHttpBody, UpdateArticleCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Category").PatchAsync(CategoryEdit);CategoryEdit = null;}
     
     private async Task UpdateBrand(){await new HttpPatchRequest<UpdateArticleBrandHttpBody, UpdateArticleBrandSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Brand").PatchAsync(BrandEdit);BrandEdit = null;}

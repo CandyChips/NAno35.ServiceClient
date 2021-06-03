@@ -6,6 +6,7 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
 
 <LoadingContent IsLoaded="_isLoaded">
     <h3>Текущее подразделение: @(Unit.Name)</h3>
@@ -21,7 +22,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 }

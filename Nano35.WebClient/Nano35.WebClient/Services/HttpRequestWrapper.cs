@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using Nano35.Contracts.Instance.Artifacts;
 using Nano35.HttpContext;
 using Newtonsoft.Json;
 using Radzen;
@@ -113,6 +114,52 @@ namespace Nano35.WebClient.Services
                 _notificationService.Notify(NotificationSeverity.Warning, "Error access", uri);
                 return false;
             }
+        }
+    }
+    public class HttpGet
+    {
+        private readonly HttpClient _httpClient;
+        private readonly HealthService _healthService;
+        public HttpGet(HttpClient httpClient, HealthService healthService)
+        {
+            _httpClient = httpClient;
+            _healthService = healthService;
+        }
+        public async Task InvokeAsync<TResponse>(string uri, string endpoint, Action<TResponse> onSuccess, Action<string> onError)
+            where TResponse : IHttpResponse
+        {
+            if (await _healthService.CheckAsync(uri) == false)
+            {
+                onError.Invoke("Health check failed");
+                return;
+            }
+            var response = await _httpClient.GetAsync($"{uri}/{endpoint}");
+            if (response.IsSuccessStatusCode) onSuccess.Invoke(await response.Content.ReadFromJsonAsync<TResponse>());
+            else onError.Invoke(await response.Content.ReadAsStringAsync());
+        }
+    }
+    public class HttpPost
+    {
+        private readonly HttpClient _httpClient;
+        private readonly HealthService _healthService;
+        public HttpPost(HttpClient httpClient, HealthService healthService)
+        {
+            _httpClient = httpClient;
+            _healthService = healthService;
+        }
+        public async Task InvokeAsync<TResponse, TBody>(string uri, string endpoint, TBody request, Action<TResponse> onSuccess, Action<string> onError)
+            where TResponse : IHttpResponse
+            where TBody : IHttpRequest
+        {
+            if (await _healthService.CheckAsync(uri) == false)
+            {
+                onError.Invoke("Health check failed");
+                return;
+            }
+            var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{uri}/{endpoint}", req);
+            if (response.IsSuccessStatusCode) onSuccess.Invoke(await response.Content.ReadFromJsonAsync<TResponse>());
+            else onError.Invoke(await response.Content.ReadAsStringAsync());
         }
     }
 }

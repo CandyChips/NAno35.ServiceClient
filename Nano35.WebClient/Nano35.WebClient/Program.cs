@@ -14,6 +14,7 @@ using Blazored.LocalStorage;
 using Blazored.Modal;
 using Nano35.Contracts;
 using Nano35.HttpContext;
+using Nano35.HttpContext.Repair;
 using Radzen;
 
 namespace Nano35.WebClient
@@ -37,6 +38,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddTransient<HealthService>();
+            builder.Services.AddTransient<HttpGet>();
             builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();

@@ -166,10 +166,10 @@
 
     private async Task LoadData()
     {
-        StorageItem = (await new HttpGetRequest<GetStorageItemByIdSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/StorageItems/{Item.Item.Id}").GetAsync()).Data;
-        Places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
-        Conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data;
-        Articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        StorageItem = (await new HttpGetRequest<GetStorageItemByIdSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItems/{Item.Item.Id}").GetAsync()).Data;
+        Places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        Conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data;
+        Articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         StateHasChanged();
     }
     

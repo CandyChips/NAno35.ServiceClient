@@ -82,7 +82,7 @@
     }
     
     private async Task LoadWorkers() =>
-        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
+        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
     
     private async Task NewWage(WorkerViewModel user)
     {
@@ -92,7 +92,7 @@
         };
         var parameters = new ModalParameters();
         parameters.Add(nameof(WorkersWageCreate.UserId), user.Id);
-        var currentUnit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data.Name;
+        var currentUnit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data.Name;
         var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
         await modal.Result;
         _loading = false;

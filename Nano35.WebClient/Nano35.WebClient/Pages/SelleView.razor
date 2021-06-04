@@ -86,7 +86,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _loading = false;
     }
 
@@ -95,7 +95,7 @@ else
         var modal = Modal.Show<SellesCreate>("Новая продажа");
         await modal.Result;
         _loading = true;
-        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _loading = false;
     }
 

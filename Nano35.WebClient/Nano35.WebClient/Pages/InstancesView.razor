@@ -57,23 +57,28 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         _loading = true;
     }
     
     private async Task NewInstance()
     {
-        var modal = Modal.Show<InstancesCreate>("Новая организация");
+        var opts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            FocusFirstElement = true
+        };
+        var modal = Modal.Show<InstancesCreate>("Новая организация", opts);
         await modal.Result;
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
         _loading = true;
     }
 
     private async Task OpenOrg(Guid id)
     {
-        await InstanceService.SetInstanceById(id);         //get session
-        await SessionProvider.SetCurrentInstanceId(id);    //set instance id
+        await InstanceService.SetInstanceById(id);     
+        await SessionProvider.SetCurrentInstanceId(id);
         NavigationManager.NavigateTo("/instance-view");
     }
 }

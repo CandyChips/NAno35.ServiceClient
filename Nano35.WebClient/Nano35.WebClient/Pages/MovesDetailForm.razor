@@ -128,10 +128,10 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        FromPlaceOnStorage = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, NotificationService,
+        FromPlaceOnStorage = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}").GetAsync()).Contains.ToList();
         
-        ToPlaceOnStorage =   (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, NotificationService,
+        ToPlaceOnStorage =   (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}").GetAsync()).Contains.ToList();
     }
     
@@ -141,7 +141,7 @@
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
     
 
     private async Task PlaceOnStorageChanged()

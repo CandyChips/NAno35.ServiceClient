@@ -109,15 +109,15 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
-        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Data;
+        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
+        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Client;
         _isLoaded = true;
     }
     
     private async Task LoadData()
     {
-        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
-        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Data;
+        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
+        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Client;
         StateHasChanged();
     }
 

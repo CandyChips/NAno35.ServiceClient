@@ -98,8 +98,8 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Article = (await new HttpGetRequest<GetArticleByIdSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Articles/{Id}").GetAsync()).Data;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService,
+        Article = (await new HttpGetRequest<GetArticleByIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/{Id}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}").GetAsync()).Data;
         _isLoaded = true;
     }

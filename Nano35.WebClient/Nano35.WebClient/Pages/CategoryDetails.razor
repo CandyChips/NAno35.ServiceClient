@@ -60,7 +60,7 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _loading = false;
     }
 
@@ -70,7 +70,7 @@
         _loading = true;
         await new HttpPatchRequest<UpdateCategoryNameHttpBody, UpdateCategoryNameSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/Name").PatchAsync(NameEdit);
         NameEdit = null;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _loading = false;
     }
     
@@ -79,7 +79,7 @@
         _loading = true;
         await new HttpPatchRequest<UpdateCategoryParentCategoryHttpBody, UpdateCategoryParentCategoryIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/ParentCategoryId").PatchAsync(ParentEdit);
         ParentEdit = null;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _loading = false;
     }
 }

@@ -85,8 +85,8 @@
     }
     
     private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/StorageItems").GetAsync()).Data;
+        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItems").GetAsync()).Data;
 
     private async Task StorageItemSelected() =>
-        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnInstance").GetAsync()).Contains.ToList();
+        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnInstance").GetAsync()).Contains.ToList();
 }

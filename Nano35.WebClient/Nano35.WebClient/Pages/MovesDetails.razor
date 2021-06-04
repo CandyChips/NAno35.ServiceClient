@@ -55,6 +55,6 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllMoveDetailsSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Moves/{Move.Id}/Details").GetAsync()).Data;
+        Details = (await new HttpGetRequest<GetAllMoveDetailsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Moves/{Move.Id}/Details").GetAsync()).Data;
     }
 }

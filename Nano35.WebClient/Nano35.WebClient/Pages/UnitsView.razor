@@ -68,7 +68,7 @@
     }
     
     private async Task<List<UnitViewModel>> GetAllUnits() =>
-        (List<UnitViewModel>) (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units;
+        (List<UnitViewModel>) (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units;
     
     private async Task NewUnit()
     {

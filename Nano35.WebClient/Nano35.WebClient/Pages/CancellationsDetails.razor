@@ -55,7 +55,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllCancellationDetailsSuccessHttpResponse>(HttpClient, NotificationService,
+        Details = (await new HttpGetRequest<GetAllCancellationDetailsSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/Cancellations/{Cancellation.Id}/Details").GetAsync()).Data;
     }
 }

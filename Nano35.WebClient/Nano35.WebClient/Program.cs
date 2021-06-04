@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using Append.Blazor.Printing;
 using Blazored.LocalStorage;
 using Blazored.Modal;
+using Nano35.Contracts;
+using Nano35.HttpContext;
 using Radzen;
 
 namespace Nano35.WebClient
@@ -34,6 +36,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddTransient<HealthService>();
             builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();

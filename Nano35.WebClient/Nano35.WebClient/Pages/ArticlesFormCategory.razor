@@ -68,7 +68,7 @@
     protected override async Task OnInitializedAsync()
     {            
         _isLoading = false;        
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoading = true;
     }
 
@@ -78,7 +78,7 @@
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService,
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}").GetAsync()).Data;
         Value = _selectedCategories.Last().Id;
         _isLoading = true;
@@ -97,7 +97,7 @@
         };
         await new HttpPostRequest<CreateCategoryHttpBody,CreateCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category").PostAsync(body);
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService,
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
@@ -107,7 +107,7 @@
         _isLoading = true;
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, NotificationService,
+        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
             $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
         _isLoading = false;
         Value = _selectedCategories.Last().Id;

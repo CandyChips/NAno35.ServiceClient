@@ -59,13 +59,13 @@ namespace Nano35.WebClient.Services
 
         public async Task<UserViewModel> GetCurrentUser()
         {            
-            var response = await new HttpGetRequest<GetUserFromTokenHttpResponse>(_httpClient, _notificationService, $"{_requestManager.IdentityServer}/Identity/FromToken").GetAsync();
+            var response = await new HttpGetRequest<GetUserFromTokenHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/Identity/FromToken").GetAsync();
             return response.Data;
         }
 
         public async Task<List<Guid>> GetCurrentRoles()
         {
-            var response = await new HttpGetRequest<GetAllRolesByUserHttpResponse>(_httpClient, _notificationService, $"{_requestManager.InstanceServer}/Workers/Current/Roles").GetAsync();
+            var response = await new HttpGetRequest<GetAllRolesByUserHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Workers/Current/Roles").GetAsync();
             return response.Roles;
         }
 

@@ -48,16 +48,21 @@
      {        
          _isLoaded = false;
          _roles = await AuthService.GetCurrentRoles();
-         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
          _isLoaded = true;
     }
 
     private async Task OpenCreateClient()
     {
-        var modal = Modal.Show<ClientsCreate>("Новый клиент");
+        var opts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true,
+            FocusFirstElement = true
+        };
+        var modal = Modal.Show<ClientsCreate>("Новый клиент", opts);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 
@@ -68,7 +73,7 @@
         var modal = Modal.Show<ClientDetails>($"{value.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 }

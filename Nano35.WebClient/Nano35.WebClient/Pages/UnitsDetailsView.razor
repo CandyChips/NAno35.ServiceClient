@@ -22,7 +22,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, NotificationService, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
         _isLoaded = true;
     }
 }

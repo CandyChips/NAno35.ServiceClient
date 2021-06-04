@@ -129,11 +129,11 @@
     }
     
     private async Task<List<ClientViewModel>> LoadClients() => 
-        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, NotificationService,
+        (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient,
             $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
 
     private async Task<List<UnitViewModel>> LoadUnits() => 
-        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, NotificationService,
+        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient,
             $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
     
     private async Task AddDetail()

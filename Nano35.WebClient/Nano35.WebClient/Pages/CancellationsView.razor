@@ -83,7 +83,7 @@
     }
 
     private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
-        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, NotificationService, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
 
     private async Task NewCancellation()
     {

@@ -320,11 +320,11 @@
 
     private async Task Update()
     {   
-        _model = (await new HttpGetRequest<GetRepairOrderByIdHttpResponse>(HttpClient, NotificationService,$"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}").GetAsync()).Data;
-        _states = (await new HttpGetRequest<GetAllRepairOrderStatesHttpResponse>(HttpClient, NotificationService,$"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States").GetAsync()).Data;
+        _model = (await new HttpGetRequest<GetRepairOrderByIdHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}").GetAsync()).Data;
+        _states = (await new HttpGetRequest<GetAllRepairOrderStatesHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States").GetAsync()).Data;
         _states.Reverse();
-        _works = (await new HttpGetRequest<GetAllRepairOrderWorksHttpResponse>(HttpClient, NotificationService,$"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works").GetAsync()).Data;
-        _devices = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, NotificationService,$"{RequestManager.StorageServer}/Articles").GetAsync()).Data;
+        _works = (await new HttpGetRequest<GetAllRepairOrderWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works").GetAsync()).Data;
+        _devices = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").GetAsync()).Data;
         
     }
 

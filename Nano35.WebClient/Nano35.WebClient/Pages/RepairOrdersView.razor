@@ -11,7 +11,8 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
-@inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Активные заказы на ремонт"/>
@@ -88,11 +89,17 @@
         _isLoaded = true;
     }
 
-    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders() => (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, NotificationService, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
-    
+    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
+    {
+        if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
+        {
+            NavigationManager.NavigateTo("/instance-view");
+        }
+        return (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+    }
+
     private async Task DetailsOpen(Guid id)
     {
-        Console.WriteLine("test");
         var modalOpts = new ModalOptions()
         {
             DisableBackgroundCancel = true, FocusFirstElement = true

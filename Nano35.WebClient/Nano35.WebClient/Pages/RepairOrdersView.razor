@@ -92,17 +92,17 @@
 
     private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
     {
-        List<RepairOrderViewModel> data = new List<RepairOrderViewModel>(); 
+        var data = new List<RepairOrderViewModel>(); 
         await GetAllRepairOrdersByhttp.InvokeAsync<GetAllRepairOrdersHttpResponse>(
             RequestManager.RepairOrdersServer, $"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
-            (resp) =>
+            resp =>
             {
-                data = resp.Data;
-            },
-            (err) =>
-            {
-                Console.WriteLine(err);
-                NavigationManager.NavigateTo("/instance-view");
+                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
             });
         return data;
     }

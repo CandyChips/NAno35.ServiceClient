@@ -5,6 +5,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <ConditionalContent IsLoaded="_isNewShown">
     <AllowedContent>
@@ -57,7 +59,17 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }
@@ -67,7 +79,17 @@
         _isLoaded = false;
         var modal = Modal.Show<UnitsCreate>("Новое подразделение");
         await modal.Result;
-        _units = (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }

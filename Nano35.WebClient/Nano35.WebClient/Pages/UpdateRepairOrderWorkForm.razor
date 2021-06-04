@@ -8,6 +8,10 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
@@ -98,8 +102,30 @@
         _model.RepairOrderId = RepairOrderId;
         _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
-        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
-        _storageItems = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            RequestManager.RepairOrdersServer, $"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_storageItems = resp.Success.Contains;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
     }
 
@@ -116,8 +142,19 @@
                 PlaceOnStorage = PlaceOnStorage
             };
         }
-        await new HttpPatchRequest<CreateRepairOrderWorkHttpBody, CreateRepairOrderWorkHttpResponse>(HttpClient, 
-            $"{RequestManager.RepairOrdersServer}/RepairOrders/Work").PatchAsync(_model);
+        
+        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Work", _model,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         await ModalInstance.CloseAsync();
     }
 
@@ -125,8 +162,18 @@
     {
         var modal = Modal.Show<CreateWork>($"Новая работа");
         await modal.Result;
-        _works = (await new HttpGetRequest<GetAllWorksHttpResponse>(HttpClient, 
-            $"{RequestManager.RepairOrdersServer}/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            RequestManager.RepairOrdersServer, $"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 
     private async Task WorkChanged()
@@ -136,9 +183,18 @@
     
     private async Task StorageItemChanged()
     {
-        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.RepairOrdersServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
-
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            RequestManager.RepairOrdersServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_places = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         _model.Price = _works.First(a=> a.Id == _model.WorkId).Price;
         _model.Price += _storageItems.First(a => a.Item.Id == StorageItemId).Item.PurchasePrice;
     }

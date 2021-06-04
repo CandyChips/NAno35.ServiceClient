@@ -8,6 +8,8 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" 
@@ -46,7 +48,17 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        _workers = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}").GetAsync()).Workers.ToList();
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
+            RequestManager.InstanceServer, $"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_workers = resp.Success.Workers.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
     }
 

@@ -8,6 +8,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <EditForm Model="@Model" OnValidSubmit="Create">
     <FluentValidationValidator/>
@@ -154,7 +156,37 @@
         }
     }
 
-    private async Task<List<ClientViewModel>> LoadClients() => (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
-
-    private async Task<List<ArticleViewModel>> LoadArticles() => (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<ClientViewModel>> LoadClients()
+    {
+        var data = new List<ClientViewModel>();
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
+            RequestManager.InstanceServer, $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
+    private async Task<List<ArticleViewModel>> LoadArticles()
+    {
+        var data = new List<ArticleViewModel>();
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
 }
+

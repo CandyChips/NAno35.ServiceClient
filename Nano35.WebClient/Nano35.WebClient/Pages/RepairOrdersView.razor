@@ -13,7 +13,7 @@
 @inject IPrintingService PrintingService
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
-@inject HttpGet GetAllRepairOrdersByhttp
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Активные заказы на ремонт"/>
@@ -93,7 +93,7 @@
     private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetAllRepairOrdersByhttp.InvokeAsync<GetAllRepairOrdersHttpResponse>(
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>(
             RequestManager.RepairOrdersServer, $"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {

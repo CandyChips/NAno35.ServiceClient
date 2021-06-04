@@ -7,11 +7,11 @@
 @page "/instance/clients"
 @layout InstanceLayout
 @inject NavigationManager NavigationManager
-@inject IRequestManager RequestManager     
+@inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
-@inject IAuthService AuthService 
-@inject HttpClient HttpClient   
-@inject NotificationService NotificationService           
+@inject IAuthService AuthService
+@inject HttpClient HttpClient
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
@@ -48,10 +48,27 @@
      {        
          _isLoaded = false;
          _roles = await AuthService.GetCurrentRoles();
-         _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+         await GetData();
          _isLoaded = true;
     }
 
+    private async Task GetData()
+    {
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
+            RequestManager.InstanceServer, $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        StateHasChanged();
+    }
+    
     private async Task OpenCreateClient()
     {
         var opts = new ModalOptions()
@@ -62,7 +79,7 @@
         var modal = Modal.Show<ClientsCreate>("Новый клиент", opts);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        await GetData();       
         _isLoaded = true;
     }
 
@@ -73,7 +90,7 @@
         var modal = Modal.Show<ClientDetails>($"{value.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllClientsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        await GetData();
         _isLoaded = true;
     }
 }

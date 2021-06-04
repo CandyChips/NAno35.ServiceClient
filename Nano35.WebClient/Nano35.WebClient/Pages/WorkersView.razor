@@ -5,13 +5,13 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
-@inject NavigationManager NavigationManager;
 @inject IInstanceService InstanceService;
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IAuthService AuthService
-@inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 @page "/instance/workers"
 
 <LoadingContent IsLoaded="_loading">
@@ -81,9 +81,21 @@
         _loading = true;
     }
     
-    private async Task LoadWorkers() =>
+    private async Task LoadWorkers()
+    {
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
+            RequestManager.InstanceServer, $"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Workers;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
-    
+    }
     private async Task NewWage(WorkerViewModel user)
     {
         var modalOpts = new ModalOptions()
@@ -92,7 +104,20 @@
         };
         var parameters = new ModalParameters();
         parameters.Add(nameof(WorkersWageCreate.UserId), user.Id);
-        var currentUnit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data.Name;
+
+        var currentUnit = "";
+        
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            RequestManager.InstanceServer, $"Units/{await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {currentUnit = resp.Success.Data.Name;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
         await modal.Result;
         _loading = false;

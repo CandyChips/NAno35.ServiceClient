@@ -4,6 +4,9 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="_model" OnSubmit="HandleValidSubmit">
@@ -78,8 +81,18 @@
 
     private async Task HandleValidSubmit()
     {
-        var response = await HttpClient.PostAsJsonAsync($"{RequestManager.RepairOrdersServer}/RepairOrders/State", _model);
-        await response.Content.ReadFromJsonAsync<CreateRepairOrderStateHttpResponse>();
+        await PostRequest.InvokeAsync<CreateRepairOrderStateHttpResponse, CreateRepairOrderStateHttpBody>(
+            RequestManager.InstanceServer, $"RepairOrders/State", _model,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         await ModalInstance.CloseAsync();
     }
 }

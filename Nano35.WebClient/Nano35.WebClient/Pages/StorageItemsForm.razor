@@ -4,6 +4,10 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
 
 <LoadingContent IsLoaded="_loaded">    
     <EditForm Model="@Model" OnValidSubmit="Create">
@@ -134,8 +138,29 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        _conditions = (await new HttpGetRequest<GetAllStorageItemConditionsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItemConditions").GetAsync()).Data.ToList();
-        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"StorageItemConditions",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_conditions = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_articles = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _loaded = true;
     }
     
@@ -153,7 +178,17 @@
         };
         var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование", modalOpts);
         await moviesModal.Result;
-        _articles = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_articles = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
     
     private async Task OnInputFileChange(InputFileChangeEventArgs e)

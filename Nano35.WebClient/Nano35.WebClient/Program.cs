@@ -39,6 +39,9 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddTransient<HealthService>();
             builder.Services.AddTransient<HttpGet>();
+            builder.Services.AddTransient<HttpPost>();
+            builder.Services.AddTransient<HttpPatch>();
+            builder.Services.AddTransient<HttpDelete>();
             builder.Services.AddBlazoredModal();
                        
             await builder.Build().RunAsync();

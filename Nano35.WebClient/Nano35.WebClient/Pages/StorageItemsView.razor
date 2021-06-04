@@ -12,6 +12,9 @@
 @inject IAuthService AuthService
 @inject IPrintingService PrintingService
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
@@ -75,7 +78,17 @@
     {        
         _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
-        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Contains;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
     }
 
@@ -86,7 +99,19 @@
         var modal = Modal.Show<StorageItemsDetails>($"{value.Item.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllStorageItemsOnUnitSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains;
+        
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Contains;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         _isLoaded = true;
     }
 

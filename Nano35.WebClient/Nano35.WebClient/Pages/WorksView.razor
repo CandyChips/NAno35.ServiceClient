@@ -8,6 +8,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Мои активные заказы на ремонт"/>
@@ -44,7 +47,8 @@
         var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд", parameters);
         await modal.Result;      
         _isLoaded = false;
-        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"").GetAsync()).Data;
+        
+        _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}").GetAsync()).Data;
         _isLoaded = true;
     }
     
@@ -53,6 +57,8 @@
         var modal = Modal.Show<RepairOrdersCreate>("Новый наряд");
         await modal.Result;
         _isLoaded = false;
+        if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
+            NavigationManager.NavigateTo("/instance-view");
         _data = (await new HttpGetRequest<GetAllRepairOrdersHttpResponse>(HttpClient, $"").GetAsync()).Data;
         _isLoaded = true;
     }

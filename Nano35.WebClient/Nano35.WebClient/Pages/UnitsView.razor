@@ -6,13 +6,12 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @layout InstanceLayout
-@inject NavigationManager NavigationManager;
+@inject NavigationManager NavigationManager
 @inject IRequestManager RequestManager;
 @inject IInstanceService InstanceService;
 @inject ISessionProvider SessionProvider;
 @inject IAuthService AuthService
-@inject HttpClient HttpClient
-@inject NotificationService NotificationService
+@inject HttpGet GetRequest
 @page "/instance/units"
 
 <LoadingContent IsLoaded="_loading">
@@ -67,8 +66,22 @@
         _loading = true;
     }
     
-    private async Task<List<UnitViewModel>> GetAllUnits() =>
-        (List<UnitViewModel>) (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units;
+    private async Task<List<UnitViewModel>> GetAllUnits()
+    {
+        var data = new List<UnitViewModel>(); 
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
     
     private async Task NewUnit()
     {

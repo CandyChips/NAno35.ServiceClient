@@ -10,6 +10,10 @@
 @inject IRequestManager RequestManager
 @inject NotificationService NotificationService
 @inject ISessionProvider SessionProvider
+@inject HttpGet GetRequest
+@inject HttpPatch PatchRequest
+@inject HttpDelete DeleteRequest
+@inject NavigationManager NavigationManager
 
    
 <LoadingContent IsLoaded="_isLoaded">
@@ -93,7 +97,6 @@
     
     private List<ClientStateViewModel> States { get; set; } = new();
     private ClientViewModel Client { get; set; } = new();
-    private List<ClientViewModel> Clients { get; set; } = new();
     
     private UpdateClientsEmailHttpBody EmailEdit {get;set;}
     private UpdateClientsNameHttpBody NameEdit {get;set;}
@@ -109,15 +112,36 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
-        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Client;
+        await LoadData();
         _isLoaded = true;
     }
     
     private async Task LoadData()
     {
-        States = (await new HttpGetRequest<GetAllClientStatesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/ClientsStates").GetAsync()).Data.ToList();
-        Client = (await new HttpGetRequest<GetClientByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Item.Id}").GetAsync()).Client;
+        await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>(
+            RequestManager.InstanceServer, $"ClientsStates",
+            resp =>
+            {
+                if (resp.IsSuccess()) {States = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        await GetRequest.InvokeAsync<GetClientByIdHttpResponse>(
+            RequestManager.InstanceServer, $"Clients/{Item.Id}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Client = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         StateHasChanged();
     }
 
@@ -137,38 +161,97 @@
     
     private async Task DeleteClient()
     {
-        await new HttpDeleteRequest<DeleteClientSuccessHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{Client.Id}").DeleteAsync();
+        await DeleteRequest.InvokeAsync<DeleteClientSuccessHttpResponse>(
+            RequestManager.InstanceServer, $"Clients/{Client.Id}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         ClientDelete = null;
         await ModalInstance.CloseAsync(ModalResult.Ok(""));
     }
     private async Task UpdateName()
     {
-        await new HttpPatchRequest<UpdateClientsNameHttpBody, UpdateClientsNameHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{NameEdit.ClientId}/Name").PatchAsync(NameEdit);
+        await PatchRequest.InvokeAsync<UpdateClientsNameHttpResponse, UpdateClientsNameHttpBody>(
+            RequestManager.InstanceServer, $"Clients/{NameEdit.ClientId}/Name", NameEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         NameEdit = null;
         await LoadData();
     }
-    
     private async Task UpdatePhone()
     {
-        await new HttpPatchRequest<UpdateClientsPhoneHttpBody, UpdateClientsPhoneHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{PhoneEdit.ClientId}/Phone").PatchAsync(PhoneEdit);
+        await PatchRequest.InvokeAsync<UpdateClientsPhoneHttpResponse, UpdateClientsPhoneHttpBody>(
+            RequestManager.InstanceServer, $"Clients/{PhoneEdit.ClientId}/Phone", PhoneEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         PhoneEdit = null;
         await LoadData();
     }
     private async Task UpdateEmail()
     {
-        await new HttpPatchRequest<UpdateClientsEmailHttpBody, UpdateClientsEmailHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{EmailEdit.ClientId}/Email").PatchAsync(EmailEdit);
+        await PatchRequest.InvokeAsync<UpdateClientsEmailHttpResponse, UpdateClientsEmailHttpBody>(
+            RequestManager.InstanceServer, $"Clients/{EmailEdit.ClientId}/Email", EmailEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         EmailEdit = null;
         await LoadData();
     }
     private async Task UpdateSelle()
     {
-        await new HttpPatchRequest<UpdateClientsSelleHttpBody, UpdateClientsSelleHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{SelleEdit.ClientId}/Selle").PatchAsync(SelleEdit);
+        await PatchRequest.InvokeAsync<UpdateClientsSelleHttpResponse, UpdateClientsSelleHttpBody>(
+            RequestManager.InstanceServer, $"Clients/{SelleEdit.ClientId}/Selle", SelleEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         SelleEdit = null;
         await LoadData();
     }
     private async Task UpdateState()
     {
-        await new HttpPatchRequest<UpdateClientsStateHttpBody, UpdateClientsStateHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients/{StateEdit.ClientId}/State").PatchAsync(StateEdit);
+        await PatchRequest.InvokeAsync<UpdateClientsStateHttpResponse, UpdateClientsStateHttpBody>(
+            RequestManager.InstanceServer, $"Clients/{StateEdit.ClientId}/State", StateEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         StateEdit = null;
         await LoadData();
     }

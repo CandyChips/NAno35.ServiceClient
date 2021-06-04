@@ -1,8 +1,10 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
-@inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
+
 
 <BoxedContent Width="40">
     <UnitsForm FormSubmitted="OnSubmit" Model="@_model" Error="@Error"/>
@@ -26,7 +28,17 @@
     {
         try
         {
-            await new HttpPostRequest<CreateUnitHttpBody,CreateUnitHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateUnitHttpResponse, CreateUnitHttpBody>(
+                RequestManager.InstanceServer, $"Units", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
         }
         catch (Exception e)
         {

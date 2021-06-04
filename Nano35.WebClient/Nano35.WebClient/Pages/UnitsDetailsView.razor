@@ -1,12 +1,11 @@
 ﻿@using Nano35.WebClient.Services
-@using Nano35.WebClient.Services
-@using Nano35.HttpContext.storage
-@using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
-@inject HttpClient HttpClient
+@using Nano35.HttpContext.instance
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
-@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+
 
 <LoadingContent IsLoaded="_isLoaded">
     <h3>Текущее подразделение: @(Unit.Name)</h3>
@@ -22,7 +21,22 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        Unit = (await new HttpGetRequest<GetUnitByIdHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units/{await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
+        
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            RequestManager.InstanceServer, $"Units/{await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    Unit = resp.Success.Data;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         _isLoaded = true;
     }
 }

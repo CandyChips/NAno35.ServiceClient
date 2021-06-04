@@ -7,6 +7,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
 
 
 <LoadingContent IsLoaded="_isLoaded">
@@ -103,14 +105,30 @@
             $"{RequestManager.StorageServer}/ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}").GetAsync()).Data;
         _isLoaded = true;
     }
-    
-    private async Task UpdateCategory() {await new HttpPatchRequest<UpdateArticleCategoryHttpBody, UpdateArticleCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Category").PatchAsync(CategoryEdit);CategoryEdit = null;}
-    
-    private async Task UpdateBrand(){await new HttpPatchRequest<UpdateArticleBrandHttpBody, UpdateArticleBrandSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Brand").PatchAsync(BrandEdit);BrandEdit = null;}
-    
-    private async Task UpdateModel(){await new HttpPatchRequest<UpdateArticleModelHttpBody, UpdateArticleModelSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Model").PatchAsync(ModelEdit);ModelEdit = null;}
-    
-    private async Task UpdateInfo(){await new HttpPatchRequest<UpdateArticleInfoHttpBody, UpdateArticleInfoSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Info").PatchAsync(InfoEdit);ModelEdit = null;}
+
+    private async Task UpdateCategory()
+    {
+        await new HttpPatchRequest<UpdateArticleCategoryHttpBody, UpdateArticleCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Category").PatchAsync(CategoryEdit);CategoryEdit = null;
+        CategoryEdit = null;
+    }
+
+    private async Task UpdateBrand()
+    {
+        await new HttpPatchRequest<UpdateArticleBrandHttpBody, UpdateArticleBrandSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Brand").PatchAsync(BrandEdit);BrandEdit = null;
+        BrandEdit = null;
+    }
+
+    private async Task UpdateModel()
+    {
+        await new HttpPatchRequest<UpdateArticleModelHttpBody, UpdateArticleModelSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Model").PatchAsync(ModelEdit);ModelEdit = null;
+        ModelEdit = null;
+    }
+
+    private async Task UpdateInfo()
+    {
+        await new HttpPatchRequest<UpdateArticleInfoHttpBody, UpdateArticleInfoSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles/Info").PatchAsync(InfoEdit);ModelEdit = null;
+        InfoEdit = null;
+    }
     
     private async Task OpenCategoryDetails(Guid id, string name)
     {

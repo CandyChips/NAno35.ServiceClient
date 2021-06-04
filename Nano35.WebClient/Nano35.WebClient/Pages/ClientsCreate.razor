@@ -3,6 +3,8 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <BoxedContent Width="40">
     <ClientsForm FormSubmitted="Submit" Model="_model" Error="@Error"/>
@@ -25,7 +27,17 @@
     {
         try
         {
-            await new HttpPostRequest<CreateClientHttpBody, CreateClientHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Clients").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateClientHttpResponse, CreateClientHttpBody>(
+                RequestManager.InstanceServer, $"Clients", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
             await ModalInstance.CloseAsync(ModalResult.Ok(_model.NewId));
         }
         catch (Exception e)

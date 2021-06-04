@@ -4,6 +4,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <EditForm Model="@(_model)"
           OnValidSubmit="HandleValidSubmit">
@@ -128,11 +130,29 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        FromPlaceOnStorage = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}").GetAsync()).Contains.ToList();
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {FromPlaceOnStorage = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         
-        ToPlaceOnStorage =   (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}").GetAsync()).Contains.ToList();
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {ToPlaceOnStorage = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
     
     private async Task HandleValidSubmit() 
@@ -140,9 +160,24 @@
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
-    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
-    
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems()
+    {
+        var data = new List<StorageItemViewModel>();
+        
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        return data;
+    }
 
     private async Task PlaceOnStorageChanged()
     {

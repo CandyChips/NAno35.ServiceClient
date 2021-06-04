@@ -5,7 +5,8 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
-@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <div style="margin-top:20px">Номер оприходования:</div>
 <b>@Selle.Number</b>
@@ -34,6 +35,16 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllSellDetailsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Sells/{Selle.Id}/details").GetAsync()).Data.ToList();
+        await GetRequest.InvokeAsync<GetAllSellDetailsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Sells/{Selle.Id}/details",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Details = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 }

@@ -10,6 +10,10 @@
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPatch PatchRequest
+@inject HttpPost PostRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     
@@ -314,17 +318,55 @@
     private UpdateRepairOrdersTroubleHttpBody TroubleEdit { get; set; }
     private UpdateRepairOrdersComplicationHttpBody ComplicationEdit { get; set; }
     
-    private string DiagnosticResult { get; set; }
-    
     private List<Guid> _roles = new();
 
     private async Task Update()
     {   
-        _model = (await new HttpGetRequest<GetRepairOrderByIdHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}").GetAsync()).Data;
-        _states = (await new HttpGetRequest<GetAllRepairOrderStatesHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/States").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetRepairOrderByIdHttpResponse>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/{Id}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_model = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        await GetRequest.InvokeAsync<GetAllRepairOrderStatesHttpResponse>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/{Id}/States",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_states = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _states.Reverse();
-        _works = (await new HttpGetRequest<GetAllRepairOrderWorksHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/{Id}/Works").GetAsync()).Data;
-        _devices = (await new HttpGetRequest<GetAllArticlesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/{Id}/Works",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Articles",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_devices = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         
     }
 
@@ -355,7 +397,17 @@
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
-        await new HttpPostRequest<SetPerformerOfRepairOrderHttpQuery,SetPerformerOfRepairOrderHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/SetPerformerOfRepairOrder").PostAsync(SetUserAsPerformerOfRepairOrderQuery);
+        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = false;
         await Update();
         _isLoaded = true;
@@ -363,71 +415,192 @@
 
     private async Task UpdateDevice()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersDeviceHttpBody, UpdateRepairOrdersDeviceHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Device").PatchAsync(DeviceEdit);
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Device", DeviceEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         DeviceEdit = null;
         await Update();
     }
     private async Task UpdateSerial()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersSerialHttpBody, UpdateRepairOrdersSerialHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Serial").PatchAsync(SerialEdit);
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersSerialHttpResponse, UpdateRepairOrdersSerialHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Serial", SerialEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         SerialEdit = null;
         await Update();
     }
     private async Task UpdateCondition()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersConditionHttpBody, UpdateRepairOrdersConditionHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Condition").PatchAsync(ConditionEdit);
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersConditionHttpResponse, UpdateRepairOrdersConditionHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Condition", ConditionEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         ConditionEdit = null;
         await Update();
     }
     private async Task UpdateTrouble()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersTroubleHttpBody, UpdateRepairOrdersTroubleHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Trouble").PatchAsync(TroubleEdit);
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersTroubleHttpResponse, UpdateRepairOrdersTroubleHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Trouble", TroubleEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         TroubleEdit = null;
         await Update();
     }
     private async Task UpdateComplication()
     {
-        await new HttpPatchRequest<UpdateRepairOrdersComplicationHttpBody, UpdateRepairOrdersComplicationHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Complication").PatchAsync(ComplicationEdit);
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersComplicationHttpResponse, UpdateRepairOrdersComplicationHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Complication", ComplicationEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         ComplicationEdit = null;
         await Update();
     }
 
     private async Task SetAsDiagnosted()
     {
-        await new HttpPostRequest<SetRepairOrderAsDiagnosedHttpBody,SetRepairOrderAsDiagnosedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Diagnosed").PostAsync(new SetRepairOrderAsDiagnosedHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsDiagnosedHttpResponse, SetRepairOrderAsDiagnosedHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
 
     private async Task SetAsAgreement()
     {
-        await new HttpPostRequest<SetRepairOrderAsAgreementHttpBody,SetRepairOrderAsAgreementHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Agreement").PostAsync(new SetRepairOrderAsAgreementHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsAgreementHttpResponse, SetRepairOrderAsAgreementHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
     private async Task SetAsReady()
     {
         var modal = Modal.Show<ReadyResult>($"Оплата за заказ наряд");
         var res = await modal.Result;
-        await new HttpPostRequest<SetRepairOrderAsReadyHttpBody,SetRepairOrderAsReadyHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Ready").PostAsync(new SetRepairOrderAsReadyHttpBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0});
+        await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         await Update();
     }
     private async Task SetAsOnWait()
     {        
-        await new HttpPostRequest<SetRepairOrderAsOnWaitHttpBody,SetRepairOrderAsOnWaitHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWait").PostAsync(new SetRepairOrderAsOnWaitHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsOnWaitHttpResponse, SetRepairOrderAsOnWaitHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
     private async Task SetAsOnWork()
     {
-        await new HttpPostRequest<SetRepairOrderAsOnWorkHttpBody,SetRepairOrderAsOnWorkHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/OnWork").PostAsync(new SetRepairOrderAsOnWorkHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsOnWorkHttpResponse, SetRepairOrderAsOnWorkHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
     private async Task SetAsCompleted()
     {
-        await new HttpPostRequest<SetRepairOrderAsCompletedHttpBody,SetRepairOrderAsCompletedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Completed").PostAsync(new SetRepairOrderAsCompletedHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsCompletedHttpResponse, SetRepairOrderAsCompletedHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
     private async Task SetAsClosed()
     {
-        await new HttpPostRequest<SetRepairOrderAsClosedHttpBody,SetRepairOrderAsClosedHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders/Close").PostAsync(new SetRepairOrderAsClosedHttpBody(){RepairOrderId = _model.Id});
+        await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>(
+            RequestManager.RepairOrdersServer, $"RepairOrders/Close", new SetRepairOrderAsClosedHttpBody(){RepairOrderId = _model.Id},
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         await Update();
     }
 }

@@ -6,6 +6,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <EditForm Model="@Model"
           OnSubmit="Create">
@@ -139,8 +142,21 @@
             await FormSubmitted.InvokeAsync();
             await ModalInstance.CloseAsync();
         }
-    private async Task<List<UnitViewModel>> LoadUnits() =>
-        (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
-        
+    private async Task<List<UnitViewModel>> LoadUnits()
+    {
+        var data = new List<UnitViewModel>();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
 
 }

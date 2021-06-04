@@ -3,6 +3,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 @inject HttpClient HttpClient 
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
 
 <div style="width: 40rem;">
     <StorageItemsForm FormSubmitted="Submit"
@@ -21,6 +23,8 @@
     {
         try
         {
+            if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
+            NavigationManager.NavigateTo("/instance-view");
             await new HttpPostRequest<CreateStorageItemHttpBody,CreateStorageItemSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems").PostAsync(_model);
             await ModalInstance.CloseAsync(ModalResult.Ok(_model.NewId));
         }

@@ -7,6 +7,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPatch PatchRequest
 
 <LoadingContent IsLoaded="_loading">
         <FieldListItem Title="Наследуемая категория">
@@ -60,26 +63,64 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = await GetCategories();
         _loading = false;
     }
 
+    private async Task<List<ArticleCategoryViewModel>> GetCategories()
+    {
+        var data = new List<ArticleCategoryViewModel>();
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            RequestManager.InstanceServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        return data;
+    }
+    
 
     private async Task UpdateName()
     {
         _loading = true;
-        await new HttpPatchRequest<UpdateCategoryNameHttpBody, UpdateCategoryNameSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/Name").PatchAsync(NameEdit);
+        await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>(
+            RequestManager.StorageServer, $"Category/Name", NameEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         NameEdit = null;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = await GetCategories(); 
         _loading = false;
     }
     
     private async Task UpdateParent()
     {
         _loading = true;
-        await new HttpPatchRequest<UpdateCategoryParentCategoryHttpBody, UpdateCategoryParentCategoryIdSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category/ParentCategoryId").PatchAsync(ParentEdit);
+        await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>(
+            RequestManager.StorageServer, $"Category/ParentCategoryId", ParentEdit,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         ParentEdit = null;
-        Categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        Categories = await GetCategories();
         _loading = false;
     }
 }

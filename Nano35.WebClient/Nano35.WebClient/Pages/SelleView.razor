@@ -10,6 +10,10 @@
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
 @inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+
 
 @if (_loading)
 {
@@ -86,7 +90,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _loading = false;
     }
 
@@ -95,7 +109,17 @@ else
         var modal = Modal.Show<SellesCreate>("Новая продажа");
         await modal.Result;
         _loading = true;
-        _data = (await new HttpGetRequest<GetAllSellsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _loading = false;
     }
 

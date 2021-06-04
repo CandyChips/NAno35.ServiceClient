@@ -2,6 +2,8 @@
 @using Nano35.HttpContext.instance
 @using System.Text.RegularExpressions
 @inject HttpClient HttpClient
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
 
 <EditForm Model="@Model" OnSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -131,15 +133,15 @@
         
         if (Phone.StartsWith("8"))
             Phone = Phone.Remove(0,1);
-        
-        Model.Phone = Phone;
-        
+
         if (Phone.Length < 10)
             Phone = Phone.PadRight(10);
 
         if (Phone.Length > 10)
             Phone = Phone.Substring(0, 10);
-
+        
+        Model.Phone = Phone;
+        
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
     }
 }

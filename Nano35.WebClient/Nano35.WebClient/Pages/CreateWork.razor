@@ -3,6 +3,8 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <WorkForm FormSubmitted="Submit"
             Model="_model" 
@@ -22,7 +24,17 @@
     {
         try
         {   
-            await new HttpPostRequest<CreateWorkHttpBody,CreateWorkHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/Works").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>(
+                RequestManager.RepairOrdersServer, $"Works", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
         }
         catch (Exception e)
         {

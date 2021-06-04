@@ -6,7 +6,9 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
-@inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 
 <BoxedContent Width="40">
@@ -52,7 +54,17 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _operations = (await new HttpGetRequest<GetAllWageOperationsHttpResponse>(HttpClient, $"{RequestManager.CashboxServer}/Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}").GetAsync()).Operations;
+        await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>(
+            RequestManager.CashboxServer, $"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
     }
 

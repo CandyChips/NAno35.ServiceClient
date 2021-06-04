@@ -3,6 +3,9 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
 
 <BoxedContent Width="40">
     <WorkerForm FormSubmitted="OnSubmit" Model="_model" Error="@Error"/>
@@ -26,7 +29,17 @@
     {
         try
         {
-            await new HttpPostRequest<CreateWorkerHttpBody,CreateWorkerHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>(
+                RequestManager.InstanceServer, $"Workers", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
         }
         catch (Exception e)
         {

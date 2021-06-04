@@ -1,10 +1,10 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
-@inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
-@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -79,7 +79,17 @@
         
     protected override async Task OnInitializedAsync()
     {
-        _types = (await new HttpGetRequest<GetAllUnitTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/UnitsTypes").GetAsync()).UnitTypes.ToList();
+        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
+            RequestManager.InstanceServer, $"UnitsTypes",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_types = resp.Success.UnitTypes.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 
     private async Task HandleValidSubmit()

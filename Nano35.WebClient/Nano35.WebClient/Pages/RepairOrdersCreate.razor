@@ -3,6 +3,8 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
 
 <BoxedContent Width="40">
     <RepairOrdersForm FormSubmitted="SendCreateRepairOrderRequest" Model="_model" Error="@Error"/>
@@ -21,7 +23,17 @@
     {
         try
         {
-            await new HttpPostRequest<CreateRepairOrderHttpBody,CreateRepairOrderHttpResponse>(HttpClient, $"{RequestManager.RepairOrdersServer}/RepairOrders").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>(
+                RequestManager.RepairOrdersServer, $"RepairOrders", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
         }
         catch (Exception e)
         {

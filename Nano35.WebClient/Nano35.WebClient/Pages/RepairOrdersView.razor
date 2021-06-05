@@ -109,10 +109,7 @@
 
     private async Task DetailsOpen(Guid id)
     {
-        var modalOpts = new ModalOptions()
-        {
-            DisableBackgroundCancel = true, FocusFirstElement = true
-        };
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
         var parameters = new ModalParameters();
         parameters.Add(nameof(RepairOrdersDetail.Id), id);
         var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters, modalOpts);
@@ -124,11 +121,8 @@
     
     private async Task NewOrder()
     {
-        var modalOpts = new ModalOptions()
-        {
-            DisableBackgroundCancel = true, FocusFirstElement = true
-        };
-        var modal = Modal.Show<RepairOrdersCreate>("Новый наряд на ремонт", modalOpts);
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var modal = Modal.Show<RepairOrdersCreateForm>("Новый наряд на ремонт", modalOpts);
         await modal.Result;
         _isLoaded = false;
         _data = await GetAllRepairOrders();

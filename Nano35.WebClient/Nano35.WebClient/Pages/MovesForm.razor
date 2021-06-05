@@ -9,20 +9,9 @@
 @inject HttpGet GetRequest
 @inject NavigationManager NavigationManager
 
-<EditForm Model="@Model"
-          OnValidSubmit="Create">
+<EditForm Model="@Model" OnValidSubmit="Create">
     <ValidationSummary/>
-    
-    @if (!_isLoaded)
-    {
-        <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden"></span>
-            </div>
-        </div>
-    }
-    else
-    {
+    <LoadingContent IsLoaded="_isLoaded">
         <InputField Title="Подразделение отправитель">
             <Controls>
                 <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}"}))
@@ -36,9 +25,7 @@
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.FromUnitId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.FromUnitId)" /></Validation>
         </InputField>
         
         <InputField Title="Подразделение получатель">
@@ -54,11 +41,8 @@
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.ToUnitId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => Model.ToUnitId)" /></Validation>
         </InputField>
-
         <RadzenFieldset Text="Перемещаемые товары">
             <RadzenGrid Data="@_details"
                         EmptyText="Добавте перемещаемые товары..."
@@ -94,7 +78,7 @@
                           ButtonStyle="ButtonStyle.Secondary"
                           Style="width: 100%" />
         </RadzenFieldset>
-    }
+    </LoadingContent>
     @if (!string.IsNullOrEmpty(Error))
     {
         <div class="alert alert-danger mt-3 mb-0">@Error</div>

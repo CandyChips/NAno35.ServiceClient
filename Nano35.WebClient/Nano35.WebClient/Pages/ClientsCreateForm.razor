@@ -1,0 +1,127 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using System.Text.RegularExpressions
+@using Nano35.Contracts.Instance.Models
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+
+<BoxedContent Width="40">
+    <LoadingContent IsLoaded="_isLoaded">
+        <EditForm Model="@Model" OnSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <InputField Title="Статус клиента*">
+                <Controls><RadzenDropDown Data="@(_state.Select(a => new {a.Id, a.Name}))" TextProperty="Name" ValueProperty="Id" TValue="Guid" @bind-Value="Model.ClientStateId" style="width: 100%"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.ClientStateId)" /></Validation>
+            </InputField>
+            <InputField Title="@(Model.ClientStateId != Guid.Empty && Model.ClientStateId == _state.First().Id ?
+                                   "ФИО клиента*" : 
+                                   "Название организации*")">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
+            </InputField>
+            <InputField Title="Эл почта">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
+            </InputField>
+            <InputField Title="Номер телефона*">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
+            </InputField>
+            <InputField Title="Скидка">
+                <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Selle"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Selle)" /></Validation>
+            </InputField>
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+            <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
+                <AllowedContent>
+                    <div class="alert alert-danger mt-3 mb-0">@Error</div>
+                </AllowedContent>
+            </ConditionalContent>
+        </EditForm>
+    </LoadingContent>
+</BoxedContent>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private bool _isLoaded;
+    private List<ClientStateViewModel> _state = new();
+    private CreateClientHttpBody Model = new(){NewId = Guid.NewGuid(), InstanceId = Guid.Empty};
+    private string Error { get; set; }
+    private string Phone {
+        get
+        {
+            if (string.IsNullOrEmpty(Model.Phone))
+                return "+7";
+            var resp = Model.Phone;
+            if (resp.Length < 10)
+                resp = resp.PadRight(10);
+            if (resp.Length > 10)
+                resp = resp.Substring(0, 10);
+
+            return $"+7 ({resp.Substring(0, 3)}) {resp.Substring(3, 3)}-{resp.Substring(6, 2)}-{resp.Substring(8, 2)}";
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                Model.Phone = "";
+                return;
+            }
+            var tmp = Regex.Replace(value, @"[^\d]", "").Remove(0,1);
+            Model.Phone = tmp;
+        }
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        _isLoaded = false;
+        try
+        {
+            await PostRequest.InvokeAsync<CreateClientHttpResponse, CreateClientHttpBody>(
+                RequestManager.InstanceServer, $"Clients", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            await ModalInstance.CloseAsync(ModalResult.Ok(Model.NewId));
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+        _isLoaded = true;
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>(
+            RequestManager.InstanceServer, $"ClientsStates",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_state = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        Model = new CreateClientHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+        _isLoaded = true;
+    }
+}

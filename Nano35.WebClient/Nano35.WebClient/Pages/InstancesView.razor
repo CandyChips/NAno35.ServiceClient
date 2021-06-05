@@ -68,7 +68,7 @@
             DisableBackgroundCancel = true,
             FocusFirstElement = true
         };
-        var modal = Modal.Show<InstancesCreate>("Новая организация", opts);
+        var modal = Modal.Show<InstancesCreateForm>("Новая организация", opts);
         await modal.Result;
         _loading = false;
         _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;

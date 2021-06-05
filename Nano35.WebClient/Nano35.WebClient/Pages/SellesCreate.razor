@@ -17,10 +17,12 @@
                     <DataAnnotationsValidator />
                     <InputField Title="Наименование прочего прихода">
                         <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="model.Name"/></Controls>
+                        <Validation><ValidationMessage For="@(() => model.Name)" /></Validation>
                     </InputField>
                     <InputField Title="Сумма прочего прихода">
                         <Controls>
                             <RadzenNumeric Style="width: 100%;" @bind-Value="model.Price"/>
+                            <Validation><ValidationMessage For="@(() => model.Price)" /></Validation>
                         </Controls>
                     </InputField>
                     <RadzenButton type="submit" Text="Провести" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />

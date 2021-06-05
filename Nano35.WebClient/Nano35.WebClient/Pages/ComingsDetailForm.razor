@@ -97,11 +97,8 @@
 
     private async Task OpenCreateStorageItem()
     {
-        var modalOpts = new ModalOptions()
-        {
-            DisableBackgroundCancel = true, FocusFirstElement = true
-        };
-        var moviesModal = Modal.Show<StorageItemsCreate>("Новое изделие", modalOpts);
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var moviesModal = Modal.Show<StorageItemsCreateForm>("Новое изделие", modalOpts);
         await moviesModal.Result;
         StorageItems = await GetAllStorageItems();
     }

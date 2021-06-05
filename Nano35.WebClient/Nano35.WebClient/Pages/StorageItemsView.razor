@@ -82,10 +82,12 @@
             RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Contains;}
+                if (resp.IsSuccess())
+                {
+                    _data = resp.Success.Contains;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -104,10 +106,12 @@
             RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Contains;}
+                if (resp.IsSuccess())
+                {
+                    _data = resp.Success.Contains;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

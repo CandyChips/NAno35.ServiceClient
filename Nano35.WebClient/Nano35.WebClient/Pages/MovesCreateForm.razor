@@ -1,0 +1,191 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.Contracts.Instance.Models
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
+@inject HttpGet GetRequest
+
+<BoxedContent Width="40">
+    <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+        <ValidationSummary/>
+        <LoadingContent IsLoaded="_isLoaded">
+            <InputField Title="Подразделение отправитель">
+                <Controls>
+                    <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}"}))
+                                    TextProperty="Name" 
+                                    ValueProperty="Id"
+                                    TValue="Guid" 
+                                    @bind-Value="Model.FromUnitId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите целевое подразделение..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => Model.FromUnitId)" /></Validation>
+            </InputField>
+            
+            <InputField Title="Подразделение получатель">
+                <Controls>
+                    <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}" }))
+                                    TextProperty="Name" 
+                                    ValueProperty="Id"
+                                    TValue="Guid" 
+                                    @bind-Value="Model.ToUnitId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите целевое подразделение..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => Model.ToUnitId)" /></Validation>
+            </InputField>
+            <RadzenFieldset Text="Перемещаемые товары">
+                <RadzenGrid Data="@_details"
+                            EmptyText="Добавте перемещаемые товары..."
+                            TItem="CreateMoveDetailViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="CreateMoveDetailViewModel"
+                                          Property="PlaceOnStorage" 
+                                          Title="Товар" />
+                        <RadzenGridColumn TItem="CreateMoveDetailViewModel" 
+                                          Property="FromPlaceOnStorage" 
+                                          Title="Ячейка отправителя" />
+                        <RadzenGridColumn TItem="CreateMoveDetailViewModel" 
+                                          Property="ToPlaceOnStorage" 
+                                          Title="Ячейка получателя" />
+                        <RadzenGridColumn TItem="CreateMoveDetailViewModel"
+                                          Property="Count"
+                                          Title="Количество" />
+                        <RadzenGridColumn TItem="CreateMoveDetailViewModel"
+                                          Context="order"
+                                          Bubble="false"
+                                          TextAlign="TextAlign.Center" 
+                                          Width="70px">
+                            <Template Context="item">
+                                <RadzenButton ButtonStyle="ButtonStyle.Danger"
+                                              Icon="close"
+                                              Size="ButtonSize.Small"/>
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+                <RadzenButton Click=@(_ => AddDetail()) 
+                              Text="Добавить"
+                              ButtonStyle="ButtonStyle.Secondary"
+                              Style="width: 100%" />
+            </RadzenFieldset>
+        </LoadingContent>
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">@Error</div>
+        }
+        
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    </EditForm>
+</BoxedContent>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private bool _isLoaded;
+
+    private List<UnitViewModel> _units = new();
+    private List<CreateMoveDetailViewModel> _details = new();
+    
+    private CreateMoveHttpBody Model = new()
+    {
+        NewId = Guid.NewGuid(),
+        InstanceId = Guid.Empty
+    };
+    private string Error { get; set; }
+    
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            Model.Details = _details.Select(a =>  new CreateMoveDetailViewModel()
+            {
+                NewId = a.NewId, 
+                Count = a.Count, 
+                FromPlaceOnStorage = a.FromPlaceOnStorage, 
+                ToPlaceOnStorage = a.ToPlaceOnStorage, 
+                StorageItemId = a.StorageItemId
+            }).ToList();
+            await PostRequest.InvokeAsync<CreateMoveSuccessHttpResponse, CreateMoveHttpBody>(
+                RequestManager.StorageServer, $"Moves", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        
+        _isLoaded = false;
+        Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        Model.FromUnitId = await SessionProvider.GetCurrentUnitId();
+        _units = await LoadUnits();
+        Model = new CreateMoveHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+        _isLoaded = true;
+    }
+
+    private async Task AddMoveDetail(CreateMoveDetailViewModel model)
+    {
+        _details.Add(model);
+    }
+    
+    private async Task<List<UnitViewModel>> LoadUnits()
+    {
+        var data = new List<UnitViewModel>();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
+    
+    private async Task AddDetail()
+    {
+        var param = new ModalParameters();
+        param.Add("FromUnitId", Model.FromUnitId);
+        param.Add("ToUnitId", Model.ToUnitId);
+        var modal = Modal.Show<MovesDetailForm>($"Новая позиция к перемещению",param);
+        var result = await modal.Result;
+        if (result.Data is CreateMoveDetailViewModel success)
+        {
+            _details.Add(success);
+        }
+    }
+}

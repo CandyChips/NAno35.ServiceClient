@@ -159,7 +159,7 @@
         {
             DisableBackgroundCancel = true, FocusFirstElement = true
         };
-        var modal = Modal.Show<ClientsCreate>($"Новый клиент", modalOpts);
+        var modal = Modal.Show<ClientsCreateForm>($"Новый клиент", modalOpts);
         var res = await modal.Result;
         if (!res.Cancelled)
         {

@@ -111,7 +111,6 @@ namespace Nano35.WebClient.Services
             }
             catch
             {
-                _notificationService.Notify(NotificationSeverity.Warning, "Error access", uri);
                 return false;
             }
         }

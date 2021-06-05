@@ -7,35 +7,26 @@
 @inject HttpGet GetRequest
 @inject NavigationManager NavigationManager
 
-<EditForm Model="@(_model)"
-          OnValidSubmit="HandleValidSubmit">
-    @if (_isLoaded)
-    {
+<EditForm Model="@(_model)" OnValidSubmit="HandleValidSubmit">
+    <LoadingContent IsLoaded="_isLoaded">
         <DataAnnotationsValidator/>
-        
         <InputField Title="Товар">
             <Controls>
-                <RadzenDropDown Data=@(StorageItems
-                                         .Select(a => 
-                                             new {Id = a.Id, 
-                                                 Name = $"{a.Article + " " + a.Condition}"}))
+                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id,  Name = $"{a.Article + " " + a.Condition}"}))
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
                                 @bind-Value="_model.StorageItemId"
                                 Style="width: 100%;"
-                                Placeholder="..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"
                                 Change="@GetAllPlacesOfStorageItem"/>
 
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.StorageItemId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
         </InputField>
-        
+            
         <InputField Title="Ячейка на складе">
             <Controls>
                 <RadzenDropDown Data=@(Warehouse
@@ -46,47 +37,25 @@
                                 TValue="string"
                                 @bind-Value="_model.PlaceOnStorage"
                                 Style="width: 100%;"
-                                Placeholder="..."
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                 FilterOperator="StringFilterOperator.Contains"
                                 AllowFiltering="true"
                                 Change="PlaceOnStorageChanged"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.PlaceOnStorage)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.PlaceOnStorage)" /></Validation>
         </InputField>
-        
         <InputField Title="Количество">
             <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="@(_maxItems.ToString())"
-                               @bind-Value="_model.Count"
-                               Max="@_maxItems"
-                               Min="1"/>
+                <RadzenNumeric Style="width: 100%;" Placeholder="@(_maxItems.ToString())" @bind-Value="_model.Count" Max="@_maxItems" Min="1"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Count)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
         </InputField>
-        
         <InputField Title="Цена">
-            <Controls>
-                <RadzenNumeric style="width: 100%;"
-                               Placeholder="..."
-                               TValue="double"
-                               @bind-Value="_model.Price"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Price)" />
-            </Validation>
+            <Controls><RadzenNumeric style="width: 100%;" TValue="double" @bind-Value="_model.Price"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
         </InputField>
-
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
-    }
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+    </LoadingContent>
 </EditForm>
 
 @code

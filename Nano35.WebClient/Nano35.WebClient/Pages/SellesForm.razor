@@ -111,7 +111,11 @@
 
     private async Task AddClient()
     {
-        var moviesModal = Modal.Show<ClientsCreate>("Новый клиент");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var moviesModal = Modal.Show<ClientsCreateForm>("Новый клиент", modalOpts);
         await moviesModal.Result;
         _isLoaded = false;
         _isLoaded = true;
@@ -119,9 +123,12 @@
     
     private async Task AddDetail()
     {
-        var modal = Modal.Show<SellesDetailForm>("Новая деталь продажи");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<SellesDetailForm>("Новая деталь продажи", modalOpts);
         var result = await modal.Result;
-
         if (result.Data is CreateSelleDetailViewModel success)
         {
             _details.Add(success);  

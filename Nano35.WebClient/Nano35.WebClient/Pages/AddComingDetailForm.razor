@@ -73,7 +73,8 @@
 
     private async Task OpenCreateStorageItem()
     {
-        var moviesModal = Modal.Show<StorageItemsCreate>("Новая позиция к списанию");
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var moviesModal = Modal.Show<StorageItemsCreateForm>("Новая позиция к списанию", modalOpts);
         var res = await moviesModal.Result;
         if (!res.Cancelled)
         {

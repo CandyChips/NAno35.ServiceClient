@@ -1,16 +1,16 @@
-﻿@using Nano35.WebClient.Services
-@using Nano35.HttpContext.storage
-@inject HttpClient HttpClient
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider 
-@inject NotificationService NotificationService
+@inject HttpClient HttpClient 
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
 @inject HttpPost PostRequest
 
+<BoxedContent Width="40">
 <LoadingContent IsLoaded="_loaded">    
-    <EditForm Model="@Model" OnValidSubmit="Create">
+    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
         <InputField Title="Наименование*">
             <Controls>
@@ -19,7 +19,7 @@
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     TValue="Guid"
-                                    @bind-Value="Model.ArticleId"
+                                    @bind-Value="_model.ArticleId"
                                     Disabled="@(!_articles.Any())"
                                     style="width: 100%;"
                                     AllowClear="true"
@@ -29,9 +29,7 @@
                     <RadzenButton Click="@(_ => OpenCreateArticle())" Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
                 </div>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => Model.ArticleId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.ArticleId)" /></Validation>
         </InputField>
 
         <InputField Title="Состояние*">
@@ -40,7 +38,7 @@
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
-                                @bind-Value="Model.ConditionId"
+                                @bind-Value="_model.ConditionId"
                                 style="flex: auto;"
                                 AllowClear="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
@@ -48,28 +46,28 @@
                                 AllowFiltering="true"/>
             </Controls>
             <Validation>
-                <ValidationMessage For="@(() => Model.ConditionId)" />
+                <ValidationMessage For="@(() => _model.ConditionId)" />
             </Validation>
         </InputField>
                     
         <InputField Title="Комментарий">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Comment"/></Controls>
-            <Validation><ValidationMessage For="@(() => Model.Comment)" /></Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Comment"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
         </InputField>
                     
         <InputField Title="Скрытый комментарий">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.HiddenComment"/></Controls>
-            <Validation><ValidationMessage For="@(() => Model.HiddenComment)" /></Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.HiddenComment"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.HiddenComment)" /></Validation>
         </InputField>
                     
         <InputField Title="Закупочная цена">
-            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.RetailPrice"/></Controls>
-            <Validation><ValidationMessage For="@(() => Model.RetailPrice)" /></Validation>
+            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.RetailPrice"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.RetailPrice)" /></Validation>
         </InputField>
                     
         <InputField Title="Цена продажи">
-            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.PurchasePrice"/></Controls>
-            <Validation><ValidationMessage For="@(() => Model.PurchasePrice)" /></Validation>
+            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.PurchasePrice"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.PurchasePrice)" /></Validation>
         </InputField>
                     
         <InputField Title="Изображения">
@@ -113,28 +111,41 @@
             <div class="alert alert-danger mt-3 mb-0">@Error</div>
         }
 
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     </EditForm>
 </LoadingContent>
+</BoxedContent>
 
 @code
 {
-    [Parameter] public CreateStorageItemHttpBody Model { get; set; }
-    [Parameter] public EventCallback FormSubmitted { get; set; }
-    [Parameter] public string Error { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    
+    private CreateStorageItemHttpBody _model = new();
+    private string Error { get; set; } = "";
     private bool _loaded;
     private List<ArticleViewModel> _articles = new();
     private List<StorageItemConditionViewModel> _conditions = new();
-    private IList<File> _files = new List<File>();
+    private readonly IList<File> _files = new List<File>();
     private IList<UploadResult> _uploadResults = new List<UploadResult>();
-    private int _maxAllowedFiles = 3;
-
+    private readonly int _maxAllowedFiles = 3;
+    
+    private async Task HandleValidSubmit()
+    {
+        _loaded = false;
+        try
+        {
+            if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
+            NavigationManager.NavigateTo("/instance-view");
+            await new HttpPostRequest<CreateStorageItemHttpBody,CreateStorageItemSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems").PostAsync(_model);
+            await ModalInstance.CloseAsync(ModalResult.Ok(_model.NewId));
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+        _loaded = true;
+    }
+    
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
@@ -142,10 +153,12 @@
             RequestManager.StorageServer, $"StorageItemConditions",
             resp =>
             {
-                if (resp.IsSuccess()) {_conditions = resp.Success.Data.ToList();}
+                if (resp.IsSuccess())
+                {
+                    _conditions = resp.Success.Data.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -154,38 +167,38 @@
             RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_articles = resp.Success.Data.ToList();}
+                if (resp.IsSuccess())
+                {
+                    _articles = resp.Success.Data.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        _model = new CreateStorageItemHttpBody
+        {
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            NewId = Guid.NewGuid()
+        };
         _loaded = true;
-    }
-    
-    private async Task Create()
-    { 
-        await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();    
     }
 
     private async Task OpenCreateArticle()
     {
-        var modalOpts = new ModalOptions()
-        {
-            DisableBackgroundCancel = true, FocusFirstElement = true
-        };
-        var moviesModal = Modal.Show<ArticlesCreate>("Новое наименование", modalOpts);
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var moviesModal = Modal.Show<ArticlesCreateForm>("Новое наименование", modalOpts);
         await moviesModal.Result;
         await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
             RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_articles = resp.Success.Data.ToList();}
+                if (resp.IsSuccess())
+                {
+                    _articles = resp.Success.Data.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -193,49 +206,45 @@
     
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
-        long maxFileSize = 1024 * 1024 * 15;
+        const long maxFileSize = 1024 * 1024 * 15;
         var upload = false;
-
         using var content = new MultipartFormDataContent();
 
         foreach (var file in e.GetMultipleFiles(_maxAllowedFiles))
         {
-            if (_uploadResults.SingleOrDefault(
-                f => f.FileName == file.Name) is null)
+            if (_uploadResults.SingleOrDefault(f => f.FileName == file.Name) is not null) continue;
+            var fileContent = new StreamContent(file.OpenReadStream());
+
+            _files.Add(
+                new File()
+                {
+                    Name = file.Name,
+                });
+
+            if (file.Size < maxFileSize)
             {
-                var fileContent = new StreamContent(file.OpenReadStream());
+                content.Add(
+                    fileContent,
+                    "\"files\"",
+                    file.Name);
 
-                _files.Add(
-                    new File()
+                upload = true;
+            }
+            else
+            {
+                _uploadResults.Add(
+                    new UploadResult()
                     {
-                        Name = file.Name,
+                        FileName = file.Name,
+                        ErrorCode = 6,
+                        Uploaded = false,
                     });
-
-                if (file.Size < maxFileSize)
-                {
-                    content.Add(
-                        fileContent,
-                        "\"files\"",
-                        file.Name);
-
-                    upload = true;
-                }
-                else
-                {
-                    _uploadResults.Add(
-                        new UploadResult()
-                        {
-                            FileName = file.Name,
-                            ErrorCode = 6,
-                            Uploaded = false,
-                        });
-                }
             }
         }
 
         if (upload)
         {
-            var response = await HttpClient.PostAsync($"https://nano35.ru/api/files/Images/CreateStorageItemImage?storageITemId={Model.NewId}", content);
+            var response = await HttpClient.PostAsync($"https://nano35.ru/api/files/Images/CreateStorageItemImage?storageITemId={_model.NewId}", content);
 
             var newUploadResults = await response.Content
                 .ReadFromJsonAsync<IList<UploadResult>>();

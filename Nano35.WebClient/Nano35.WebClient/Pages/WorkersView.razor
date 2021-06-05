@@ -74,7 +74,7 @@
         {
             DisableBackgroundCancel = true, FocusFirstElement = true
         };
-        var modal = Modal.Show<WorkerCreate>("Новый Сотрудник", modalOpts);
+        var modal = Modal.Show<WorkerCreateForm>("Новый Сотрудник", modalOpts);
         await modal.Result;
         _loading = false;
         await LoadWorkers();

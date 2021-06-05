@@ -1,0 +1,134 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<BoxedContent Width="40">
+    <EditForm Model=@(_model) OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        
+        <InputField Title="Название сервиса">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Name"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Name)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Эл почта">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Email"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Email)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Номер телефона">
+            <Controls>
+                <RadzenTextBox Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Phone"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Phone)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Название организации">
+            <Controls>
+                <RadzenNumeric Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.RealName"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.RealName)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Описание">
+            <Controls>
+                <RadzenNumeric Style="width: 100%;" 
+                               Placeholder="..."
+                               @bind-Value="_model.Info"/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.Info)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Регион">
+            <Controls>
+                <RadzenDropDown Data="@(_regions.Select(a => new {Id = a.Id, Name = a.Name}))"
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="_model.RegionId"
+                                style="width: 100%"
+                                Placeholder="..."/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.RegionId)" />
+            </Validation>
+        </InputField>
+        
+        <InputField Title="Тип">
+            <Controls>
+                <RadzenDropDown Data="@(_types.Select(a => new {Id = a.Id, Name = a.Name}))"
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                TValue="Guid"
+                                @bind-Value="_model.TypeId"
+                                style="width: 100%"
+                                Placeholder="..."/>
+            </Controls>
+            <Validation>
+                <ValidationMessage For="@(() => _model.TypeId)" />
+            </Validation>
+        </InputField>
+        
+        @if (!string.IsNullOrEmpty(Error))
+        {
+            <div class="alert alert-danger mt-3 mb-0">@(Error)</div>
+        }
+        
+        <RadzenButton type="submit"
+                      Text="Создать"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%" />
+    </EditForm>
+</BoxedContent>
+
+@code
+{
+    private CreateInstanceHttpBody _model;
+    private string Error { get; set; }
+    private List<InstanceTypeViewModel> _types = new();
+    private List<RegionViewModel> _regions = new();
+    
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            await new HttpPostRequest<CreateInstanceHttpBody,CreateInstanceHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances").PostAsync(_model);
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateInstanceHttpBody { NewId = Guid.NewGuid() };
+        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
+        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
+    }
+}

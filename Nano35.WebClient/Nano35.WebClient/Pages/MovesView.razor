@@ -69,7 +69,7 @@
     
     private async Task NewMove()
     {
-        var modal = Modal.Show<MovesCreate>("Новое списание");
+        var modal = Modal.Show<MovesCreateForm>("Новое списание");
         await modal.Result;
         _loading = false;
         _data = await GetAllMoves();

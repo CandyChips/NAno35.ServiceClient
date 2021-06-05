@@ -58,10 +58,12 @@
             RequestManager.InstanceServer, $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    _data = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -76,7 +78,7 @@
             DisableBackgroundCancel = true,
             FocusFirstElement = true
         };
-        var modal = Modal.Show<ClientsCreate>("Новый клиент", opts);
+        var modal = Modal.Show<ClientsCreateForm>("Новый клиент", opts);
         await modal.Result;
         _isLoaded = false;
         await GetData();       

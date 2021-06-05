@@ -77,7 +77,7 @@
     private async Task NewUnit()
     {
         _isLoaded = false;
-        var modal = Modal.Show<UnitsCreate>("Новое подразделение");
+        var modal = Modal.Show<UnitsCreateForm>("Новое подразделение");
         await modal.Result;
         await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
             RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",

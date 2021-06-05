@@ -1,9 +1,11 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
-@inject HttpClient HttpClient 
-@inject IRequestManager RequestManager 
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
 
+<BoxedContent Width="40">
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
@@ -47,25 +49,42 @@
         </ConditionalContent>
     </EditForm>
 </LoadingContent>
+</BoxedContent>
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public bool IsExpandedView { get; set; } = true;
-    [Parameter] public CreateArticleHttpBody Model { get; set; }
-    [Parameter] public EventCallback FormSubmitted { get; set; }
-    [Parameter] public string Error { get; set; }
+    private CreateArticleHttpBody Model = new();
+    private string Error { get; set; } = "";
     private bool _isLoaded;
+    
+    private async Task HandleValidSubmit()
+    {
+        _isLoaded = false;
+        try
+        {
+            await new HttpPostRequest<CreateArticleHttpBody,CreateArticleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").PostAsync(Model);
+            await ModalInstance.CloseAsync(ModalResult.Ok(Model.NewId));
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+        _isLoaded = true;
+    }
     
     protected override async Task OnInitializedAsync()
     {
+        _isLoaded = false;
         Model.Specs = new List<SpecHttpContext>();
+        Model = new CreateArticleHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId(),
+            Specs = new List<SpecHttpContext>()
+        };
         _isLoaded = true;
-    }
-
-    private async Task HandleValidSubmit()
-    {
-        await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
     }
 }

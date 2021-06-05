@@ -87,7 +87,7 @@
 
     private async Task NewCancellation()
     {
-        var modal = Modal.Show<CancellationsCreate>("Новое списание");
+        var modal = Modal.Show<CancellationsCreateForm>("Новое списание");
         await modal.Result;
         _loading = false;
         _data = await GetAllCancellations();

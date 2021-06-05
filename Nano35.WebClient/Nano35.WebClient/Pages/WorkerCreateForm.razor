@@ -1,0 +1,122 @@
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using System.Text.RegularExpressions
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
+
+<BoxedContent Width="40">
+    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <InputField Title="Фио*">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Name"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Name)" /></Validation>
+        </InputField>
+        <InputField Title="Эл почта">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Email"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Email)" /></Validation>
+        </InputField>
+        <InputField Title="Номер телефона*">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
+        </InputField>
+        <InputField Title="Пароль*">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Password"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Password)" /></Validation>
+        </InputField>
+        <InputField Title="Подтверждение пароля*">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.PasswordConfirm"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.PasswordConfirm)" /></Validation>
+        </InputField>
+        <InputField Title="Примечание">
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Comment"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
+        </InputField>
+        <InputField Title="Должности*">
+            <Controls>
+                <RadzenCheckBoxList @bind-Value="@roles" TValue="Guid" Orientation="Orientation.Horizontal">
+                    <Items>
+                        <RadzenCheckBoxListItem Text="Администратор" Value="@Roles.Admin" />
+                        <RadzenCheckBoxListItem Text="Кладовщик" Value="@Roles.Storage" />
+                        <RadzenCheckBoxListItem Text="Менеджер" Value="@Roles.Manager" />
+                        <RadzenCheckBoxListItem Text="Бухгалтер" Value="@Roles.Cashbox" />
+                        <RadzenCheckBoxListItem Text="Мастер" Value="@Roles.Master" />
+                    </Items>
+                </RadzenCheckBoxList>
+            </Controls>
+            <Validation><ValidationMessage For="@(() => _model.Roles)"/></Validation>
+        </InputField>
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+        <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
+            <AllowedContent>
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            </AllowedContent>
+        </ConditionalContent>
+    </EditForm>
+</BoxedContent>
+
+@code
+{
+    private CreateWorkerHttpBody _model = new();
+    private string Error { get; set; }
+    private string Phone {
+        get
+        {
+            if (string.IsNullOrEmpty(_model.Phone))
+                return "+7";
+            var resp = _model.Phone;
+            if (resp.Length < 10)
+                resp = resp.PadRight(10);
+            if (resp.Length > 10)
+                resp = resp.Substring(0, 10);
+
+            return $"+7 ({resp.Substring(0, 3)}) {resp.Substring(3, 3)}-{resp.Substring(6, 2)}-{resp.Substring(8, 2)}";
+        }
+        set
+        {
+            if (string.IsNullOrEmpty(value) || value == "+7" || value == "8")
+            {
+                _model.Phone = "";
+                return;
+            }
+            var tmp = Regex.Replace(value, @"[^\d]", "").Remove(0,1);
+            _model.Phone = tmp;
+        }
+    }
+    private IEnumerable<Guid> roles = new Guid[] {};
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new CreateWorkerHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            _model.Roles = roles.ToList();
+            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>(
+                RequestManager.InstanceServer, $"Workers", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+}

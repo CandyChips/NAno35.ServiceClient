@@ -1,0 +1,153 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.Contracts.Storage.Artifacts
+@using Nano35.Contracts.Instance.Models
+@using Nano35.HttpContext.instance
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+
+<BoxedContent Width="40">
+    <LoadingContent IsLoaded="_isLoaded">
+        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+            <FluentValidationValidator/>
+            <ValidationSummary/>
+            <InputField Title="Подразделение*">
+                <Controls>
+                    <RadzenDropDown Data=@(_units.Select(a => new { a.Id, Name = $"{a.Name} - {a.Address}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="Model.UnitId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите целевое подразделение..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => Model.UnitId)" /></Validation>
+            </InputField>
+        
+            <InputField Title="Комментарий">
+                <Controls>
+                    <RadzenTextBox Style="width: 100%;"
+                                   Placeholder="Введите коментарий к списанию..."
+                                   @bind-Value="Model.Comment"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => Model.Comment)" /></Validation>
+            </InputField>
+        
+            <InputField Title="Списываемые товары">
+                <Controls>
+                    <RadzenGrid Data=@(_details)
+                                EmptyText="Добавте списываемые товары..."
+                                TItem="CreateCancellationDetailViewModel">
+                        <Columns>
+                            <RadzenGridColumn TItem="CreateCancellationDetailViewModel"
+                                              Property="PlaceOnStorage"
+                                              Title="Товар"/>
+                            <RadzenGridColumn TItem="CreateCancellationDetailViewModel"
+                                              Property="PlaceOnStorage"
+                                              Title="Место на складе"/>
+                            <RadzenGridColumn TItem="CreateCancellationDetailViewModel"
+                                              Property="Count"
+                                              Title="Количество"/>
+                            <RadzenGridColumn TItem="CreateCancellationDetailViewModel"
+                                              Bubble="false"
+                                              TextAlign="TextAlign.Center"
+                                              Width="70px">
+                                <Template Context="item">
+                                    <RadzenButton Click=@(_ => DeleteDetail(item))
+                                                  ButtonStyle="ButtonStyle.Danger"
+                                                  Icon="close"
+                                                  Size="ButtonSize.Small">
+                                    </RadzenButton>
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+                    </RadzenGrid>
+                    <RadzenButton Click=@(_ => AddDetail())
+                                  Text="Добавить"
+                                  ButtonStyle="ButtonStyle.Secondary"
+                                  style="width: 100%"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => Model.Details)" /></Validation>
+            </InputField>
+            @if (!string.IsNullOrEmpty(Error))
+            {
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            }
+        
+            <RadzenButton type="submit"
+                          Text="Списать"
+                          ButtonStyle="ButtonStyle.Primary"
+                          Style="width: 100%"/>
+        </EditForm>
+    </LoadingContent>
+</BoxedContent>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public Guid UnitId { get; set; }
+    private bool _isLoaded;
+    private List<UnitViewModel> _units = new();
+    private List<CreateCancellationDetailViewModel> _details = new();
+    private CreateCancellationHttpBody Model = new()
+    {
+        NewId = Guid.NewGuid(),
+        InstanceId = Guid.Empty
+    };
+    
+    
+    private string Error { get; set; }
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            Model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            await new HttpPostRequest<CreateCancellationHttpBody,CreateCancellationSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations").PostAsync(Model);
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        
+        Model = new CreateCancellationHttpBody
+        {
+            NewId = Guid.NewGuid(),
+            InstanceId = await SessionProvider.GetCurrentInstanceId()
+        };
+        Model.Comment = "";
+        _units = await LoadUnits();
+        Model.UnitId = await SessionProvider.GetCurrentUnitId();
+        _isLoaded = true;
+    }
+
+    private async Task DeleteDetail(CreateCancellationDetailViewModel item)
+    {
+        Console.WriteLine("Detail deleted");
+        _details.Remove(item);
+        StateHasChanged();
+    }
+
+    private async Task AddDetail()
+    {
+        var moviesModal = Modal.Show<CancellationsDetailForm>("Новая позиция к списанию");
+        var result = await moviesModal.Result;
+
+        if (result.Data is CreateCancellationDetailViewModel success)
+        {
+            _details.Add(success);  
+        }
+    }
+    private async Task<List<UnitViewModel>> LoadUnits() => (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
+
+}

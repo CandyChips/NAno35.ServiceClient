@@ -4,6 +4,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
@@ -56,6 +58,7 @@
 @code
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
     
     private CreateCancellationDetailViewModel _model;
     private List<StorageItemViewModel> StorageItems { get; set; } = new();
@@ -74,17 +77,43 @@
         _isLoaded = true;
     }
 
-    private async Task GetAllPlacesOfStorageItem() =>
-        Warehouse = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
-
+    private async Task GetAllPlacesOfStorageItem()
+    {
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Warehouse = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
     private async Task HandleValidSubmit() 
     {
         await ModalInstance.CloseAsync(ModalResult.Ok(_model));
     }
     
-    private async Task<List<StorageItemViewModel>> GetAllStorageItems() =>
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems()
+    {
+        var data = new List<StorageItemViewModel>();
+        
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+
+        return data;
+    }
 
     private async Task PlaceOnStorageChanged() =>
         _maxItems = Warehouse.First(a=> a.Name == _model.PlaceOnStorage).Count;

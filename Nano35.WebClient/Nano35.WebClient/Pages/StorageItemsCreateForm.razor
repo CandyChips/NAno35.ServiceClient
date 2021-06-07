@@ -136,7 +136,18 @@
         {
             if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
             NavigationManager.NavigateTo("/instance-view");
-            await new HttpPostRequest<CreateStorageItemHttpBody,CreateStorageItemSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/StorageItems").PostAsync(_model);
+            
+            await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>(
+                RequestManager.StorageServer, $"StorageItems", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
             await ModalInstance.CloseAsync(ModalResult.Ok(_model.NewId));
         }
         catch (Exception e)

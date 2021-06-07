@@ -94,7 +94,6 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        _data = (await new HttpGetRequest<GetAllWorkersHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Workers;
     }
     private async Task NewWage(WorkerViewModel user)
     {
@@ -103,7 +102,7 @@
             DisableBackgroundCancel = true, FocusFirstElement = true
         };
         var parameters = new ModalParameters();
-        parameters.Add(nameof(WorkersWageCreate.UserId), user.Id);
+        parameters.Add(nameof(WorkersWageCreateForm.UserId), user.Id);
 
         var currentUnit = "";
         
@@ -118,7 +117,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        var modal = Modal.Show<WorkersWageCreate>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
+        var modal = Modal.Show<WorkersWageCreateForm>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
         await modal.Result;
         _loading = false;
         await LoadWorkers();

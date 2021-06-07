@@ -1,6 +1,7 @@
 ﻿using Nano35.HttpContext.identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -29,19 +30,21 @@ namespace Nano35.WebClient.Services
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider  _customAuthenticationStateProvider;
-        private readonly NotificationService _notificationService;
-
+        private readonly HttpGet _get;
+        private readonly NavigationManager _navigationManager;
         public AuthService(
             IRequestManager requestManager,
             ILocalStorageService localStorage,
             HttpClient httpClient,
             AuthenticationStateProvider  customAuthenticationStateProvider, 
-            NotificationService notificationService)
+            HttpGet get, 
+            NavigationManager navigationManager)
         {
             _requestManager = requestManager;
             _httpClient = httpClient;
             _customAuthenticationStateProvider = customAuthenticationStateProvider;
-            _notificationService = notificationService;
+            _get = get;
+            _navigationManager = navigationManager;
             _localStorage = localStorage;
         }
 
@@ -58,15 +61,37 @@ namespace Nano35.WebClient.Services
         }
 
         public async Task<UserViewModel> GetCurrentUser()
-        {            
-            var response = await new HttpGetRequest<GetUserFromTokenHttpResponse>(_httpClient, $"{_requestManager.IdentityServer}/Identity/FromToken").GetAsync();
-            return response.Data;
+        {
+            var response = new UserViewModel();
+            await _get.InvokeAsync<GetUserFromTokenHttpResponse>(
+                _requestManager.IdentityServer, $"Identity/FromToken",
+                resp =>
+                {
+                    if (resp.IsSuccess()) {response = resp.Success.Data;}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        _navigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            return response;
         }
 
         public async Task<List<Guid>> GetCurrentRoles()
         {
-            var response = await new HttpGetRequest<GetAllRolesByUserHttpResponse>(_httpClient, $"{_requestManager.InstanceServer}/Workers/Current/Roles").GetAsync();
-            return response.Roles;
+            var response = new List<Guid>();
+            await _get.InvokeAsync<GetAllRolesByUserHttpResponse>(
+                _requestManager.InstanceServer, $"Workers/Current/Roles",
+                resp =>
+                {
+                    if (resp.IsSuccess()) {response = resp.Success.Roles.ToList();}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        _navigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            return response;
         }
 
         public Task Register(RegisterHttpBody model)

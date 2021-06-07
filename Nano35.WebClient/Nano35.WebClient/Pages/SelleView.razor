@@ -106,7 +106,7 @@ else
 
     private async Task NewSelle()
     {
-        var modal = Modal.Show<SellesCreate>("Новая продажа");
+        var modal = Modal.Show<SellesCreateForm>("Новая продажа");
         await modal.Result;
         _loading = true;
         await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>(

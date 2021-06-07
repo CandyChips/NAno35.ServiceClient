@@ -1,11 +1,11 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
-@using Nano35.HttpContext.instance
-@using Blazored.FluentValidation
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <div style="margin-top:20px">Номер оприходования:</div>
 <b>@Cancellation.Number</b>
@@ -55,7 +55,16 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllCancellationDetailsSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/Cancellations/{Cancellation.Id}/Details").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllCancellationDetailsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Cancellations/{Cancellation.Id}/Details",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Details = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 }

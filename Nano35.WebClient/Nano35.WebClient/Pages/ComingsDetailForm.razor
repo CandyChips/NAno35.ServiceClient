@@ -1,9 +1,12 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
+@using System.Text.RegularExpressions
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
@@ -55,15 +58,15 @@
                 </RejectedContent>
             </ConditionalContent>
             <InputField Title="Количество">
-                <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Count"ShowUpDown="false"Min="1"/></Controls>
+                <Controls> <RadzenTextBox Style="width: 100%;" @bind-Value="Count" Change="( () => CountCanged())" /> </Controls>
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
-            
+
             <InputField Title="Цена за еденицу">
-                <Controls><RadzenNumeric style="width: 100%;" ShowUpDown="false" @bind-Value="_model.Price"/></Controls>
+                <Controls><RadzenTextBox style="width: 100%;" @bind-Value="Price" Change="( () => PriceCanged())" /></Controls>
                 <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
             </InputField>
-    
+            
             <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         </EditForm>
     </LoadingContent>
@@ -71,12 +74,18 @@
 
 @code
 {
+    // <RadzenTextBox style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="true" Min="1"/>
+    // <input style="width: 100%" type="number" @bind="_model.Count" min="1" />
+    
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public EventCallback FormSubmitted { get; set; }
     private CreateComingDetailViewModel _model = new();
     private List<StorageItemViewModel> StorageItems { get; set; }
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
+    private string Price;
+    private string Count;
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,15 +112,50 @@
         StorageItems = await GetAllStorageItems();
     }
     
-    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data.ToList();
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems()
+    {
+        var data = new List<StorageItemViewModel>();
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
 
     private async Task StorageItemChanged()
     {
         _model.PlaceOnStorage = "";
-        Warehouse =  (await new HttpGetRequest<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Contains.ToList();
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Warehouse = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         _model.Price = (double) StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).PurchasePrice;
+    }
+
+    private async Task PriceCanged()
+    {
+        double.TryParse(Regex.Replace(Price, @"[^\d]", ""), out var res);
+        _model.Price = res;
+    }
+
+    private async Task CountCanged()
+    {
+        int.TryParse(Regex.Replace(Count, @"[^\d]", ""), out var res);
+        _model.Count = res;
     }
 }

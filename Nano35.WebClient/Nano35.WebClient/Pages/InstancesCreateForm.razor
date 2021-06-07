@@ -4,6 +4,9 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <BoxedContent Width="40">
     <EditForm Model=@(_model) OnValidSubmit="HandleValidSubmit">
@@ -117,7 +120,17 @@
     {
         try
         {
-            await new HttpPostRequest<CreateInstanceHttpBody,CreateInstanceHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Instances").PostAsync(_model);
+            await PostRequest.InvokeAsync<CreateInstanceHttpResponse, CreateInstanceHttpBody>(
+                RequestManager.InstanceServer, $"Instances", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
         }
         catch (Exception e)
         {
@@ -128,7 +141,28 @@
     protected override async Task OnInitializedAsync()
     {
         _model = new CreateInstanceHttpBody { NewId = Guid.NewGuid() };
-        _types = (await new HttpGetRequest<GetAllInstanceTypesHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesTypes").GetAsync()).Data.ToList();
-        _regions = (await new HttpGetRequest<GetAllRegionsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/InstancesRegions").GetAsync()).Data.ToList();
+        
+        await GetRequest.InvokeAsync<GetAllInstanceTypesHttpResponse>(
+            RequestManager.InstanceServer, $"InstancesTypes",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_types = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        await GetRequest.InvokeAsync<GetAllRegionsHttpResponse>(
+            RequestManager.InstanceServer, $"InstancesRegions",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_regions = resp.Success.Data.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 }

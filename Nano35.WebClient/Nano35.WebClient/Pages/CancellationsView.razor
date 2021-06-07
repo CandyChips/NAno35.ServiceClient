@@ -8,6 +8,8 @@
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Списания"/>
@@ -82,12 +84,31 @@
         _loading = true;
     }
 
-    private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations() =>
-        (await new HttpGetRequest<GetAllCancellationsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}").GetAsync()).Data;
-
+    private async Task<IEnumerable<CancellationViewModel>> GetAllCancellations()
+    {
+        var data = new List<CancellationViewModel>();
+        
+        await GetRequest.InvokeAsync<GetAllCancellationsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+        
+    }
     private async Task NewCancellation()
     {
-        var modal = Modal.Show<CancellationsCreateForm>("Новое списание");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<CancellationsCreateForm>("Новое списание", modalOpts);
         await modal.Result;
         _loading = false;
         _data = await GetAllCancellations();

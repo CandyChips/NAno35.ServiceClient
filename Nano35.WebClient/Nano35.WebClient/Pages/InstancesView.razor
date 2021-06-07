@@ -4,11 +4,12 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @page "/instances"
-@inject NavigationManager NavigationManager
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService 
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <AuthorizeView>
     <CenterContent Width="50">
@@ -57,7 +58,18 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
+            RequestManager.InstanceServer, $"Instances/Current",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
         _loading = true;
     }
     
@@ -71,7 +83,17 @@
         var modal = Modal.Show<InstancesCreateForm>("Новая организация", opts);
         await modal.Result;
         _loading = false;
-        _data = (await new HttpGetRequest<GetAllInstancesHttpResponse>(HttpClient,$"{RequestManager.InstanceServer}/Instances/Current").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
+            RequestManager.InstanceServer, $"Instances/Current",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _loading = true;
     }
 

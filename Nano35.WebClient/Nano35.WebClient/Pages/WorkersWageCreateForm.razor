@@ -9,6 +9,7 @@
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
+@inject HttpPost PostRequest
 
 
 <BoxedContent Width="40">
@@ -44,16 +45,21 @@
 </BoxedContent>
 
 @code {
-    [Parameter] public CreateWageOperationHttpBody Model { get; set; }
+
+    [Parameter] public CreateWageOperationHttpBody Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
+    [Parameter] public Guid UserId { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private List<WageOperationViewModel> _operations = new();
     private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        
+        Model.NewId = Guid.NewGuid();
         await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>(
             RequestManager.CashboxServer, $"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
             resp =>
@@ -70,6 +76,26 @@
 
     private async Task HandleValidSubmit()
     {
-        await FormSubmitted.InvokeAsync();
+        
+        try
+        {
+            await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>(
+                RequestManager.InstanceServer, $"Cashbox/WageOperations", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            await ModalInstance.CloseAsync();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
+        
     }
 }

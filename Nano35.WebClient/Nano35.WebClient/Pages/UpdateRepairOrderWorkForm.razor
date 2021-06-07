@@ -160,7 +160,7 @@
 
     private async Task NewWork()
     {
-        var modal = Modal.Show<CreateWork>($"Новая работа");
+        var modal = Modal.Show<WorkCreateForm>($"Новая работа");
         await modal.Result;
         
         await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(

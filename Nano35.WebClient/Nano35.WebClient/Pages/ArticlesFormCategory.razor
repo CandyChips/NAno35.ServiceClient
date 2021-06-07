@@ -4,6 +4,9 @@
 @inject IRequestManager RequestManager
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <LoadingContent IsLoaded="_isLoading">
     
@@ -68,18 +71,38 @@
     protected override async Task OnInitializedAsync()
     {            
         _isLoading = false;        
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_categories = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoading = true;
     }
-
+    
+    
     private async Task OnAddCategory(ArticleCategoryViewModel selected)
     {
         _isLoading = false;
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_categories = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         Value = _selectedCategories.Last().Id;
         _isLoading = true;
     }
@@ -95,10 +118,31 @@
             NewId = Guid.NewGuid(),
             ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
         };
-        await new HttpPostRequest<CreateCategoryHttpBody,CreateCategorySuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Category").PostAsync(body);
+        await PostRequest.InvokeAsync<CreateCategorySuccessHttpResponse, CreateCategoryHttpBody>(
+            RequestManager.StorageServer, $"Category", body,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
+        
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_categories = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        Value = _selectedCategories.Last().Id;
         _isLoading = false;
     }
 
@@ -107,8 +151,17 @@
         _isLoading = true;
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-        _categories = (await new HttpGetRequest<GetAllArticleCategoriesSuccessHttpResponse>(HttpClient,
-            $"{RequestManager.StorageServer}/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Data;        Value = _selectedCategories.Last().Id;
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_categories = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoading = false;
         Value = _selectedCategories.Last().Id;
         StateHasChanged();

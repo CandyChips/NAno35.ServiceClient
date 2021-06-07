@@ -4,6 +4,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
@@ -85,9 +87,37 @@
         _isLoaded = true;
     }
     
-    private async Task<List<StorageItemViewModel>> GetAllStorageItems() => 
-        (await new HttpGetRequest<GetAllStorageItemsSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/StorageItems").GetAsync()).Data;
+    private async Task<List<StorageItemViewModel>> GetAllStorageItems()
+    {
+        var data = new List<StorageItemViewModel>();
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"StorageItems",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        
+        return data;
+    }
 
-    private async Task StorageItemSelected() =>
-        _places = (await new HttpGetRequest<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>(HttpClient,$"{RequestManager.StorageServer}/Warehouse/PlacesOfStorageItemOnInstance").GetAsync()).Contains.ToList();
+    private async Task StorageItemSelected()
+    {
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnInstance",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_places = resp.Success.Contains.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
+    
 }

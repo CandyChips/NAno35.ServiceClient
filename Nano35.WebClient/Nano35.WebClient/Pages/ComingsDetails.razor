@@ -5,6 +5,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
+@inject HttpGet GetRequest
+@inject NavigationManager NavigationManager
 
 <RadzenFieldset Text="Информация" Style="width: 100%;">
     <ul class="list-group">
@@ -45,6 +47,16 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Details = (await new HttpGetRequest<GetAllComingDetailsSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Comings/{Coming.Id}/Details").GetAsync()).Data;
+        await GetRequest.InvokeAsync<GetAllComingDetailsSuccessHttpResponse>(
+            RequestManager.StorageServer, $"Comings/{Coming.Id}/Details",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Details = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
     }
 }

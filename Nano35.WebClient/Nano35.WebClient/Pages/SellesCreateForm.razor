@@ -1,0 +1,214 @@
+﻿@using Nano35.HttpContext.storage
+@using Nano35.WebClient.Services
+@using Nano35.HttpContext.instance
+@using Nano35.Contracts.Instance.Models
+@inject HttpClient HttpClient
+@inject IRequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
+
+<div style="width: 40rem;">
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Продажа со склада">
+                <LoadingContent IsLoaded="_isLoaded">
+                    <EditForm Model="@Model" OnValidSubmit="Create">
+                        <ValidationSummary/>
+                        <FluentValidationValidator/>
+                        <InputField Title="Подразделение*">
+                            <Controls>
+                                <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
+                                                TextProperty="Name"
+                                                ValueProperty="Id"
+                                                TValue="Guid"
+                                                @bind-Value="Model.UnitId"
+                                                Style="width: 100%;"
+                                                Placeholder="Выберите целевое подразделение..."
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                FilterOperator="StringFilterOperator.Contains"
+                                                AllowFiltering="true"/>
+                            </Controls>
+                        </InputField>
+                
+                        <InputField Title="Продаваемые товары">
+                            <Controls>
+                                <RadzenGrid Data=@(_details)
+                                            EmptyText="Добавте продаваемые товары..."
+                                            TItem="CreateSelleDetailViewModel">
+                                    <Columns>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                                          Property="PlaceOnStorage"
+                                                          Title="Товар"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                                          Property="PlaceOnStorage"
+                                                          Title="Место на складе"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                                          Property="Count"
+                                                          Title="Количество"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                                          Property="Price"
+                                                          Title="Цена"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
+                                                          Bubble="false"
+                                                          TextAlign="TextAlign.Center"
+                                                          Width="70px">
+                                            <Template Context="item">
+                                                <RadzenButton Click=@(_ => DeleteDetail(item))
+                                                              ButtonStyle="ButtonStyle.Danger"
+                                                              Icon="close"
+                                                              Size="ButtonSize.Small">
+                                                </RadzenButton>
+                                            </Template>
+                                        </RadzenGridColumn>
+                                    </Columns>
+                                </RadzenGrid>
+                                <RadzenButton Click=@(_ => AddDetail())
+                                              Text="Добавить"
+                                              ButtonStyle="ButtonStyle.Secondary"
+                                              style="width: 100%"/>
+                            </Controls>
+                        </InputField>
+                    
+                        @if (!string.IsNullOrEmpty(Error))
+                        {
+                            <div class="alert alert-danger mt-3 mb-0">@Error</div>
+                        }
+                
+                        <RadzenButton type="submit"
+                                      Text="Создать"
+                                      ButtonStyle="ButtonStyle.Primary"
+                                      Style="width: 100%"/>
+                    </EditForm>
+                </LoadingContent>
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Прочий приход">
+                <EditForm Model="@model" OnValidSubmit="@(_ => {})">
+                    <DataAnnotationsValidator />
+                    <InputField Title="Наименование прочего прихода">
+                        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="model.Name"/></Controls>
+                        <Validation><ValidationMessage For="@(() => model.Name)" /></Validation>
+                    </InputField>
+                    <InputField Title="Сумма прочего прихода">
+                        <Controls>
+                            <RadzenNumeric Style="width: 100%;" @bind-Value="model.Price"/>
+                            <Validation><ValidationMessage For="@(() => model.Price)" /></Validation>
+                        </Controls>
+                    </InputField>
+                    <RadzenButton type="submit" Text="Провести" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+                </EditForm>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+</div>
+
+
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private CreateSelleHttpBody Model { get; set; } = new();
+    private string Error { get; set; }
+    
+    private class FreeSelle
+    {
+        public string Name { get; set; }
+        public double Price { get; set; }
+    }
+
+    private FreeSelle model = new();
+    private List<CreateSelleDetailViewModel> _details = new();
+    private List<UnitViewModel> _units = new();
+    private bool _isLoaded;
+    private int Count;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        _units = await LoadUnits();
+        Model.NewId = Guid.NewGuid();
+        Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        Model.UnitId = await SessionProvider.GetCurrentUnitId();
+        _isLoaded = true;
+    }
+
+    private async Task AddClient()
+    {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var moviesModal = Modal.Show<ClientsCreateForm>("Новый клиент", modalOpts);
+        await moviesModal.Result;
+        _isLoaded = false;
+        _isLoaded = true;
+    }
+    
+    private async Task AddDetail()
+    {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var modal = Modal.Show<SellesDetailForm>("Новая деталь продажи", modalOpts);
+        var result = await modal.Result;
+        if (result.Data is CreateSelleDetailViewModel success)
+        {
+            _details.Add(success);  
+        }
+    }
+    
+    private async Task DeleteDetail(CreateSelleDetailViewModel item)
+    {
+        Console.WriteLine("Detail deleted");
+        _details.Remove(item);
+        StateHasChanged();
+    }
+    
+    private async Task Create()
+        {
+            Model.Details = _details.Select(a => 
+                new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            try
+            {
+                await PostRequest.InvokeAsync<CreateSelleSuccessHttpResponse, CreateSelleHttpBody>(
+                    RequestManager.InstanceServer, $"Sells", Model,
+                    resp =>
+                    {
+                        if (resp.IsSuccess()) {}
+                        else
+                        {
+                            Console.WriteLine(resp.Error);
+                            NavigationManager.NavigateTo("/instance-view");
+                        }
+                    });
+                
+                await ModalInstance.CloseAsync();
+            }
+            catch (Exception e)
+            {
+                Error = e.Message;
+            }
+        }
+    private async Task<List<UnitViewModel>> LoadUnits()
+    {
+        var data = new List<UnitViewModel>();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
+
+}

@@ -4,6 +4,8 @@
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <BoxedContent Width="40">
 <LoadingContent IsLoaded="_isLoaded">
@@ -65,7 +67,18 @@
         _isLoaded = false;
         try
         {
-            await new HttpPostRequest<CreateArticleHttpBody,CreateArticleSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Articles").PostAsync(Model);
+            await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>(
+                RequestManager.StorageServer, $"Articles", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            
             await ModalInstance.CloseAsync(ModalResult.Ok(Model.NewId));
         }
         catch (Exception e)

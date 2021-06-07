@@ -7,11 +7,17 @@
         <RadzenButton Click="@(_ => { _isEditable = false; OnSave.Invoke(); })"
                       Text="Сохранить изменения"
                       Size="ButtonSize.Small"
-                      ButtonStyle="ButtonStyle.Primary"/>
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 90px;
+                             padding-left: 0px;
+                             padding-right: 0px;"/>
         <RadzenButton Click="@(_ => { _isEditable = false; OnCancel.Invoke(); })"
                       Text="Отменить"
                       Size="ButtonSize.Small"
-                      ButtonStyle="ButtonStyle.Secondary"/>
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Style="width: 90px;
+                             padding-left: 0px;
+                             padding-right: 0px;"/>
     </div>
 }
 else
@@ -30,11 +36,13 @@ else
 <style>
     .LeftBlock {
         display: flex; 
-        width: 50%; 
+        width: 60%; 
         align-items: center;
     }
     .RightBlock {
+        display: flex; 
         float: right; 
+        width: 40%; 
         display: flex;
     }
 </style>

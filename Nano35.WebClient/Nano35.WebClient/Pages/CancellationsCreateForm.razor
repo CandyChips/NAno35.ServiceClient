@@ -1,11 +1,13 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
-@using Nano35.Contracts.Storage.Artifacts
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
 
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
@@ -107,7 +109,18 @@
         try
         {
             Model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-            await new HttpPostRequest<CreateCancellationHttpBody,CreateCancellationSuccessHttpResponse>(HttpClient, $"{RequestManager.StorageServer}/Cancellations").PostAsync(Model);
+            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>(
+                RequestManager.StorageServer, $"Cancellations", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
@@ -140,7 +153,12 @@
 
     private async Task AddDetail()
     {
-        var moviesModal = Modal.Show<CancellationsDetailForm>("Новая позиция к списанию");
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        
+        var moviesModal = Modal.Show<CancellationsDetailForm>("Новая позиция к списанию", modalOpts);
         var result = await moviesModal.Result;
 
         if (result.Data is CreateCancellationDetailViewModel success)
@@ -148,6 +166,20 @@
             _details.Add(success);  
         }
     }
-    private async Task<List<UnitViewModel>> LoadUnits() => (await new HttpGetRequest<GetAllUnitsHttpResponse>(HttpClient, $"{RequestManager.InstanceServer}/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}").GetAsync()).Units.ToList();
-
+    private async Task<List<UnitViewModel>> LoadUnits()
+    {
+        var data = new List<UnitViewModel>();
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
 }

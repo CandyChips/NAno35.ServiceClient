@@ -4,6 +4,9 @@
 @inject HttpClient HttpClient
 @inject IRequestManager RequestManager
 @inject IInstanceService InstanceService
+@inject ISessionProvider SessionProvider
+@inject HttpPost PostRequest
+@inject NavigationManager NavigationManager
 
 <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
@@ -24,15 +27,37 @@
 
 @code
 {
-    [Parameter] public CreateWorkHttpBody Model { get; set; }
+    [Parameter] public CreateWorkHttpBody Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public string Error { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        Model.NewId = Guid.NewGuid();
+        Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+    }
 
     private async Task HandleValidSubmit()
     {
-        await FormSubmitted.InvokeAsync();
-        await ModalInstance.CloseAsync();
+        try
+        {   
+            await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>(
+                RequestManager.RepairOrdersServer, $"Works", Model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
+            await ModalInstance.CloseAsync();
+        }
+        catch (Exception e)
+        {
+            Error = e.Message;
+        }
     }
 }

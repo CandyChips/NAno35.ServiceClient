@@ -26,20 +26,18 @@
                 FilterMode="FilterMode.Advanced"
                 EmptyText="Нет оприходований."
                 AllowPaging="true"
-                PageSize="10"
+                PageSize="15"
                 AllowSorting="true"
                 Data="@_data"
                 TItem="RepairOrderViewModel">
         <Columns>
             <RadzenGridColumn TItem="RepairOrderViewModel"
-                              Bubble="false"
+                              Property="Number"
                               Filterable="false"
                               Sortable="false"
-                              Title="Статус">
-                <Template Context="item">
-                    @RepairOrderStateTypesHelper.GetName(item.CurrentState) - @item.LastStateDate
-                </Template>
-            </RadzenGridColumn>
+                              Title="№"
+                              TextAlign="TextAlign.Center"
+                              Width="70px"/>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Client"
                               Filterable="false"
@@ -54,22 +52,21 @@
                               Bubble="false"
                               Filterable="false"
                               Sortable="false"
+                              Title="Статус">
+                <Template Context="item">
+                    @RepairOrderStateTypesHelper.GetName(item.CurrentState) - @item.LastStateDate
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="RepairOrderViewModel"
+                              Bubble="false"
+                              Filterable="false"
+                              Sortable="false"
                               TextAlign="TextAlign.Center" 
-                              Width="400px">
+                              Width="130px">
                 <Template Context="item">
                     <RadzenButton Click=@(_ => DetailsOpen(item.Id))
                                   Size="ButtonSize.Small"
                                   Text="Информация"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderReceipt/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
-                                  Text="Акт приема"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderDetails/{item.Id}&{await SessionProvider.GetCurrentInstanceId()}"))
-                                  Text="Акт выполненых работ"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
                                   ButtonStyle="ButtonStyle.Secondary"/>
                 </Template>
             </RadzenGridColumn>

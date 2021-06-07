@@ -33,6 +33,7 @@
     <Content Remove="Pages\RepairOrdersDetailForm.razor" />
     <Content Remove="Pages\RepairOrdersBecomePerformer.razor" />
     <Content Remove="Helpers\**" />
+    <Content Remove="Pages\WorksView.razor" />
   </ItemGroup>
 
   <ItemGroup>

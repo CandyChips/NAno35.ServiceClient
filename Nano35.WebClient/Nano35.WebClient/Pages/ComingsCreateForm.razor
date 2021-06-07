@@ -11,10 +11,10 @@
 @inject NavigationManager NavigationManager
 
 <BoxedContent Width="40">
-    <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary/>
-        <LoadingContent IsLoaded="_isLoaded"> 
+    <LoadingContent IsLoaded="_isLoaded"> 
+        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
             <InputField Title="Поставщик*">
                 <Controls>
                     <div style="display: flex; width: 100%;">
@@ -83,13 +83,13 @@
                 <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%" />
             </RadzenFieldset>
             <ValidationMessage For="@(() => Model.Details)" />
-        </LoadingContent>
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="alert alert-danger mt-3 mb-0">@Error</div>
-        }
-        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%; margin-top: 1rem;" />
-    </EditForm>
+            @if (!string.IsNullOrEmpty(Error))
+            {
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            }
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%; margin-top: 1rem;" />
+        </EditForm>
+    </LoadingContent>
 </BoxedContent>
 
 @code

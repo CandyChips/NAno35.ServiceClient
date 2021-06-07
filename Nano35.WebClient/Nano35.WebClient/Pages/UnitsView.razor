@@ -74,11 +74,7 @@
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
-                else
-                {
-                    Console.WriteLine(resp.Error);
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                else {NavigationManager.NavigateTo("/instance-view");}
             });
         return data;
     }

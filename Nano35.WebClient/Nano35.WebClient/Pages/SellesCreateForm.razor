@@ -3,7 +3,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HealthService HealthService
@@ -175,8 +175,7 @@
                 new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
             try
             {
-                await PostRequest.InvokeAsync<CreateSelleSuccessHttpResponse, CreateSelleHttpBody>(
-                    RequestManager.InstanceServer, $"Sells", Model,
+                await PostRequest.InvokeAsync<CreateSelleSuccessHttpResponse, CreateSelleHttpBody>($"Sells", Model,
                     resp =>
                     {
                         if (resp.IsSuccess()) {}
@@ -197,8 +196,7 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

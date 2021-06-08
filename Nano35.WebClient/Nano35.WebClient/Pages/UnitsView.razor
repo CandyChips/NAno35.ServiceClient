@@ -7,7 +7,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @inject NavigationManager NavigationManager
-@inject IRequestManager RequestManager;
+@inject RequestManager RequestManager;
 @inject IInstanceService InstanceService;
 @inject ISessionProvider SessionProvider;
 @inject IAuthService AuthService
@@ -69,8 +69,7 @@
     private async Task<List<UnitViewModel>> GetAllUnits()
     {
         var data = new List<UnitViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

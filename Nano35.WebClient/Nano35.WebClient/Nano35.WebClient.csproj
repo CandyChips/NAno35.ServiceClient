@@ -10,6 +10,7 @@
     <PackageReference Include="Blazored.FluentValidation" Version="2.0.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="4.1.1" />
     <PackageReference Include="Blazored.Modal" Version="6.0.1" />
+    <PackageReference Include="iso8859.blazor.wheel-zoom" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.6" PrivateAssets="all" />

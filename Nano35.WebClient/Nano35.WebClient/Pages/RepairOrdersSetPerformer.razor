@@ -4,7 +4,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject NotificationService NotificationService
@@ -48,8 +48,7 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
-            RequestManager.InstanceServer, $"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}",
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>($"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}",
             resp =>
             {
                 if (resp.IsSuccess()) {_workers = resp.Success.Workers.ToList();}

@@ -3,7 +3,7 @@
 @using Nano35.HttpContext.instance
 @using Blazored.FluentValidation
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -57,8 +57,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllMoveDetailsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Moves/{Move.Id}/Details",
+        await GetRequest.InvokeAsync<GetAllMoveDetailsSuccessHttpResponse>($"Moves/{Move.Id}/Details",
             resp =>
             {
                 if (resp.IsSuccess()) {Details = resp.Success.Data;}

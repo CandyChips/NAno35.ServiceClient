@@ -17,13 +17,13 @@ namespace Nano35.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILocalStorageService _localStorage;
-        private readonly IRequestManager _requestManager;    
+        private readonly RequestManager _requestManager;    
         private readonly AuthenticationState _anonymous;
 
         public CustomAuthenticationStateProvider(
             HttpClient httpClient, 
             ILocalStorageService localStorage, 
-            IRequestManager requestManager)
+            RequestManager requestManager)
         {
             _httpClient = httpClient;
             _localStorage = localStorage;

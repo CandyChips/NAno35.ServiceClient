@@ -4,7 +4,7 @@
 @using System.Text.RegularExpressions
 @using System.Threading
 @inject IAuthService AuthService
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
 
@@ -54,8 +54,7 @@
         try
         {
             var response = "";
-            await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>(
-                RequestManager.IdentityServer, $"Identity/Authenticate", _model,
+            await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>($"Identity/Authenticate", _model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Token;}

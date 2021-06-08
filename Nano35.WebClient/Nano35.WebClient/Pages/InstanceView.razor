@@ -3,8 +3,8 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance-view"
-@inject ISessionProvider SessionProvider   
-@inject IRequestManager RequestManager     
+@inject ISessionProvider SessionProvider
+@inject HealthService HealthService
 @inject NavigationManager NavigationManager
 
 <h2>Организация</h2>
@@ -15,7 +15,7 @@
     {
         if (!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
-        if(!await RequestManager.HealthCheck(RequestManager.InstanceServer))
+        if(!await HealthService.CheckAsync())
             NavigationManager.NavigateTo("/instances");
     }
 }

@@ -4,7 +4,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
@@ -111,8 +111,7 @@
         try
         {
             Model.UnitId = await SessionProvider.GetCurrentUnitId();
-            await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>(
-                RequestManager.RepairOrdersServer, $"RepairOrders", Model,
+            await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>($"RepairOrders", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -148,8 +147,7 @@
     private async Task<List<ClientViewModel>> LoadClients()
     {
         var data = new List<ClientViewModel>();
-        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
-            RequestManager.InstanceServer, $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>($"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -167,8 +165,7 @@
     private async Task<List<ArticleViewModel>> LoadArticles()
     {
         var data = new List<ArticleViewModel>();
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

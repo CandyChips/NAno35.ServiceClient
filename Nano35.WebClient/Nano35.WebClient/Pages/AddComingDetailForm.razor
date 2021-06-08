@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -90,8 +90,7 @@
     private async Task<List<StorageItemViewModel>> GetAllStorageItems()
     {
         var data = new List<StorageItemViewModel>();
-        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItems",
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>($"StorageItems",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}
@@ -107,8 +106,7 @@
 
     private async Task StorageItemSelected()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnInstance",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnInstanceSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnInstance",
             resp =>
             {
                 if (resp.IsSuccess()) {_places = resp.Success.Contains.ToList();}

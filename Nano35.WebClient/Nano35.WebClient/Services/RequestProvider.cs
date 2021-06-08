@@ -9,10 +9,10 @@ namespace Nano35.WebClient.Services
     public abstract class RequestProviderr<TReq, TSRes>
     {
         protected readonly HttpClient HttpClient;
-        protected readonly IRequestManager RequestManager;
+        protected readonly RequestManager RequestManager;
         protected readonly TReq Request;
 
-        protected RequestProviderr(IRequestManager requestManager, HttpClient httpClient, TReq request)
+        protected RequestProviderr(RequestManager requestManager, HttpClient httpClient, TReq request)
         {
             RequestManager = requestManager;
             HttpClient = httpClient;

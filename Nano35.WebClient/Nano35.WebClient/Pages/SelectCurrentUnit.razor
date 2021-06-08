@@ -2,7 +2,7 @@
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -59,8 +59,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}
@@ -79,8 +78,7 @@
         _isLoaded = false;
         var modal = Modal.Show<UnitsCreateForm>("Новое подразделение");
         await modal.Result;
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}

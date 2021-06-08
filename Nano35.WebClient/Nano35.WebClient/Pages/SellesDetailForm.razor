@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -77,8 +77,7 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Warehouse = resp.Success.Contains.ToList();}
@@ -101,8 +100,7 @@
     {
         var data = new List<StorageItemViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>($"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}

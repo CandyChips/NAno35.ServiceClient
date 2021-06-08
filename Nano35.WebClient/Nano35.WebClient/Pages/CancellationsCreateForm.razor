@@ -3,7 +3,7 @@
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
@@ -109,8 +109,7 @@
         try
         {
             Model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>(
-                RequestManager.StorageServer, $"Cancellations", Model,
+            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>($"Cancellations", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -169,8 +168,7 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

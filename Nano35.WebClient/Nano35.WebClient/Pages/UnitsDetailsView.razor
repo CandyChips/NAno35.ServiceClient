@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
@@ -22,8 +22,7 @@
     {
         _isLoaded = false;
         
-        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
-            RequestManager.InstanceServer, $"Units/{await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>($"Units/{await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess())

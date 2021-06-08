@@ -10,23 +10,35 @@ using Radzen;
 
 namespace Nano35.WebClient.Services
 {
+    public class RequestManager
+    {
+        public RequestManager(HttpClient httpClient) => _httpClient = httpClient;
+
+        private readonly string _proxyUri = "https://nano35.ru/api";
+        
+        private readonly HttpClient _httpClient;
+        public string ProxyUri => _proxyUri;
+    }
+    
     public class HealthService
     {
         private readonly NotificationService _notificationService;
         private readonly HttpClient _httpClient;
+        private readonly RequestManager _requestManager;
 
         public HealthService(NotificationService notificationService, HttpClient httpClient)
         {
             _notificationService = notificationService;
             _httpClient = httpClient;
+            _requestManager = new RequestManager(_httpClient);
         }
 
-        public async Task<bool> CheckAsync(string uri)
+        public async Task<bool> CheckAsync()
         {
             try
             {
-                var response = await _httpClient.GetAsync($"{uri}/health");
-                if (response.IsSuccessStatusCode == false) _notificationService.Notify(NotificationSeverity.Warning, "Error access", uri);
+                var response = await _httpClient.GetAsync($"{_requestManager.ProxyUri}/health");
+                if (response.IsSuccessStatusCode == false) _notificationService.Notify(NotificationSeverity.Warning, "Error access", _requestManager.ProxyUri);
                 return response.IsSuccessStatusCode;
             }
             catch
@@ -39,20 +51,22 @@ namespace Nano35.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly HealthService _healthService;
+        private readonly RequestManager _requestManager;
         public HttpGet(HttpClient httpClient, HealthService healthService)
         {
             _httpClient = httpClient;
             _healthService = healthService;
+            _requestManager = new RequestManager(_httpClient);
         }
-        public async Task InvokeAsync<TResponse>(string uri, string endpoint, Action<UseCaseResponse<TResponse>> onResponse)
+        public async Task InvokeAsync<TResponse>(string endpoint, Action<UseCaseResponse<TResponse>> onResponse)
             where TResponse : IHttpResponse
         {
-            if (await _healthService.CheckAsync(uri) == false)
+            if (await _healthService.CheckAsync() == false)
             {
                 onResponse.Invoke(new UseCaseResponse<TResponse>("Health check failed"));
                 return;
             }
-            var response = await _httpClient.GetAsync($"{uri}/{endpoint}");
+            var response = await _httpClient.GetAsync($"{_requestManager.ProxyUri}/{endpoint}");
             onResponse.Invoke(response.IsSuccessStatusCode ?
                 new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
                 new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
@@ -63,22 +77,25 @@ namespace Nano35.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly HealthService _healthService;
+        private readonly RequestManager _requestManager;
         public HttpPost(HttpClient httpClient, HealthService healthService)
         {
             _httpClient = httpClient;
             _healthService = healthService;
+            _requestManager = new RequestManager(_httpClient);
         }
-        public async Task InvokeAsync<TResponse, TBody>(string uri, string endpoint, TBody request, Action<UseCaseResponse<TResponse>> onResponse)
+        public async Task InvokeAsync<TResponse, TBody>(string endpoint, TBody request, Action<UseCaseResponse<TResponse>> onResponse)
             where TResponse : IHttpResponse
             where TBody : IHttpRequest
         {
-            if (await _healthService.CheckAsync(uri) == false)
+            
+            if (await _healthService.CheckAsync() == false)
             {
                 onResponse.Invoke(new UseCaseResponse<TResponse>("Health check failed"));
                 return;
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{uri}/{endpoint}", req);
+            var response = await _httpClient.PostAsync($"{_requestManager.ProxyUri}/{endpoint}", req);
             onResponse.Invoke(response.IsSuccessStatusCode ?
                 new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
                 new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
@@ -89,22 +106,24 @@ namespace Nano35.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly HealthService _healthService;
+        private readonly RequestManager _requestManager;
         public HttpPatch(HttpClient httpClient, HealthService healthService)
         {
             _httpClient = httpClient;
             _healthService = healthService;
+            _requestManager = new RequestManager(_httpClient);
         }
-        public async Task InvokeAsync<TResponse, TBody>(string uri, string endpoint, TBody request, Action<UseCaseResponse<TResponse>> onResponse)
+        public async Task InvokeAsync<TResponse, TBody>(string endpoint, TBody request, Action<UseCaseResponse<TResponse>> onResponse)
             where TResponse : IHttpResponse
             where TBody : IHttpRequest
         {
-            if (await _healthService.CheckAsync(uri) == false)
+            if (await _healthService.CheckAsync() == false)
             {
                 onResponse.Invoke(new UseCaseResponse<TResponse>("Health check failed"));
                 return;
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PatchAsync($"{uri}/{endpoint}", req);
+            var response = await _httpClient.PatchAsync($"{_requestManager.ProxyUri}/{endpoint}", req);
             onResponse.Invoke(response.IsSuccessStatusCode ?
                 new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
                 new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
@@ -115,20 +134,22 @@ namespace Nano35.WebClient.Services
     {
         private readonly HttpClient _httpClient;
         private readonly HealthService _healthService;
+        private readonly RequestManager _requestManager;
         public HttpDelete(HttpClient httpClient, HealthService healthService)
         {
             _httpClient = httpClient;
             _healthService = healthService;
+            _requestManager = new RequestManager(_httpClient);
         }
-        public async Task InvokeAsync<TResponse>(string uri, string endpoint, Action<UseCaseResponse<TResponse>> onResponse)
+        public async Task InvokeAsync<TResponse>(string endpoint, Action<UseCaseResponse<TResponse>> onResponse)
             where TResponse : IHttpResponse
         {
-            if (await _healthService.CheckAsync(uri) == false)
+            if (await _healthService.CheckAsync() == false)
             {
                 onResponse.Invoke(new UseCaseResponse<TResponse>("Health check failed"));
                 return;
             }
-            var response = await _httpClient.DeleteAsync($"{uri}/{endpoint}");
+            var response = await _httpClient.DeleteAsync($"{_requestManager.ProxyUri}/{endpoint}");
             onResponse.Invoke(response.IsSuccessStatusCode ?
                 new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
                 new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));

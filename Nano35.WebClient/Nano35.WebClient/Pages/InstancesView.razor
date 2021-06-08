@@ -4,7 +4,7 @@
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @page "/instances"
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject IInstanceService InstanceService 
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
@@ -58,8 +58,7 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
-        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
-            RequestManager.InstanceServer, $"Instances/Current",
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>($"Instances/Current",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}
@@ -83,8 +82,7 @@
         var modal = Modal.Show<InstancesCreateForm>("Новая организация", opts);
         await modal.Result;
         _loading = false;
-        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
-            RequestManager.InstanceServer, $"Instances/Current",
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>($"Instances/Current",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}

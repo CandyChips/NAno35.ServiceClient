@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
@@ -83,8 +83,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoading = false;
-        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
-            RequestManager.InstanceServer, $"UnitsTypes",
+        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>($"UnitsTypes",
             resp =>
             {
                 if (resp.IsSuccess()) {_types = resp.Success.UnitTypes.ToList();}
@@ -107,8 +106,7 @@
         _isLoading = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateUnitHttpResponse, CreateUnitHttpBody>(
-                RequestManager.InstanceServer, $"Units", Model,
+            await PostRequest.InvokeAsync<CreateUnitHttpResponse, CreateUnitHttpBody>($"Units", Model,
                 resp =>
                 {
                     if (resp.IsSuccess())

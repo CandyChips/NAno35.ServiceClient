@@ -7,7 +7,7 @@
 @using Nano35.WebClient.Helpers
 @using Nano35.WebClient.Services
 @using Append.Blazor.Printing
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
@@ -145,8 +145,7 @@
     private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>(
-            RequestManager.RepairOrdersServer, $"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

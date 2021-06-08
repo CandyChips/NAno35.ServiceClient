@@ -3,7 +3,7 @@
 @using Nano35.HttpContext.Cashbox
 @using Nano35.WebClient.Services
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject HealthService HealthService
@@ -60,8 +60,7 @@
         _isLoaded = false;
         
         Model.NewId = Guid.NewGuid();
-        await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>(
-            RequestManager.CashboxServer, $"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
+        await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>($"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
             resp =>
             {
                 if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
@@ -79,8 +78,7 @@
         
         try
         {
-            await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>(
-                RequestManager.InstanceServer, $"Cashbox/WageOperations", Model,
+            await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>($"Cashbox/WageOperations", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}

@@ -1,6 +1,6 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 @inject HttpClient HttpClient 
 @inject HealthService HealthService
@@ -134,11 +134,10 @@
         _loaded = false;
         try
         {
-            if (await HealthService.CheckAsync(RequestManager.RepairOrdersServer) == false)
+            if (await HealthService.CheckAsync() == false)
             NavigationManager.NavigateTo("/instance-view");
             
-            await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>(
-                RequestManager.StorageServer, $"StorageItems", _model,
+            await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>($"StorageItems", _model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -160,8 +159,7 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItemConditions",
+        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>($"StorageItemConditions",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -174,8 +172,7 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -199,9 +196,14 @@
     {
         var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
         var moviesModal = Modal.Show<ArticlesCreateForm>("Новое наименование", modalOpts);
-        await moviesModal.Result;
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        
+        var res = await moviesModal.Result;
+        if (!res.Cancelled)
+        {
+            _model.ArticleId = (Guid) res.Data;
+        }
+        
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

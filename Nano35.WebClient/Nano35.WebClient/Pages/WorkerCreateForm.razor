@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.instance
 @using System.Text.RegularExpressions
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
@@ -102,8 +102,7 @@
         try
         {
             _model.Roles = roles.ToList();
-            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>(
-                RequestManager.InstanceServer, $"Workers", _model,
+            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>($"Workers", _model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}

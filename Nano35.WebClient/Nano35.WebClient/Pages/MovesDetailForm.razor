@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -11,8 +11,6 @@
           OnValidSubmit="HandleValidSubmit">
     @if (_isLoaded)
     {
-        <DataAnnotationsValidator/>
-        
         <InputField Title="Товар">
             <Controls>
                 <RadzenDropDown Data=@(StorageItems.Select(a => new { a.Id, Name = $"{a.Article + " " + a.Condition}" }))
@@ -130,8 +128,7 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={FromUnitId}",
             resp =>
             {
                 if (resp.IsSuccess()) {FromPlaceOnStorage = resp.Success.Contains.ToList();}
@@ -142,8 +139,7 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={ToUnitId}",
             resp =>
             {
                 if (resp.IsSuccess()) {ToPlaceOnStorage = resp.Success.Contains.ToList();}
@@ -164,8 +160,7 @@
     {
         var data = new List<StorageItemViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>($"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}

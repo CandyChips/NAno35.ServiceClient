@@ -9,6 +9,7 @@
 @using Append.Blazor.Printing
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
 @inject HealthService HealthService
@@ -27,7 +28,7 @@
                             AllowPaging="true"
                             PageSize="15"
                             AllowSorting="true"
-                            Data="@_data"
+                            Data="@_opened"
                             TItem="RepairOrderViewModel">
                     <Columns>
                         <RadzenGridColumn TItem="RepairOrderViewModel"
@@ -80,7 +81,7 @@
                             AllowPaging="true"
                             PageSize="15"
                             AllowSorting="true"
-                            Data="@_data"
+                            Data="@_closed"
                             TItem="RepairOrderViewModel">
                     <Columns>
                         <RadzenGridColumn TItem="RepairOrderViewModel"
@@ -131,21 +132,40 @@
 
 @code {
     private bool _isLoaded;
-    private List<RepairOrderViewModel> _data;
+    private List<RepairOrderViewModel> _opened;
+    private List<RepairOrderViewModel> _closed;
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
+    private Guid User { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _data = await GetAllRepairOrders();
+        User = (await AuthService.GetCurrentUser()).Id;
+        _opened = await GetAllOpenedRepairOrders();
+        _closed = await GetAllClosedRepairOrders();
         _isLoaded = true;
     }
 
-    private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
+    private async Task<List<RepairOrderViewModel>> GetAllOpenedRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        return data;
+    }
+    private async Task<List<RepairOrderViewModel>> GetAllClosedRepairOrders()
+    {
+        var data = new List<RepairOrderViewModel>(); 
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}
@@ -166,7 +186,9 @@
         var modal = Modal.Show<RepairOrdersDetail>($"Заказ наряд на ремонт", parameters, modalOpts);
         await modal.Result;
         _isLoaded = false;
-        _data = await GetAllRepairOrders();
+        StateHasChanged();
+        _opened = await GetAllOpenedRepairOrders();
+        _closed = await GetAllClosedRepairOrders();
         _isLoaded = true;
     }
 }

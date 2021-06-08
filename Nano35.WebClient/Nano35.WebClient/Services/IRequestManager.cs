@@ -16,14 +16,15 @@ namespace Nano35.WebClient.Services
 
     public class ClusterRequestManager : IRequestManager
     {
+        private const string ProxyUri = "https://nano35.ru/api";
         private readonly HttpClient _httpClient;
         public ClusterRequestManager(HttpClient httpClient) => _httpClient = httpClient;
-        public string IdentityServer => "https://nano35.ru/api/identity";
-        public string InstanceServer => "https://nano35.ru/api/instance";
-        public string StorageServer => "https://nano35.ru/api/storage";
-        public string RepairOrdersServer => "https://nano35.ru/api/repairorders";
-        public string FileServer => "https://nano35.ru/api/storage";
-        public string CashboxServer => "https://nano35.ru/api/Cashbox";
+        public string IdentityServer => ProxyUri;
+        public string InstanceServer => ProxyUri;
+        public string StorageServer => ProxyUri;
+        public string RepairOrdersServer => ProxyUri;
+        public string CashboxServer => ProxyUri;
+        public string FileServer => $"{ProxyUri}/storage";
         public async Task<bool> HealthCheck(string serverUrl) => (await _httpClient.GetAsync($"{serverUrl}/health")).IsSuccessStatusCode;
     }
 }

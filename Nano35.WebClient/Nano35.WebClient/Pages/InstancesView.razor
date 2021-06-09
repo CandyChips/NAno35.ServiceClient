@@ -62,14 +62,15 @@
             RequestManager.InstanceServer, $"Instances/Current",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    _data = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        
         _loading = true;
     }
     

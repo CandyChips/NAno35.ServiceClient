@@ -58,12 +58,12 @@
                 </RejectedContent>
             </ConditionalContent>
             <InputField Title="Количество">
-                <Controls> <RadzenTextBox Style="width: 100%;" @bind-Value="Count" Change="( () => CountCanged())" /> </Controls>
+                <Controls> <RadzenTextBox Style="width: 100%;" @bind-Value="_count" Change="( () => CountCanged())" /> </Controls>
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
 
             <InputField Title="Цена за еденицу">
-                <Controls><RadzenTextBox style="width: 100%;" @bind-Value="Price" Change="( () => PriceCanged())" /></Controls>
+                <Controls><RadzenTextBox style="width: 100%;" @bind-Value="_price" Change="( () => PriceCanged())" /></Controls>
                 <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
             </InputField>
             
@@ -84,8 +84,8 @@
     private List<StorageItemViewModel> StorageItems { get; set; }
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
-    private string Price;
-    private string Count;
+    private string _price;
+    private string _count;
 
     protected override async Task OnInitializedAsync()
     {
@@ -149,13 +149,13 @@
 
     private async Task PriceCanged()
     {
-        double.TryParse(Regex.Replace(Price, @"[^\d]", ""), out var res);
+        double.TryParse(Regex.Replace(_price, @"[^\d]", ""), out var res);
         _model.Price = res;
     }
 
     private async Task CountCanged()
     {
-        int.TryParse(Regex.Replace(Count, @"[^\d]", ""), out var res);
+        int.TryParse(Regex.Replace(_count, @"[^\d]", ""), out var res);
         _model.Count = res;
     }
 }

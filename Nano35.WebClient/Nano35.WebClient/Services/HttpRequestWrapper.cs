@@ -53,9 +53,7 @@ namespace Nano35.WebClient.Services
                 return;
             }
             var response = await _httpClient.GetAsync($"{uri}/{endpoint}");
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.ReadAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -79,9 +77,7 @@ namespace Nano35.WebClient.Services
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"{uri}/{endpoint}", req);
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.ReadAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -105,9 +101,7 @@ namespace Nano35.WebClient.Services
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _httpClient.PatchAsync($"{uri}/{endpoint}", req);
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.ReadAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -129,9 +123,7 @@ namespace Nano35.WebClient.Services
                 return;
             }
             var response = await _httpClient.DeleteAsync($"{uri}/{endpoint}");
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.ReadAsync<UseCaseResponse<TResponse>>());
         }
     }
 }

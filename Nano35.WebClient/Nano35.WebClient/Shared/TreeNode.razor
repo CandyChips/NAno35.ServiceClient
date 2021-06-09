@@ -1,7 +1,7 @@
 @using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @inject HttpGet GetRequest
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 
 @if (_childs.Count != 0)
@@ -25,8 +25,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={Item.Id}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={Item.Id}",
             resp =>
             {
                 if (resp.IsSuccess())

@@ -6,7 +6,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/coming"
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IAuthService AuthService
@@ -98,8 +98,7 @@
     private async Task<IEnumerable<ComingViewModel>> GetAllComings()
     {
         var data = new List<ComingViewModel>();
-        await GetRequest.InvokeAsync<GetAllComingsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllComingsSuccessHttpResponse>($"Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
@@ -136,6 +135,7 @@
         var modal = Modal.Show<ComingsDetails>($"Оприходование", parameters, modalOpts);
         await modal.Result;
         _loading = false;
+        StateHasChanged();
         _data = await GetAllComings();
         _loading = true;
     }

@@ -1,7 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.HttpContext.storage
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject HttpPost PostRequest
@@ -16,15 +16,11 @@
             <Validation><ValidationMessage For="@(() => Model.CategoryId)" /></Validation>
         </InputField>
         <InputField Title="Бренд">
-            <Controls></Controls>
-            <Validation></Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Model"/></Controls>
+            <Validation><ValidationMessage For="@(() => Model.Brand)" /></Validation>
         </InputField>
         <InputField Title="Модель">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Brand"/></Controls>
-            <Validation><ValidationMessage For="@(() => Model.Brand)" /></Validation>
-        </InputField>
-        <InputField Title="Бренд">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Model"/></Controls>
             <Validation><ValidationMessage For="@(() => Model.Model)" /></Validation>
         </InputField>
         <ConditionalContent IsLoaded="IsExpandedView">
@@ -67,8 +63,7 @@
         _isLoaded = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>(
-                RequestManager.StorageServer, $"Articles", Model,
+            await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>($"Articles", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}

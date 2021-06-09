@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.HttpContext.Repair
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject IInstanceService InstanceService
 @inject ISessionProvider SessionProvider
 @inject HttpPost PostRequest
@@ -42,8 +42,7 @@
     {
         try
         {   
-            await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>(
-                RequestManager.RepairOrdersServer, $"Works", Model,
+            await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>($"Works", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}

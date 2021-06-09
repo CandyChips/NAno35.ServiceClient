@@ -2,7 +2,7 @@
 @using Nano35.WebClient.Services
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -27,11 +27,11 @@
 <RadzenFieldset Text="Оприходуемые товары" Style="width: 60rem">
     <RadzenGrid Data="@(Details)" EmptyText="Добавте оприходуемые товары..." TItem="ComingDetailViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ComingDetailViewModel" Property="StorageItem" Title="Товар" />
+            <RadzenGridColumn TItem="ComingDetailViewModel" Property="StorageItem" Title="Товар" Width="370px"/>
             <RadzenGridColumn TItem="ComingDetailViewModel" Property="PlaceOnStorage" Title="Место на складе" />
             <RadzenGridColumn TItem="ComingDetailViewModel" Property="Count" Title="Количество" />
             <RadzenGridColumn TItem="ComingDetailViewModel" Property="Price" Title="Цена" />
-            <RadzenGridColumn TItem="ComingDetailViewModel" Bubble="false" Sortable="false" Filterable="false" Width="250px" TextAlign="TextAlign.Center">
+            <RadzenGridColumn TItem="ComingDetailViewModel" Bubble="false" Sortable="false" Filterable="false" Width="120px" TextAlign="TextAlign.Center">
                 <Template Context="item">
                     <a href="http://192.168.100.124:5002/StorageItems/Ticket?storageItemId=@item.StorageItemId.ToString()" target="_blank">Этикетка</a>
                 </Template>
@@ -47,8 +47,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllComingDetailsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Comings/{Coming.Id}/Details",
+        await GetRequest.InvokeAsync<GetAllComingDetailsSuccessHttpResponse>($"Comings/{Coming.Id}/Details",
             resp =>
             {
                 if (resp.IsSuccess()) {Details = resp.Success.Data;}

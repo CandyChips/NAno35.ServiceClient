@@ -5,7 +5,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/sells"
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
@@ -90,8 +90,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}
@@ -109,8 +108,7 @@ else
         var modal = Modal.Show<SellesCreateForm>("Новая продажа");
         await modal.Result;
         _loading = true;
-        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}

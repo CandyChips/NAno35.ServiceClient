@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.storage
 @using Nano35.HttpContext.Repair
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
@@ -81,8 +81,7 @@
 
     private async Task HandleValidSubmit()
     {
-        await PostRequest.InvokeAsync<CreateRepairOrderStateHttpResponse, CreateRepairOrderStateHttpBody>(
-            RequestManager.InstanceServer, $"RepairOrders/State", _model,
+        await PostRequest.InvokeAsync<CreateRepairOrderStateHttpResponse, CreateRepairOrderStateHttpBody>($"RepairOrders/State", _model,
             resp =>
             {
                 if (resp.IsSuccess()) {}

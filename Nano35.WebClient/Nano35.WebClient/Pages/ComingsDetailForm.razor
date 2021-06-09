@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.storage
 @using System.Text.RegularExpressions
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -11,7 +11,6 @@
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
         <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-            <DataAnnotationsValidator/>
             <InputField Title="Товар">
                 <Controls>
                     <div style="display: flex; width: 100%">
@@ -58,12 +57,12 @@
                 </RejectedContent>
             </ConditionalContent>
             <InputField Title="Количество">
-                <Controls> <RadzenTextBox Style="width: 100%;" @bind-Value="_count" Change="( () => CountCanged())" /> </Controls>
+                <Controls> <RadzenNumeric style="width: 100%;" @bind-Value="_model.Count" ShowUpDown="false" Min="1"/> </Controls>
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
 
             <InputField Title="Цена за еденицу">
-                <Controls><RadzenTextBox style="width: 100%;" @bind-Value="_price" Change="( () => PriceCanged())" /></Controls>
+                <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="false" Min="0"/></Controls>
                 <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
             </InputField>
             
@@ -74,7 +73,8 @@
 
 @code
 {
-    // <RadzenTextBox style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="true" Min="1"/>
+    // <RadzenTextBox Style="width: 100%;" @bind-Value="Count" Change="( () => CountCanged())" />
+    // <RadzenNumeric style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="true" Min="1"/>
     // <input style="width: 100%" type="number" @bind="_model.Count" min="1" />
     
     [CascadingParameter] public IModalService Modal { get; set; }
@@ -84,8 +84,8 @@
     private List<StorageItemViewModel> StorageItems { get; set; }
     private List<PlaceWithStorageItemOnUnit> Warehouse { get; set; } = new();
     private bool _isLoaded;
-    private string _price;
-    private string _count;
+    private string Price;
+    private string Count;
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,8 +115,7 @@
     private async Task<List<StorageItemViewModel>> GetAllStorageItems()
     {
         var data = new List<StorageItemViewModel>();
-        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>($"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
@@ -132,8 +131,7 @@
     private async Task StorageItemChanged()
     {
         _model.PlaceOnStorage = "";
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Warehouse = resp.Success.Contains.ToList();}
@@ -149,13 +147,13 @@
 
     private async Task PriceCanged()
     {
-        double.TryParse(Regex.Replace(_price, @"[^\d]", ""), out var res);
+        double.TryParse(Regex.Replace(Price, @"[^\d]", ""), out var res);
         _model.Price = res;
     }
 
     private async Task CountCanged()
     {
-        int.TryParse(Regex.Replace(_count, @"[^\d]", ""), out var res);
+        int.TryParse(Regex.Replace(Count, @"[^\d]", ""), out var res);
         _model.Count = res;
     }
 }

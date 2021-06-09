@@ -1,7 +1,7 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -55,8 +55,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllCancellationDetailsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Cancellations/{Cancellation.Id}/Details",
+        await GetRequest.InvokeAsync<GetAllCancellationDetailsSuccessHttpResponse>($"Cancellations/{Cancellation.Id}/Details",
             resp =>
             {
                 if (resp.IsSuccess()) {Details = resp.Success.Data;}

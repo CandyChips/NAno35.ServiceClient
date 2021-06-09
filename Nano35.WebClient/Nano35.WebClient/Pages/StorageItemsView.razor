@@ -8,7 +8,7 @@
 @layout InstanceLayout
 @page "/instance/storage/warehouse"
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject IPrintingService PrintingService
@@ -32,11 +32,12 @@
                     <RejectedContent>
                         <RadzenSteps>
                             <Steps>
-                                @foreach (var image in item.Item.Images.Select((value, i) => new {i, value}))
+                                @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/StorageItems/{value}"}))
                                 {
-
                                     <RadzenStepsItem>
-                                        <img src="https://nano35.ru/api/files/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="width: 100%"/>
+                                        <RadzenCard Style="width: 35rem;height: 35rem">
+                                                <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
+                                        </RadzenCard>
                                     </RadzenStepsItem>
                                 }
                             </Steps>
@@ -76,6 +77,8 @@
 
 @code
 {
+    
+    // <img src="https://nano35.ru/api/files/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="height: 100%"/>
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     private IEnumerable<StorageItemOnUnitViewModel> _data;
@@ -88,11 +91,9 @@
     {        
         _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp => {if (resp.IsSuccess()){_categories = resp.Success.Data;}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }
@@ -104,8 +105,7 @@
         var modal = Modal.Show<StorageItemsDetails>($"{value.Item.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }

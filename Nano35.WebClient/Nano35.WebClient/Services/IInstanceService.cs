@@ -20,12 +20,12 @@ namespace Nano35.WebClient.Services
         IInstanceService
     {
         private readonly HttpClient _httpClient;
-        private readonly IRequestManager _requestManager;
+        private readonly RequestManager _requestManager;
         private readonly ISessionProvider _sessionProvider;
         private readonly HttpGet _get;
         private readonly NavigationManager _navigationManager;
 
-        public InstanceService(HttpClient httpClient, IRequestManager requestManager, ISessionProvider sessionProvider, HttpGet get, NavigationManager navigationManager)
+        public InstanceService(HttpClient httpClient, RequestManager requestManager, ISessionProvider sessionProvider, HttpGet get, NavigationManager navigationManager)
         {
             _get = get;
             _httpClient = httpClient;
@@ -42,8 +42,7 @@ namespace Nano35.WebClient.Services
 
         public async Task SetInstanceById(Guid id)
         {
-            await _get.InvokeAsync<GetInstanceByIdHttpResponse>(
-                _requestManager.InstanceServer, $"Instances/{id}",
+            await _get.InvokeAsync<GetInstanceByIdHttpResponse>($"Instances/{id}",
                 resp =>
                 {
                     if (resp.IsSuccess()) {Instance = resp.Success.Data;}

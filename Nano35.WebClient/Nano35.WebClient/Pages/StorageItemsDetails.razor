@@ -2,7 +2,7 @@
 @using Nano35.WebClient.Services
 @using System.Globalization
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HealthService HealthService
@@ -170,8 +170,7 @@
 
     private async Task LoadData()
     {
-        await GetRequest.InvokeAsync<GetStorageItemByIdSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItems/{Item.Item.Id}",
+        await GetRequest.InvokeAsync<GetStorageItemByIdSuccessHttpResponse>($"StorageItems/{Item.Item.Id}",
             resp =>
             {
                 if (resp.IsSuccess()) {StorageItem = resp.Success.Data;}
@@ -181,8 +180,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={Item.Item.Id}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Places = resp.Success.Contains;}
@@ -192,8 +190,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"StorageItemConditions",
+        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>($"StorageItemConditions",
             resp =>
             {
                 if (resp.IsSuccess()) {Conditions = resp.Success.Data;}
@@ -203,8 +200,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Articles = resp.Success.Data;}
@@ -219,8 +215,7 @@
     
     private async Task UpdateArticle()
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemArticleSuccessHttpResponse, UpdateStorageItemArticleHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/Article", ArticleEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemArticleSuccessHttpResponse, UpdateStorageItemArticleHttpBody>($"StorageItems/Article", ArticleEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -236,8 +231,7 @@
 
     private async Task UpdatePurchasePrice()
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemPurchasePriceSuccessHttpResponse, UpdateStorageItemPurchasePriceHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/PurchasePrice", PurchasePriceEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemPurchasePriceSuccessHttpResponse, UpdateStorageItemPurchasePriceHttpBody>($"StorageItems/PurchasePrice", PurchasePriceEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -253,8 +247,7 @@
 
     private async Task UpdateRetailPrice() 
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemRetailPriceSuccessHttpResponse, UpdateStorageItemRetailPriceHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/RetailPrice", RetailPriceEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemRetailPriceSuccessHttpResponse, UpdateStorageItemRetailPriceHttpBody>($"StorageItems/RetailPrice", RetailPriceEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -270,8 +263,7 @@
     
     private async Task UpdateCondition() 
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemConditionSuccessHttpResponse, UpdateStorageItemConditionHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/Condition", ConditionEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemConditionSuccessHttpResponse, UpdateStorageItemConditionHttpBody>($"StorageItems/Condition", ConditionEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -286,8 +278,7 @@
     }    
     private async Task UpdateComment()
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemCommentSuccessHttpResponse, UpdateStorageItemCommentHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/Comment", CommentEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemCommentSuccessHttpResponse, UpdateStorageItemCommentHttpBody>($"StorageItems/Comment", CommentEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -303,8 +294,7 @@
     
     private async Task UpdateHiddenComment()
     {
-        await PatchRequest.InvokeAsync<UpdateStorageItemHiddenCommentSuccessHttpResponse, UpdateStorageItemHiddenCommentHttpBody>(
-            RequestManager.StorageServer, $"StorageItems/HiddenComment", HiddenCommentEdit,
+        await PatchRequest.InvokeAsync<UpdateStorageItemHiddenCommentSuccessHttpResponse, UpdateStorageItemHiddenCommentHttpBody>($"StorageItems/HiddenComment", HiddenCommentEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}

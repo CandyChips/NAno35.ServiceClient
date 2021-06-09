@@ -5,7 +5,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/moves"
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
@@ -53,8 +53,7 @@
     private async Task<List<MoveViewModel>> GetAllMoves()
     {
         var data = new List<MoveViewModel>();
-        await GetRequest.InvokeAsync<GetAllMovesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Moves?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllMovesSuccessHttpResponse>($"Moves?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

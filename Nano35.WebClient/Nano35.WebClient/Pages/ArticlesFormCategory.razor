@@ -1,7 +1,7 @@
 ﻿@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @inject ISessionProvider SessionProvider
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
@@ -71,8 +71,7 @@
     protected override async Task OnInitializedAsync()
     {            
         _isLoading = false;        
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -92,8 +91,7 @@
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -118,8 +116,7 @@
             NewId = Guid.NewGuid(),
             ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
         };
-        await PostRequest.InvokeAsync<CreateCategorySuccessHttpResponse, CreateCategoryHttpBody>(
-            RequestManager.StorageServer, $"Category", body,
+        await PostRequest.InvokeAsync<CreateCategorySuccessHttpResponse, CreateCategoryHttpBody>($"Category", body,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -131,8 +128,7 @@
             });
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
         
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -151,8 +147,7 @@
         _isLoading = true;
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}

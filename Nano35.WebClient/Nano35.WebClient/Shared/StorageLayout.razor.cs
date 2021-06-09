@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Components;
 using Nano35.WebClient.Services;
 
+
 namespace Nano35.WebClient.Shared
 {
     public partial class StorageLayout
     {
         [Inject] private ISessionProvider SessionProvider { get; set; }
-        [Inject] private IRequestManager RequestManager { get; set; }
+        [Inject] private HealthService HealthService { get; set; }
         [Inject] private IInstanceService InstanceService { get; set; }
         
         private bool _serverAvailable = false;
@@ -16,7 +17,7 @@ namespace Nano35.WebClient.Shared
         protected override async Task OnInitializedAsync()
         {
             _loading = false;
-            _serverAvailable = await RequestManager.HealthCheck(RequestManager.InstanceServer);
+            _serverAvailable = await HealthService.CheckAsync();
             if(!_serverAvailable)
                 NavigationManager.NavigateTo("/instances");
             if(!await SessionProvider.IsCurrentSessionIdExist())

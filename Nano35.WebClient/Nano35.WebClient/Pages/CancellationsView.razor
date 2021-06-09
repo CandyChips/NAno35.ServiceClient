@@ -4,7 +4,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/cancellations"
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject NotificationService NotificationService
@@ -88,8 +88,7 @@
     {
         var data = new List<CancellationViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllCancellationsSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllCancellationsSuccessHttpResponse>($"Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

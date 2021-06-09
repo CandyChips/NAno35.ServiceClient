@@ -26,14 +26,14 @@ namespace Nano35.WebClient.Services
 
     public class AuthService : IAuthService
     {
-        private readonly IRequestManager _requestManager;
+        private readonly RequestManager _requestManager;
         private readonly ILocalStorageService _localStorage;
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider  _customAuthenticationStateProvider;
         private readonly HttpGet _get;
         private readonly NavigationManager _navigationManager;
         public AuthService(
-            IRequestManager requestManager,
+            RequestManager requestManager,
             ILocalStorageService localStorage,
             HttpClient httpClient,
             AuthenticationStateProvider  customAuthenticationStateProvider, 
@@ -63,8 +63,7 @@ namespace Nano35.WebClient.Services
         public async Task<UserViewModel> GetCurrentUser()
         {
             var response = new UserViewModel();
-            await _get.InvokeAsync<GetUserFromTokenHttpResponse>(
-                _requestManager.IdentityServer, $"Identity/FromToken",
+            await _get.InvokeAsync<GetUserFromTokenHttpResponse>($"Identity/FromToken",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Data;}
@@ -80,8 +79,7 @@ namespace Nano35.WebClient.Services
         public async Task<List<Guid>> GetCurrentRoles()
         {
             var response = new List<Guid>();
-            await _get.InvokeAsync<GetAllRolesByUserHttpResponse>(
-                _requestManager.InstanceServer, $"Workers/Current/Roles",
+            await _get.InvokeAsync<GetAllRolesByUserHttpResponse>($"Workers/Current/Roles",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Roles.ToList();}

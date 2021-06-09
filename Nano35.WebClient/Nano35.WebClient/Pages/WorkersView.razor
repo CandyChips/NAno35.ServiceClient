@@ -6,7 +6,7 @@
 @attribute [Authorize]
 @layout InstanceLayout
 @inject IInstanceService InstanceService;
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IAuthService AuthService
@@ -83,8 +83,7 @@
     
     private async Task LoadWorkers()
     {
-        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
-            RequestManager.InstanceServer, $"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>($"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Workers;}
@@ -106,8 +105,7 @@
 
         var currentUnit = "";
         
-        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
-            RequestManager.InstanceServer, $"Units/{await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>($"Units/{await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {currentUnit = resp.Success.Data.Name;}

@@ -4,7 +4,7 @@
 @using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
 @using Nano35.Contracts.Storage.Artifacts
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -70,8 +70,7 @@
     private async Task<List<ArticleCategoryViewModel>> GetCategories()
     {
         var data = new List<ArticleCategoryViewModel>();
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.InstanceServer, $"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}
@@ -89,8 +88,7 @@
     private async Task UpdateName()
     {
         _loading = true;
-        await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>(
-            RequestManager.StorageServer, $"Category/Name", NameEdit,
+        await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>($"Category/Name", NameEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -102,14 +100,14 @@
             });
         NameEdit = null;
         Categories = await GetCategories(); 
+        StateHasChanged();
         _loading = false;
     }
     
     private async Task UpdateParent()
     {
         _loading = true;
-        await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>(
-            RequestManager.StorageServer, $"Category/ParentCategoryId", ParentEdit,
+        await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>($"Category/ParentCategoryId", ParentEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -121,6 +119,7 @@
             });
         ParentEdit = null;
         Categories = await GetCategories();
+        StateHasChanged();
         _loading = false;
     }
 }

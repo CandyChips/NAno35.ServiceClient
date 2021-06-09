@@ -3,7 +3,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
 @using Nano35.WebClient.Helpers
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
 @inject HttpGet GetRequest
@@ -113,8 +113,7 @@
         _isLoaded = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateComingSuccessHttpResponse, CreateComingHttpBody>(
-                RequestManager.StorageServer, $"Comings", Model,
+            await PostRequest.InvokeAsync<CreateComingSuccessHttpResponse, CreateComingHttpBody>($"Comings", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -150,8 +149,7 @@
     {
         var data = new List<ClientViewModel>();
 
-        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
-            RequestManager.InstanceServer, $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>($"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
@@ -168,8 +166,7 @@
     {
         var data = new List<UnitViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

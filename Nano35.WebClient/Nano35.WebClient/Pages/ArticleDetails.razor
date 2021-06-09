@@ -4,7 +4,7 @@
 @using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
 @using Nano35.Contracts.Storage.Artifacts
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HealthService HealthService
@@ -102,9 +102,13 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        
-        await GetRequest.InvokeAsync<GetArticleByIdSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Articles/{Id}",
+        await LoadData();
+        _isLoaded = true;
+    }
+
+    private async Task LoadData()
+    {
+        await GetRequest.InvokeAsync<GetArticleByIdSuccessHttpResponse>($"Articles/{Id}",
             resp =>
             {
                 if (resp.IsSuccess()) {Article = resp.Success.Data;}
@@ -114,8 +118,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            RequestManager.StorageServer, $"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
             resp =>
             {
                 if (resp.IsSuccess()) {Categories = resp.Success.Data;}
@@ -125,13 +128,14 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        _isLoaded = true;
+
+        StateHasChanged();
     }
+    
 
     private async Task UpdateCategory()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleCategorySuccessHttpResponse, UpdateArticleCategoryHttpBody>(
-        RequestManager.StorageServer, $"Articles/Category", CategoryEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleCategorySuccessHttpResponse, UpdateArticleCategoryHttpBody>($"Articles/Category", CategoryEdit,
         resp =>
         {
             if (resp.IsSuccess()) {}
@@ -142,12 +146,12 @@
             }
         });
         CategoryEdit = null;
+        await LoadData();
     }
 
     private async Task UpdateBrand()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleBrandSuccessHttpResponse, UpdateArticleBrandHttpBody>(
-            RequestManager.StorageServer, $"Articles/Brand", BrandEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleBrandSuccessHttpResponse, UpdateArticleBrandHttpBody>($"Articles/Brand", BrandEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -158,12 +162,12 @@
                 }
             });
         BrandEdit = null;
+        await LoadData();
     }
 
     private async Task UpdateModel()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleModelSuccessHttpResponse, UpdateArticleModelHttpBody>(
-            RequestManager.StorageServer, $"Articles/Model", ModelEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleModelSuccessHttpResponse, UpdateArticleModelHttpBody>($"Articles/Model", ModelEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -174,12 +178,12 @@
                 }
             });
         ModelEdit = null;
+        await LoadData();
     }
 
     private async Task UpdateInfo()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleInfoSuccessHttpResponse, UpdateArticleInfoHttpBody>(
-            RequestManager.StorageServer, $"Articles/Info", InfoEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleInfoSuccessHttpResponse, UpdateArticleInfoHttpBody>($"Articles/Info", InfoEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -190,6 +194,7 @@
                 }
             });
         InfoEdit = null;
+        await LoadData();
     }
     
     private async Task OpenCategoryDetails(Guid id, string name)

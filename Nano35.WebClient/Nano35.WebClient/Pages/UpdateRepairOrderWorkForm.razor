@@ -5,7 +5,7 @@
 @using Radzen.Blazor.Rendering
 @using Nano35.Contracts.Repair.Models
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NotificationService NotificationService
 @inject HealthService HealthService
@@ -103,8 +103,7 @@
         _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
         
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
-            RequestManager.RepairOrdersServer, $"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_works = resp.Success.Data;}
@@ -115,8 +114,7 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            RequestManager.StorageServer, $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_storageItems = resp.Success.Contains;}
@@ -143,8 +141,7 @@
             };
         }
         
-        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>(
-            RequestManager.RepairOrdersServer, $"RepairOrders/Work", _model,
+        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>($"RepairOrders/Work", _model,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -163,8 +160,7 @@
         var modal = Modal.Show<WorkCreateForm>($"Новая работа");
         await modal.Result;
         
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
-            RequestManager.RepairOrdersServer, $"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_works = resp.Success.Data;}
@@ -183,8 +179,7 @@
     
     private async Task StorageItemChanged()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            RequestManager.RepairOrdersServer, $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_places = resp.Success.Contains.ToList();}

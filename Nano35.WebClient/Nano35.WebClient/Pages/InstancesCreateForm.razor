@@ -2,7 +2,7 @@
 @using Nano35.HttpContext.instance
 @using Nano35.Contracts.Instance.Models
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpGet GetRequest
 @inject HttpPost PostRequest
@@ -120,8 +120,7 @@
     {
         try
         {
-            await PostRequest.InvokeAsync<CreateInstanceHttpResponse, CreateInstanceHttpBody>(
-                RequestManager.InstanceServer, $"Instances", _model,
+            await PostRequest.InvokeAsync<CreateInstanceHttpResponse, CreateInstanceHttpBody>($"Instances", _model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -142,8 +141,7 @@
     {
         _model = new CreateInstanceHttpBody { NewId = Guid.NewGuid() };
         
-        await GetRequest.InvokeAsync<GetAllInstanceTypesHttpResponse>(
-            RequestManager.InstanceServer, $"InstancesTypes",
+        await GetRequest.InvokeAsync<GetAllInstanceTypesHttpResponse>($"InstancesTypes",
             resp =>
             {
                 if (resp.IsSuccess()) {_types = resp.Success.Data.ToList();}
@@ -153,8 +151,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllRegionsHttpResponse>(
-            RequestManager.InstanceServer, $"InstancesRegions",
+        await GetRequest.InvokeAsync<GetAllRegionsHttpResponse>($"InstancesRegions",
             resp =>
             {
                 if (resp.IsSuccess()) {_regions = resp.Success.Data.ToList();}

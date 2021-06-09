@@ -31,12 +31,12 @@ namespace Nano35.WebClient
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<CustomAuthenticationStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
-            builder.Services.AddScoped<IRequestManager, ClusterRequestManager>();
             builder.Services.AddScoped<IPrintingService, PrintingService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddTransient<RequestManager>();
             builder.Services.AddTransient<HealthService>();
             builder.Services.AddTransient<HttpGet>();
             builder.Services.AddTransient<HttpPost>();

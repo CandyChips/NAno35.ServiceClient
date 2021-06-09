@@ -3,7 +3,7 @@
 @using Nano35.Contracts.Instance.Models
 @using Nano35.HttpContext.instance
 @inject HttpClient HttpClient
-@inject IRequestManager RequestManager
+@inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
@@ -120,8 +120,7 @@
                 ToPlaceOnStorage = a.ToPlaceOnStorage, 
                 StorageItemId = a.StorageItemId
             }).ToList();
-            await PostRequest.InvokeAsync<CreateMoveSuccessHttpResponse, CreateMoveHttpBody>(
-                RequestManager.StorageServer, $"Moves", Model,
+            await PostRequest.InvokeAsync<CreateMoveSuccessHttpResponse, CreateMoveHttpBody>($"Moves", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -162,8 +161,7 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            RequestManager.InstanceServer, $"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

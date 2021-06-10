@@ -6,7 +6,7 @@
 
 @if (_childs.Count != 0)
 {
-    <RadzenTreeItem Text="@Item.Name">
+    <RadzenTreeItem Text="@Item.Name" Change=@OnChange.InvokeAsync(Item)>
         @foreach (var item in _childs)
         {
             <TreeNode Item="@item"/>
@@ -20,18 +20,16 @@ else
 
 @code
 {
-    [Parameter] public ArticleCategoryViewModel Item { get; set; }
-    private List<ArticleCategoryViewModel> _childs = new();
+    [Parameter] public CategoryViewModel Item { get; set; }
+    [Parameter] public EventCallback OnChange { get; set; } 
+    private List<CategoryViewModel> _childs = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={Item.Id}",
-            resp =>
-            {
-                if (resp.IsSuccess())
-                {
-                    _childs = resp.Success.Data;
-                }
-            });
+        if (Item.Categories != null) 
+        {
+            Console.WriteLine(Item.Name);
+            _childs = Item.Categories;
+        }
     }
 }

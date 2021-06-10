@@ -14,7 +14,8 @@ namespace Nano35.WebClient.Services
     {
         public RequestManager(HttpClient httpClient) => _httpClient = httpClient;
 
-        private readonly string _proxyUri = "https://nano35.ru/api";
+        //private readonly string _proxyUri = "https://nano35.ru/api";
+        private readonly string _proxyUri = "http://localhost:8080";
         
         private readonly HttpClient _httpClient;
         public string ProxyUri => _proxyUri;

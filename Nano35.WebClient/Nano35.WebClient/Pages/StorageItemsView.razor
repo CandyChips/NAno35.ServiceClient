@@ -18,73 +18,75 @@
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
-        <RadzenGrid EmptyText="Нет изделий на складе."
-                    AllowPaging="true"
-                    PageSize="10"
-                    Data="@_data"
-                    TItem="StorageItemOnUnitViewModel">
-            <Template Context="item">
-                <ConditionalContent IsLoaded="item.Item.Images == null || item.Item.Images.Count == 0">
-                    <AllowedContent>
-                        <span>Нет изображений</span>
-                    </AllowedContent>
-                    <RejectedContent>
-                        <RadzenSteps>
-                            <Steps>
-                                @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/StorageItems/{value}"}))
-                                {
-                                    <RadzenStepsItem>
-                                        <RadzenCard Style="width: 35rem;height: 35rem">
-                                                <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
-                                        </RadzenCard>
-                                    </RadzenStepsItem>
-                                }
-                            </Steps>
-                        </RadzenSteps>
-                    </RejectedContent>
-                </ConditionalContent>
-            </Template>
-            <Columns>
-                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
-                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
-                    <Template Context="item">@item.Item.RetailPrice руб.</Template>
-                </RadzenGridColumn>
-                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Закуп. стоимость">
-                    <Template Context="item">@item.Item.PurchasePrice руб.</Template>
-                </RadzenGridColumn>
-                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="100px" Title="Наличие">
-                    <Template Context="item">@item.Count шт.</Template>
-                </RadzenGridColumn>
-                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Context="coming" Bubble="false" Width="400px" TextAlign="TextAlign.Center">
-                    <Template Context="item">
-                        @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
-                        {
-                            <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" ButtonStyle="ButtonStyle.Secondary"/>
-                        }
-                        <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" ButtonStyle="ButtonStyle.Secondary"/>
-                    </Template>
-                </RadzenGridColumn>
-            </Columns>
-        </RadzenGrid>
-        <RadzenTree Style="width: 100%">
-            @foreach (var item in _categories)
-            {
-                <TreeNode Item="@item"/>
-            }
-        </RadzenTree>
+    <RadzenGrid EmptyText="Нет изделий на складе."
+                AllowPaging="true"
+                PageSize="10"
+                Data="@_data"
+                TItem="StorageItemOnUnitViewModel">
+        <Template Context="item">
+            <ConditionalContent IsLoaded="item.Item.Images == null || item.Item.Images.Count == 0">
+                <AllowedContent>
+                    <span>Нет изображений</span>
+                </AllowedContent>
+                <RejectedContent>
+                    <RadzenSteps>
+                        <Steps>
+                            @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/StorageItems/{value}"}))
+                            {
+                                <RadzenStepsItem>
+                                    <RadzenCard Style="width: 35rem;height: 35rem">
+                                        <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
+                                    </RadzenCard>
+                                </RadzenStepsItem>
+                            }
+                        </Steps>
+                    </RadzenSteps>
+                </RejectedContent>
+            </ConditionalContent>
+        </Template>
+        <Columns>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
+                <Template Context="item">@item.Item.RetailPrice руб.</Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Закуп. стоимость">
+                <Template Context="item">@item.Item.PurchasePrice руб.</Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="100px" Title="Наличие">
+                <Template Context="item">@item.Count шт.</Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Context="coming" Bubble="false" Width="400px" TextAlign="TextAlign.Center">
+                <Template Context="item">
+                    @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
+                    {
+                        <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" ButtonStyle="ButtonStyle.Secondary"/>
+                    }
+                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" ButtonStyle="ButtonStyle.Secondary"/>
+                </Template>
+            </RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+    <RadzenTree style="width: 100%" >
+        @foreach (var item in _categories)
+        {
+            <TreeNode Item=@item OnChange=@Filter(item)></TreeNode>
+        }
+    </RadzenTree>
 </LoadingContent>
 
 @code
 {
     
     // <img src="https://nano35.ru/api/files/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="height: 100%"/>
+    // <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Categories"  HasChildren=@(e => (e as CategoryViewModel).Categories.Any()) />
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     private IEnumerable<StorageItemOnUnitViewModel> _data;
     private List<Guid> _roles = new();
-    private List<ArticleCategoryViewModel> _categories = new();
+    private List<CategoryViewModel> _categories = new();
     
     private bool _isLoaded;
+    
 
     protected override async Task OnInitializedAsync()
     {        
@@ -93,9 +95,9 @@
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
             $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
-            resp => {if (resp.IsSuccess()){_categories = resp.Success.Data;}else{NavigationManager.NavigateTo("/instance-view");}});
+        await GetRequest.InvokeAsync<GetCategoryTreeByRootHttpResponse>(
+            $"Category/TreeByRoot",
+            resp => {if (resp.IsSuccess()){_categories.Add(resp.Success.Data);}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }
 
@@ -114,5 +116,12 @@
     private async Task PrintTicketAsync(Guid itemId)
     {
         await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/StorageItemTicket/{itemId}");
+    }
+
+    private async Task Filter(CategoryViewModel item)
+    {
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}&CategoryId={item.Id}",
+            resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
     }
 }

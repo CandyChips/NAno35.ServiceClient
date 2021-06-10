@@ -1,9 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Authorization
-@using Nano35.HttpContext.storage
 @using Nano35.WebClient.Services
 @using Nano35.WebClient.Helpers
 @using Append.Blazor.Printing
-@using Nano35.Contracts.Storage.Artifacts
+@using Nano35.Contexts.Http.storage
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/warehouse"
@@ -91,9 +90,11 @@
     {        
         _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp => {if (resp.IsSuccess()){_categories = resp.Success.Data;}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }

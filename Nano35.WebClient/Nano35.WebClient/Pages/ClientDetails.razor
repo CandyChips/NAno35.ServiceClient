@@ -1,11 +1,8 @@
-﻿@using Nano35.HttpContext.storage
-@using Nano35.WebClient.Services
-@using Nano35.Contracts.Storage.Models
-@using ArticleViewModel = Nano35.HttpContext.storage.ArticleViewModel
-@using Nano35.Contracts.Storage.Artifacts
-@using Nano35.HttpContext.instance
+﻿@using Nano35.WebClient.Services
 @using Nano35.Contracts.Instance.Models
 @using System.Text.RegularExpressions
+@using Nano35.Contexts.Http.Instance
+@using Nano35.Contexts.Http.storage
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject NotificationService NotificationService
@@ -132,7 +129,7 @@
         await GetRequest.InvokeAsync<GetClientByIdHttpResponse>($"Clients/{Item.Id}",
             resp =>
             {
-                if (resp.IsSuccess()) {Client = resp.Success.Data;}
+                if (resp.IsSuccess()) {Client = resp.Success.Client;}
                 else
                 {
                     Console.WriteLine(resp.Error);

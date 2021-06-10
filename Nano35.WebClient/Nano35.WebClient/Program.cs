@@ -1,20 +1,13 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nano35.WebClient.Services;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Append.Blazor.Printing;
 using Blazored.LocalStorage;
 using Blazored.Modal;
-using Nano35.Contracts;
-using Nano35.HttpContext;
-using Nano35.HttpContext.Repair;
 using Radzen;
 
 namespace Nano35.WebClient
@@ -42,8 +35,9 @@ namespace Nano35.WebClient
             builder.Services.AddTransient<HttpPost>();
             builder.Services.AddTransient<HttpPatch>();
             builder.Services.AddTransient<HttpDelete>();
+            builder.Services.AddTransient<JsConsole>();
             builder.Services.AddBlazoredModal();
-                       
+            
             await builder.Build().RunAsync();
         }
     }

@@ -1,17 +1,14 @@
-﻿using Nano35.HttpContext.identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Nano35.Contracts.Identity.Artifacts;
+using Nano35.Contexts.Http.Identity;
+using Nano35.Contexts.Http.Instance;
 using Nano35.Contracts.Identity.Models;
-using Nano35.HttpContext.instance;
-using Radzen;
 
 namespace Nano35.WebClient.Services
 {

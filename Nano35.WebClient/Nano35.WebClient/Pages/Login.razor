@@ -1,12 +1,12 @@
 ﻿@page "/log-in"
 @using Nano35.WebClient.Services
-@using Nano35.HttpContext.identity
 @using System.Text.RegularExpressions
-@using System.Threading
+@using Nano35.Contexts.Http.Identity
 @inject IAuthService AuthService
 @inject RequestManager RequestManager
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
+@inject JsConsole JsConsole
 
 <CenterContent>
     <LoadingContent IsLoaded="_isLoaded">
@@ -43,7 +43,7 @@
     private bool _isLoaded = true;
     private string _error;
     private string Phone { get ; set ; } = "+7";
-
+    
     protected override void OnInitialized()
     {
         _isLoaded = true;
@@ -57,7 +57,11 @@
             await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>($"Identity/Authenticate", _model,
                 resp =>
                 {
-                    if (resp.IsSuccess()) {response = resp.Success.Token;}
+                    if (resp.IsSuccess())
+                    {
+                        JsConsole.LogAsync(resp.Success.Token);
+                        response = resp.Success.Token;
+                    }
                     else
                     {
                         Console.WriteLine(resp.Error);

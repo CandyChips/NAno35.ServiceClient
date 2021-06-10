@@ -3,8 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-using Nano35.Contracts.Instance.Artifacts;
-using Nano35.HttpContext;
+using Nano35.Communication;
+using Nano35.Contexts.Http;
 using Newtonsoft.Json;
 using Radzen;
 
@@ -67,9 +67,7 @@ namespace Nano35.WebClient.Services
                 return;
             }
             var response = await _httpClient.GetAsync($"{_requestManager.ProxyUri}/{endpoint}");
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.Content.ReadFromJsonAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -96,9 +94,7 @@ namespace Nano35.WebClient.Services
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"{_requestManager.ProxyUri}/{endpoint}", req);
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.Content.ReadFromJsonAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -124,9 +120,7 @@ namespace Nano35.WebClient.Services
             }
             var req = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
             var response = await _httpClient.PatchAsync($"{_requestManager.ProxyUri}/{endpoint}", req);
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.Content.ReadFromJsonAsync<UseCaseResponse<TResponse>>());
         }
     }
     
@@ -150,9 +144,7 @@ namespace Nano35.WebClient.Services
                 return;
             }
             var response = await _httpClient.DeleteAsync($"{_requestManager.ProxyUri}/{endpoint}");
-            onResponse.Invoke(response.IsSuccessStatusCode ?
-                new UseCaseResponse<TResponse>(await response.Content.ReadFromJsonAsync<TResponse>()) :
-                new UseCaseResponse<TResponse>(await response.Content.ReadAsStringAsync()));
+            onResponse.Invoke(await response.Content.ReadFromJsonAsync<UseCaseResponse<TResponse>>());
         }
     }
 }

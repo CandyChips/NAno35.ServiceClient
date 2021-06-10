@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Contexts.Http.Instance
 @using Nano35.Contracts.Instance.Models
-@using Nano35.HttpContext.instance
 @using Nano35.WebClient.Services
 @attribute [Authorize]
 @page "/instances"
@@ -58,7 +58,8 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
-        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>($"Instances/Current",
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
+            $"Instances/Current",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -83,13 +84,16 @@
         var modal = Modal.Show<InstancesCreateForm>("Новая организация", opts);
         await modal.Result;
         _loading = false;
-        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>($"Instances/Current",
+        await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
+            $"Instances/Current",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Data;}
+                if (resp.IsSuccess()) 
+                {
+                    _data = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

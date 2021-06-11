@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.6" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Nano35.Communication" Version="0.0.9" />
-    <PackageReference Include="Nano35.Contexts.Http" Version="3.1.8" />
+    <PackageReference Include="Nano35.Contexts.Http" Version="3.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Radzen.Blazor" Version="3.4.1" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />

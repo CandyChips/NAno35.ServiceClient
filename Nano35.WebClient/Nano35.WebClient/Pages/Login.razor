@@ -51,55 +51,30 @@
 
     private async Task HandleValidSubmit()
     {
-        try
-        {
-            var response = "";
-            await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>($"Identity/Authenticate", _model,
-                resp =>
+        await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>($"Identity/Authenticate", _model,
+            resp =>
+            {
+                if (resp.IsSuccess())
                 {
-                    if (resp.IsSuccess())
-                    {
-                        JsConsole.LogAsync(resp.Success.Token);
-                        response = resp.Success.Token;
-                    }
-                    else
-                    {
-                        Console.WriteLine(resp.Error);
-                    }
-                });
-            
-            await AuthService.Login(response);
-            NavigationManager.NavigateTo("/");
-        }
-        catch (Exception ex)
-        {
-            _error = ex.Message;
-        }
+                    AuthService.Login(resp.Success.Token);
+                }
+                else
+                {
+                    _error = resp.Error;
+                }
+            });
+        NavigationManager.NavigateTo("/");
     }
     
     private void PhoneMask()
     {
-
         Phone = Regex.Replace(Phone, @"[^\d]", "");
-        
         var countryCode = "+7";
-        
-        if (Phone.StartsWith("7"))
-            Phone = Phone.Remove(0,1);
-        
-        if (Phone.StartsWith("8"))
-            Phone = Phone.Remove(0,1);
-        
-        if (Phone.Length < 10)
-            Phone = Phone.PadRight(10);
-
-        if (Phone.Length > 10)
-            Phone = Phone.Substring(0, 10);
-        
+        if (Phone.StartsWith("7")) Phone = Phone.Remove(0,1);
+        if (Phone.StartsWith("8")) Phone = Phone.Remove(0,1);
+        if (Phone.Length < 10) Phone = Phone.PadRight(10);
+        if (Phone.Length > 10) Phone = Phone.Substring(0, 10);
         _model.Login = Phone;
-        
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
-        
-        
     }
 }

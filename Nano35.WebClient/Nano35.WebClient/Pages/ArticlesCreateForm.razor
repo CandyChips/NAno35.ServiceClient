@@ -63,7 +63,8 @@
         _isLoaded = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>($"Articles", Model,
+            await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>(
+                $"Articles", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}

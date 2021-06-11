@@ -25,7 +25,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={Item.Id}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={Item.Id}",
             resp =>
             {
                 if (resp.IsSuccess())

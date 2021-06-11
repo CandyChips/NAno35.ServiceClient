@@ -115,7 +115,8 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            $"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
             resp =>
             {
                 if (resp.IsSuccess()) {Categories = resp.Success.Data;}
@@ -132,23 +133,25 @@
 
     private async Task UpdateCategory()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleCategorySuccessHttpResponse, UpdateArticleCategoryHttpBody>($"Articles/Category", CategoryEdit,
-        resp =>
-        {
-            if (resp.IsSuccess()) {}
-            else
+        await PatchRequest.InvokeAsync<UpdateArticleCategorySuccessHttpResponse, UpdateArticleCategoryHttpBody>(
+            $"Articles/Category", CategoryEdit,
+            resp =>
             {
-                Console.WriteLine(resp.Error);
-                NavigationManager.NavigateTo("/instance-view");
-            }
-        });
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         CategoryEdit = null;
         await LoadData();
     }
 
     private async Task UpdateBrand()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleBrandSuccessHttpResponse, UpdateArticleBrandHttpBody>($"Articles/Brand", BrandEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleBrandSuccessHttpResponse, UpdateArticleBrandHttpBody>(
+            $"Articles/Brand", BrandEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -164,7 +167,8 @@
 
     private async Task UpdateModel()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleModelSuccessHttpResponse, UpdateArticleModelHttpBody>($"Articles/Model", ModelEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleModelSuccessHttpResponse, UpdateArticleModelHttpBody>(
+            $"Articles/Model", ModelEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -180,7 +184,8 @@
 
     private async Task UpdateInfo()
     {
-        await PatchRequest.InvokeAsync<UpdateArticleInfoSuccessHttpResponse, UpdateArticleInfoHttpBody>($"Articles/Info", InfoEdit,
+        await PatchRequest.InvokeAsync<UpdateArticleInfoSuccessHttpResponse, UpdateArticleInfoHttpBody>(
+            $"Articles/Info", InfoEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}

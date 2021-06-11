@@ -15,11 +15,9 @@
         <InputField Title="Наименование*">
             <Controls>
                 <div style="display: flex; width: 100%">
-                    <RadzenDropDown Data=@(_articles.Select(a => new {Id = a.Id, Name = $"{a.Category} {a.Brand} {a.Model}"}))
-                                    TextProperty="Name"
-                                    ValueProperty="Id"
-                                    TValue="Guid"
-                                    @bind-Value="_model.ArticleId"
+                    <RadzenDropDown TValue="Guid" @bind-Value="_model.ArticleId"
+                                    Data=@(_articles.Select(a => new {a.Id, Name = $"{a.Category} {a.Brand} {a.Model}"}))
+                                    TextProperty="Name" ValueProperty="Id"
                                     Disabled="@(!_articles.Any())"
                                     style="width: 100%;"
                                     AllowClear="true"
@@ -34,11 +32,9 @@
 
         <InputField Title="Состояние*">
             <Controls>
-                <RadzenDropDown Data="@(_conditions.Select(a => new {Id = a.Id, Name = a.Name}))"
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="_model.ConditionId"
+                <RadzenDropDown TValue="Guid" @bind-Value="_model.ConditionId"
+                                Data="@(_conditions.Select(a => new {a.Id, a.Name}))"
+                                TextProperty="Name" ValueProperty="Id"
                                 style="flex: auto;"
                                 AllowClear="true"
                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
@@ -70,48 +66,29 @@
             <Validation><ValidationMessage For="@(() => _model.PurchasePrice)" /></Validation>
         </InputField>
                     
-        <InputField Title="Изображения">
-            <Controls>
-                <div class="custom-file">
-                    <InputFile class="custom-file-input" OnChange="@OnInputFileChange" multiple />
-                    <label class="custom-file-label"></label>
-                </div>
-            </Controls>
-        </InputField>
+        <RadzenUpload @ref="upload"
+                      Auto="false"
+                      Multiple="true"
+                      Url=@($"https://nano35.ru/files/images/CreateStorageItemImage/{_model.NewId}") 
+                      Style="margin-bottom: 20px; width: 100%;"
+                      Accept="image/*"
+                      Progress=@(args => OnProgress(args, "Manual Upload")) />
+        <RadzenButton Text="Upload" 
+                      Click=@(args => upload.Upload()) 
+                      ButtonStyle="ButtonStyle.Secondary"
+                      Style="margin-bottom: 20px; width: 100%;" />
         
-
-        @if (_files.Count > 0)
+        @if (progress != 0)
         {
-            <div class="card">
-                <div class="card-body">
-                    <ul>
-                        @foreach (var file in _files)
-                        {
-                            <li>
-                                @if (FileUpload(_uploadResults, file.Name, out var result))
-                                {
-                                    <img src="https://nano35.ru/api/files/StorageItems/@result.StoredFileName" alt="Image" style="width: 100px;"/>
-                                }
-                                else
-                                {
-                                    <span>
-                                        There was an error uploading the file
-                                        (Error: @result.ErrorCode).
-                                    </span>
-                                }
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
+            <RadzenProgressBar @bind-Value="@progress" Style="margin-bottom: 20px" />
         }
                 
         @if (!string.IsNullOrEmpty(Error))
         {
             <div class="alert alert-danger mt-3 mb-0">@Error</div>
         }
-
-        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+        
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Disabled="@(progress != 0)" Style="width: 100%" />
     </EditForm>
 </LoadingContent>
 </BoxedContent>
@@ -123,11 +100,12 @@
     private CreateStorageItemHttpBody _model = new();
     private string Error { get; set; } = "";
     private bool _loaded;
+    double progress = 0;
+    private bool shouldRender;
     private List<ArticleViewModel> _articles = new();
     private List<StorageItemConditionViewModel> _conditions = new();
-    private readonly IList<File> _files = new List<File>();
-    private IList<UploadResult> _uploadResults = new List<UploadResult>();
     private readonly int _maxAllowedFiles = 3;
+    RadzenUpload upload;
     
     private async Task HandleValidSubmit()
     {
@@ -217,79 +195,12 @@
             });
     }
     
-    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    void OnProgress(UploadProgressArgs args, string name)
     {
-        const long maxFileSize = 1024 * 1024 * 15;
-        var upload = false;
-        using var content = new MultipartFormDataContent();
-
-        foreach (var file in e.GetMultipleFiles(_maxAllowedFiles))
+        this.progress = args.Progress;
+        if (args.Progress == 100)
         {
-            if (_uploadResults.SingleOrDefault(f => f.FileName == file.Name) is not null) continue;
-            var fileContent = new StreamContent(file.OpenReadStream());
-
-            _files.Add(
-                new File()
-                {
-                    Name = file.Name,
-                });
-
-            if (file.Size < maxFileSize)
-            {
-                content.Add(
-                    fileContent,
-                    "\"files\"",
-                    file.Name);
-
-                upload = true;
-            }
-            else
-            {
-                _uploadResults.Add(
-                    new UploadResult()
-                    {
-                        FileName = file.Name,
-                        ErrorCode = 6,
-                        Uploaded = false,
-                    });
-            }
+            this.progress = 0;
         }
-
-        if (upload)
-        {
-            var response = await HttpClient.PostAsync($"https://nano35.ru/api/files/Images/CreateStorageItemImage?storageITemId={_model.NewId}", content);
-
-            var newUploadResults = await response.Content
-                .ReadFromJsonAsync<IList<UploadResult>>();
-
-            _uploadResults = _uploadResults.Concat(newUploadResults).ToList();
-        }
-    }
-
-    private static bool FileUpload(IList<UploadResult> uploadResults,
-        string fileName, out UploadResult result)
-    {
-        result = uploadResults.SingleOrDefault(f => f.FileName == fileName);
-
-        if (result is null)
-        {
-            result = new UploadResult();
-            result.ErrorCode = 5;
-        }
-
-        return result.Uploaded;
-    }
-
-    private class File
-    {
-        public string Name { get; set; }
-    }
-
-    public class UploadResult
-    {
-        public int ErrorCode { get; set; }
-        public string StoredFileName { get; set; }
-        public string FileName { get; set; }
-        public bool Uploaded { get; set; }
     }
 }

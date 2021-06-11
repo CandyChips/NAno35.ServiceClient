@@ -60,13 +60,13 @@ namespace Nano35.WebClient.Services
         public async Task<UserViewModel> GetCurrentUser()
         {
             var response = new UserViewModel();
-            await _get.InvokeAsync<GetUserFromTokenHttpResponse>($"Identity/FromToken",
+            await _get.InvokeAsync<GetUserFromTokenHttpResponse>(
+                $"Identity/FromToken",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Data;}
                     else
                     {
-                        Console.WriteLine(resp.Error);
                         _navigationManager.NavigateTo("/instance-view");
                     }
                 });

@@ -71,7 +71,7 @@
     protected override async Task OnInitializedAsync()
     {            
         _isLoading = false;        
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -91,7 +91,7 @@
         _selectedCategory = null;
         _categories.Clear();
         _selectedCategories.Add(selected);
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}

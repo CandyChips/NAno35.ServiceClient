@@ -6,7 +6,7 @@
 
 @if (_childs.Count != 0)
 {
-    <RadzenTreeItem Text="@Item.Name" Change=@OnChange.InvokeAsync(Item)>
+    <RadzenTreeItem Value="@Item.Id" Text="@Item.Name">
         @foreach (var item in _childs)
         {
             <TreeNode Item="@item"/>
@@ -15,13 +15,12 @@
 }
 else
 {
-    <RadzenTreeItem Text="@Item.Name" />
+    <RadzenTreeItem Value="@Item.Id" Text="@Item.Name" />
 }
 
 @code
 {
     [Parameter] public CategoryViewModel Item { get; set; }
-    [Parameter] public EventCallback OnChange { get; set; } 
     private List<CategoryViewModel> _childs = new();
 
     protected override async Task OnInitializedAsync()

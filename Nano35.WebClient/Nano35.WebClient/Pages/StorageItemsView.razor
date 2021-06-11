@@ -66,10 +66,10 @@
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-    <RadzenTree style="width: 100%" >
+    <RadzenTree style="width: 100%" Change=@Filter >
         @foreach (var item in _categories)
         {
-            <TreeNode Item=@item OnChange=@Filter(item)></TreeNode>
+            <TreeNode Item=@item></TreeNode>
         }
     </RadzenTree>
 </LoadingContent>
@@ -118,10 +118,13 @@
         await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/StorageItemTicket/{itemId}");
     }
 
-    private async Task Filter(CategoryViewModel item)
+    private async Task Filter(TreeEventArgs args)
     {
+        Console.WriteLine(args.Value);
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}&CategoryId={item.Id}",
+            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}&CategoryId={args.Value}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
+        
+        StateHasChanged();
     }
 }

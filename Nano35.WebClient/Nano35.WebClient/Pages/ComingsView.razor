@@ -32,10 +32,12 @@
             <RadzenGridColumn TItem="ComingViewModel" 
                               Property="Number"
                               Title="Номер" 
+                              TextAlign="TextAlign.Center"
                               Width="70px"/>
             
             <RadzenGridColumn TItem="ComingViewModel"
                               Filterable="false"
+                              TextAlign="TextAlign.Center"
                               Title="Дата">
                 <Template Context="item">
                     @item.Date.ToString("dd-MM-yyyy hh:mm")
@@ -44,14 +46,17 @@
             
             <RadzenGridColumn TItem="ComingViewModel"
                               Property="Unit" 
+                              TextAlign="TextAlign.Center"
                               Title="Подразделение" />
             
             <RadzenGridColumn TItem="ComingViewModel"
                               Property="Client" 
+                              TextAlign="TextAlign.Center"
                               Title="Клиент" />
             
             <RadzenGridColumn TItem="ComingViewModel"
                               Width="130px"
+                              TextAlign="TextAlign.Center"
                               Title="Цена">
                 <Template Context="item">
                     @item.Cash руб.

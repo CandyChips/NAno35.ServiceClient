@@ -61,11 +61,6 @@
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
 
-            <InputField Title="Цена за еденицу">
-                <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="false" Min="0"/></Controls>
-                <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
-            </InputField>
-            
             <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         </EditForm>
     </LoadingContent>

@@ -36,8 +36,7 @@ namespace Nano35.WebClient.Services
 
         public async Task<bool> CheckAsync()
         {
-            try
-            {
+            try            {
                 var response = await _httpClient.GetAsync($"{_requestManager.ProxyUri}/health");
                 if (!response.IsSuccessStatusCode) _notificationService.Notify(NotificationSeverity.Warning, "Error access", _requestManager.ProxyUri);
                 return response.IsSuccessStatusCode;

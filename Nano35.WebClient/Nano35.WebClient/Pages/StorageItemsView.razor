@@ -23,15 +23,15 @@
                 PageSize="10"
                 Data="@_data"
                 TItem="StorageItemOnUnitViewModel">
-        <Template Context="item">
-            <ConditionalContent IsLoaded="item.Item.Images == null || item.Item.Images.Count == 0">
+        <Template Context="@(item)">
+            <ConditionalContent IsLoaded="@(item.Item.Images == null || item.Item.Images.Count == 0)">
                 <AllowedContent>
                     <span>Нет изображений</span>
                 </AllowedContent>
                 <RejectedContent>
                     <RadzenSteps>
                         <Steps>
-                            @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/StorageItems/{value}"}))
+                            @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/Images/GetImageOfStorageItem/{value}"}))
                             {
                                 <RadzenStepsItem>
                                     <RadzenCard Style="width: 35rem;height: 35rem">

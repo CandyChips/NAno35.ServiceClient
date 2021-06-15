@@ -19,17 +19,13 @@
                 Data="@_data"
                 TItem="MoveViewModel">
         <Columns>
-            <RadzenGridColumn TItem="MoveViewModel" Property="Number" Title="Номер" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="ToUnit" Title="Подразделение получатель" />
-            <RadzenGridColumn TItem="MoveViewModel" Property="FromUnit" Title="Подразделение отправитель" />
-            <RadzenGridColumn TItem="MoveViewModel" Width="130px">
+            <RadzenGridColumn TItem="MoveViewModel" Property="Number" TextAlign="TextAlign.Center" Title="Номер" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="Date" TextAlign="TextAlign.Center" Title="Дата" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="ToUnit" TextAlign="TextAlign.Center" Title="Подразделение получатель" />
+            <RadzenGridColumn TItem="MoveViewModel" Property="FromUnit" TextAlign="TextAlign.Center" Title="Подразделение отправитель" />
+            <RadzenGridColumn TItem="MoveViewModel" Width="130px" TextAlign="TextAlign.Center">
                 <Template Context="item">
-                    <RadzenButton Click=@(_ => OpenMove(item)) 
-                                  Text="Информация"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Primary"/>
+                    <RadzenButton Click=@(_ => OpenMove(item)) Text="Информация" Size="ButtonSize.Small" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>

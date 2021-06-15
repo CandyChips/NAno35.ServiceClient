@@ -25,7 +25,7 @@
         </nav>
         <RadzenTabs>
             <Tabs>
-                <RadzenTabsItem Text="Добавить">
+                <RadzenTabsItem Text="Добавить существующую подкатегория">
                     <div style="display: flex;">
                         <RadzenDropDown Data="@(_categories)"
                                         style="width: 100%;"
@@ -41,16 +41,19 @@
                                         AllowFiltering="true"/>
                     </div>
                 </RadzenTabsItem>
-                <RadzenTabsItem Text="Создать">
-                    <div style="display: flex;">
-                        <RadzenTextBox Change=@(args => _name = args.ToString())
-                                       style="width: 100%;"
-                                       Placeholder=@(_selectedCategories.Any() ? $"Введите название новой подкатегории к {_selectedCategories.Last().Name}" : "Введите название новой категории" ) />
-                        <RadzenButton Click="@(_ => OnCreateCategory())"
-                                      Text="Добавить"
-                                      ButtonStyle="ButtonStyle.Secondary" />
-                    </div>
-                </RadzenTabsItem>
+                @if (_selectedCategories.Any())
+                {
+                    <RadzenTabsItem Text="Создать подкатегорию">
+                        <div style="display: flex;">
+                            <RadzenTextBox Change=@(args => _name = args.ToString())
+                                           style="width: 100%;"
+                                           Placeholder=@(_selectedCategories.Any() ? $"Введите название новой подкатегории к {_selectedCategories.Last().Name}" : "Введите название новой категории" ) />
+                            <RadzenButton Click="@(_ => OnCreateCategory())"
+                                          Text="Добавить"
+                                          ButtonStyle="ButtonStyle.Secondary" />
+                        </div>
+                    </RadzenTabsItem>
+                }
             </Tabs>
         </RadzenTabs>
     </div>
@@ -58,10 +61,9 @@
 
 @code
 {
-    private Guid _value;
     [Parameter] public EventCallback<Guid> ValueChanged { get; set; }
     [Parameter] public Guid Value { get => _value; set { if (_value == value ) return; _value = value; ValueChanged.InvokeAsync(value); } }
-    
+    private Guid _value;    
     private List<ArticleCategoryViewModel> _categories = new();
     private List<ArticleCategoryViewModel> _selectedCategories = new();
     private ArticleCategoryViewModel _selectedCategory;

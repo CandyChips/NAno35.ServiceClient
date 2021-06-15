@@ -80,7 +80,7 @@
                         </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
-                <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%" />
+                <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%; margin-top: 1rem" />
             </RadzenFieldset>
             <ValidationMessage For="@(() => Model.Details)" />
             @if (!string.IsNullOrEmpty(Error))

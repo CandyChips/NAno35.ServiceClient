@@ -71,8 +71,8 @@
                 <Controls>
                     <div style="width: 100%; display: flex;">
                         <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Complication"/>
-                        @if(_isComplected1Shown) { <RadzenButton Text="Устройство" Click="@(_ => { Model.Complication += "Устройство"; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
-                        @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания"; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                        @if(_isComplected1Shown) { <RadzenButton Text="Устройство" Click="@(_ => { Model.Complication += "Устройство "; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                        @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += "Блок питания "; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
                     </div>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.Complication)" /></Validation>
@@ -121,6 +121,8 @@
                         NavigationManager.NavigateTo("/instance-view");
                     }
                 });
+
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
         {

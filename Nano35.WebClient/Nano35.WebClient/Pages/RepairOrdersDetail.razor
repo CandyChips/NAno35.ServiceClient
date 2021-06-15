@@ -4,6 +4,7 @@
 @using Append.Blazor.Printing
 @using Nano35.Contexts.Http.Repair
 @using Nano35.Contexts.Http.storage
+@using RepairOrderStateType = Nano35.WebClient.Helpers.RepairOrderStateType
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -33,16 +34,19 @@
                             Style="width: 100%;">
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderReceipt/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                        <RadzenButton Click=@(async _ => await PrintingService.Print($"http://localhost:5009/StorageItems/RepairOrderReceipt/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                       Text="Акт приема"
                                       Size="ButtonSize.Small"
                                       Style="margin: 1rem 0;"
                                       ButtonStyle="ButtonStyle.Secondary"/>
-                        <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
-                                      Text="Акт выполненых работ"
-                                      Size="ButtonSize.Small"
-                                      Style="margin: 1rem 0;"
-                                      ButtonStyle="ButtonStyle.Secondary"/>
+                        @if(_works.Any())
+                        {
+                            <RadzenButton Click=@(async _ => await PrintingService.Print($"http://localhost:5009/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                                          Text="Акт выполненых работ"
+                                          Size="ButtonSize.Small"
+                                          Style="margin: 1rem 0;"
+                                          ButtonStyle="ButtonStyle.Secondary"/>
+                        }
                     </li>
                     <li class="list-group-item">
                         <b>Клиент: @_model.Client</b>
@@ -168,7 +172,6 @@
                         };
                         case 8:
                         {
-                            <RadzenButton Text="Закрыто" Click="@(SetAsClosed)"/>
                             break; 
                         };
                     }
@@ -184,7 +187,8 @@
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
                    _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
-                 _roles.Any(c => c == RolesHelper.Master))
+                 (_roles.Any(c => c == RolesHelper.Master) ||
+                 _roles.Any(c => c == RolesHelper.Admin)))
             {
                 <RadzenButton Click=@(_ => AddWork())
                               Text="Добавить работу"
@@ -254,6 +258,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        _states.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
         _states.Reverse();
         await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>($"RepairOrders/{Id}/Works",
             resp =>

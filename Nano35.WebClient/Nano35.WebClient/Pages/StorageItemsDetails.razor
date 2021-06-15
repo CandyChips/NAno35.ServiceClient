@@ -90,19 +90,6 @@
                 </EditableField>
             </FieldListItem>
             
-            <FieldListItem Title="Комментарий">
-                <EditableField OnCancel="@(() => CommentEdit = null)"
-                               OnEdit="@(() => CommentEdit = new UpdateStorageItemCommentHttpBody(){Id = StorageItem.Id})"
-                               OnSave="@(async () => await UpdateComment())">
-                    <View>@StorageItem.Comment</View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="CommentEdit.Comment"
-                                       Placeholder="@StorageItem.Comment"/>
-                    </Edit>
-                </EditableField>
-            </FieldListItem>
-            
             <FieldListItem Title="Скрытый комментарий">
                 <EditableField OnCancel="@(() => HiddenCommentEdit = null)"
                                OnEdit="@(() => HiddenCommentEdit = new UpdateStorageItemHiddenCommentHttpBody(){Id = StorageItem.Id})"

@@ -60,11 +60,6 @@
                 <Controls> <RadzenNumeric style="width: 100%;" @bind-Value="_model.Count" ShowUpDown="false" Min="1"/> </Controls>
                 <Validation><ValidationMessage For="@(() => _model.Count)" /></Validation>
             </InputField>
-
-            <InputField Title="Цена за еденицу">
-                <Controls><RadzenNumeric style="width: 100%;" @bind-Value="_model.Price" ShowUpDown="false" Min="0"/></Controls>
-                <Validation><ValidationMessage For="@(() => _model.Price)" /></Validation>
-            </InputField>
             
             <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         </EditForm>
@@ -141,14 +136,6 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        
-        _model.Price = (double) StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).PurchasePrice;
-    }
-
-    private async Task PriceCanged()
-    {
-        double.TryParse(Regex.Replace(Price, @"[^\d]", ""), out var res);
-        _model.Price = res;
     }
 
     private async Task CountCanged()

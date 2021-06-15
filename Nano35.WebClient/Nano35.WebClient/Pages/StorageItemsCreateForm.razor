@@ -46,11 +46,6 @@
             </Validation>
         </InputField>
                     
-        <InputField Title="Комментарий">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Comment"/></Controls>
-            <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
-        </InputField>
-                    
         <InputField Title="Скрытый комментарий">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.HiddenComment"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.HiddenComment)" /></Validation>

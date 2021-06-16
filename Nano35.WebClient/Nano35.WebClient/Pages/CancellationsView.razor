@@ -30,16 +30,19 @@
                               Property="Number" 
                               Filterable="false"
                               Sortable="false"
+                              TextAlign="TextAlign.Center"
                               Title="Номер" />
             <RadzenGridColumn TItem="CancellationViewModel" 
                               Property="Date" 
                               Filterable="false"
                               Sortable="false"
+                              TextAlign="TextAlign.Center"
                               Title="Дата" />
             <RadzenGridColumn TItem="CancellationViewModel" 
                               Property="Unit" 
                               Filterable="false"
                               Sortable="false"
+                              TextAlign="TextAlign.Center"
                               Title="Подразделение" />
             <RadzenGridColumn TItem="CancellationViewModel"
                               Filterable="false"
@@ -52,6 +55,7 @@
             <RadzenGridColumn TItem="CancellationViewModel" 
                               Filterable="false"
                               Sortable="false"
+                              TextAlign="TextAlign.Center"
                               Width="130px">
                 <Template Context="item">
                     <RadzenButton Click=@(_ => OpenCancellation(item)) 

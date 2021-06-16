@@ -9,83 +9,79 @@
 @inject HttpPost PostRequest
 
 <BoxedContent Width="40">
-<LoadingContent IsLoaded="_loaded">    
-    <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <InputField Title="Наименование*">
-            <Controls>
-                <div style="display: flex; width: 100%">
-                    <RadzenDropDown TValue="Guid" @bind-Value="_model.ArticleId"
-                                    Data=@(_articles.Select(a => new {a.Id, Name = $"{a.Category} {a.Brand} {a.Model}"}))
+    <LoadingContent IsLoaded="_loaded">    
+        <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <InputField Title="Наименование*">
+                <Controls>
+                    <div style="display: flex; width: 100%">
+                        <RadzenDropDown TValue="Guid" @bind-Value="_model.ArticleId"
+                                        Data=@(_articles.Select(a => new {a.Id, Name = $"{a.Category} {a.Brand} {a.Model}"}))
+                                        TextProperty="Name" ValueProperty="Id"
+                                        Disabled="@(!_articles.Any())"
+                                        style="width: 100%;"
+                                        AllowClear="true"
+                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                        FilterOperator="StringFilterOperator.Contains"
+                                        AllowFiltering="true"/>
+                        <RadzenButton Click="@(_ => OpenCreateArticle())" Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
+                    </div>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => _model.ArticleId)" /></Validation>
+            </InputField>
+
+            <InputField Title="Состояние*">
+                <Controls>
+                    <RadzenDropDown TValue="Guid" @bind-Value="_model.ConditionId"
+                                    Data="@(_conditions.Select(a => new {a.Id, a.Name}))"
                                     TextProperty="Name" ValueProperty="Id"
-                                    Disabled="@(!_articles.Any())"
-                                    style="width: 100%;"
+                                    style="flex: auto;"
                                     AllowClear="true"
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
-                    <RadzenButton Click="@(_ => OpenCreateArticle())" Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
-                </div>
-            </Controls>
-            <Validation><ValidationMessage For="@(() => _model.ArticleId)" /></Validation>
-        </InputField>
-
-        <InputField Title="Состояние*">
-            <Controls>
-                <RadzenDropDown TValue="Guid" @bind-Value="_model.ConditionId"
-                                Data="@(_conditions.Select(a => new {a.Id, a.Name}))"
-                                TextProperty="Name" ValueProperty="Id"
-                                style="flex: auto;"
-                                AllowClear="true"
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.ConditionId)" />
-            </Validation>
-        </InputField>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => _model.ConditionId)" />
+                </Validation>
+            </InputField>
+                        
+            <InputField Title="Скрытый комментарий">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.HiddenComment"/></Controls>
+                <Validation><ValidationMessage For="@(() => _model.HiddenComment)" /></Validation>
+            </InputField>
+                        
+            <InputField Title="Закупочная цена">
+                <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.RetailPrice"/></Controls>
+                <Validation><ValidationMessage For="@(() => _model.RetailPrice)" /></Validation>
+            </InputField>
+                        
+            <InputField Title="Цена продажи">
+                <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.PurchasePrice"/></Controls>
+                <Validation><ValidationMessage For="@(() => _model.PurchasePrice)" /></Validation>
+            </InputField>
+                        
+            <RadzenUpload @ref="upload"
+                          Auto="false"
+                          Multiple="true"
+                          Url=@($"https://nano35.ru/files/images/CreateStorageItemImage/{_model.NewId}") 
+                          Style="margin-bottom: 20px; width: 100%;"
+                          Accept="image/*"
+                          Progress=@(args => OnProgress(args, "Manual Upload")) />
+            
+            @if (progress != 0)
+            {
+                <RadzenProgressBar @bind-Value="@progress" Style="margin-bottom: 20px" />
+            }
                     
-        <InputField Title="Скрытый комментарий">
-            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.HiddenComment"/></Controls>
-            <Validation><ValidationMessage For="@(() => _model.HiddenComment)" /></Validation>
-        </InputField>
-                    
-        <InputField Title="Закупочная цена">
-            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.RetailPrice"/></Controls>
-            <Validation><ValidationMessage For="@(() => _model.RetailPrice)" /></Validation>
-        </InputField>
-                    
-        <InputField Title="Цена продажи">
-            <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.PurchasePrice"/></Controls>
-            <Validation><ValidationMessage For="@(() => _model.PurchasePrice)" /></Validation>
-        </InputField>
-                    
-        <RadzenUpload @ref="upload"
-                      Auto="false"
-                      Multiple="true"
-                      Url=@($"https://nano35.ru/files/images/CreateStorageItemImage/{_model.NewId}") 
-                      Style="margin-bottom: 20px; width: 100%;"
-                      Accept="image/*"
-                      Progress=@(args => OnProgress(args, "Manual Upload")) />
-        <RadzenButton Text="Upload" 
-                      Click=@(args => upload.Upload()) 
-                      ButtonStyle="ButtonStyle.Secondary"
-                      Style="margin-bottom: 20px; width: 100%;" />
-        
-        @if (progress != 0)
-        {
-            <RadzenProgressBar @bind-Value="@progress" Style="margin-bottom: 20px" />
-        }
-                
-        @if (!string.IsNullOrEmpty(Error))
-        {
-            <div class="alert alert-danger mt-3 mb-0">@Error</div>
-        }
-        
-        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Disabled="@(progress != 0)" Style="width: 100%" />
-    </EditForm>
-</LoadingContent>
+            @if (!string.IsNullOrEmpty(Error))
+            {
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            }
+            
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Disabled="@(progress != 0)" Style="width: 100%" />
+        </EditForm>
+    </LoadingContent>
 </BoxedContent>
 
 @code
@@ -104,6 +100,7 @@
     
     private async Task HandleValidSubmit()
     {
+        await upload.Upload();
         _loaded = false;
         try
         {
@@ -132,6 +129,7 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
+        _model.Comment = "";
         await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>($"StorageItemConditions",
             resp =>
             {

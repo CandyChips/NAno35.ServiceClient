@@ -2,6 +2,7 @@
 {
     public enum RepairOrderStateType
     {
+        All = -1,
         Created = 0,
         PerformerChanged = 1,
         Diagnosis = 2,
@@ -16,6 +17,7 @@
 
     public class RepairOrderStateTypesHelper
     {
+        public static int All => -1;
         public static int Created => 0;
         public static int PerformerChanged => 1;
         public static int Diagnosis => 2;
@@ -30,6 +32,7 @@
         public static string GetName(int id)
         {
             return 
+                id == All ? "Все заказы" :
                 id == Created ? "Заказ создан" :
                 id == PerformerChanged ? "Изменен исполнитель" :
                 id == Diagnosis ? "Заказ на диагностике" :

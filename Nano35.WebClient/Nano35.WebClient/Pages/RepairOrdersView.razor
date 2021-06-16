@@ -7,59 +7,82 @@
 @using Nano35.WebClient.Services
 @using Append.Blazor.Printing
 @using Nano35.Contexts.Http.Repair
+@using Radzen.Blazor.Rendering
+@using RepairOrderStateType = Nano35.WebClient.Helpers.RepairOrderStateType
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
 @inject IPrintingService PrintingService
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
+@inject IAuthService AuthService
 @inject HttpGet GetRequest
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Активные заказы на ремонт"/>
-    <RadzenButton Click=@(_ => NewOrder()) 
-                  Text="Создать"
-                  Style="margin: 1rem 0;"
-                  ButtonStyle="ButtonStyle.Primary"/>
+    @if(_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+    {
+        <RadzenButton Click=@(_ => NewOrder())
+                      Text="Создать"
+                      Style="margin: 1rem 0;"
+                      ButtonStyle="ButtonStyle.Primary"/>
+    }
     <RadzenGrid AllowFiltering="true"
                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                FilterMode="FilterMode.Advanced"
-                EmptyText="Нет оприходований."
+                FilterMode="FilterMode.Simple"
+                LogicalFilterOperator="LogicalFilterOperator.Or"
+                EmptyText="Нет заказов на ремонт."
                 AllowPaging="true"
                 PageSize="15"
                 AllowSorting="true"
-                Data="@_data"
+                Data="@_filteredData"
                 TItem="RepairOrderViewModel">
         <Columns>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Number"
-                              Filterable="false"
-                              Sortable="false"
                               Title="№"
                               TextAlign="TextAlign.Center"
+                              Filterable="false"
+                              Sortable="false"
                               Width="70px"/>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Client"
-                              Filterable="false"
                               Sortable="false"
-                              Title="Клиент"/>
+                              Title="Клиент">
+                <FilterTemplate>
+                    <RadzenDropDown @bind-Value="@_currentClient" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                                     Change=@OnChangeClient
+                                     Data="@(_clientData)" />
+                                            
+                </FilterTemplate>
+            </RadzenGridColumn>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Property="Device"
-                              Filterable="false"
                               Sortable="false"
-                              Title="Изделие"/>
+                              Title="Изделие">
+            <FilterTemplate>
+                <RadzenDropDown @bind-Value="@_currentDevice" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                                 Change=@OnChangeDevice
+                                 Data="@(_deviceData)" />
+                            
+            </FilterTemplate>
+            </RadzenGridColumn>
             <RadzenGridColumn TItem="RepairOrderViewModel"
-                              Bubble="false"
-                              Filterable="false"
+                              Property="CurrentState"
                               Sortable="false"
                               Title="Статус">
                 <Template Context="item">
                     @RepairOrderStateTypesHelper.GetName(item.CurrentState) - @item.LastStateDate
                 </Template>
+                <FilterTemplate>
+                    <RadzenDropDown @bind-Value="@_currentState" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                                     Change=@OnChangeState
+                                     Data="@(Enum.GetValues(typeof(RepairOrderStateType)).Cast<RepairOrderStateType>().Select(t => new { Text = RepairOrderStateTypesHelper.GetName((int) t), Value = t }))" />
+                
+                </FilterTemplate>
             </RadzenGridColumn>
             <RadzenGridColumn TItem="RepairOrderViewModel"
                               Bubble="false"
-                              Filterable="false"
                               Sortable="false"
                               TextAlign="TextAlign.Center" 
                               Width="130px">
@@ -77,13 +100,45 @@
 @code {
     private bool _isLoaded;
     private List<RepairOrderViewModel> _data;
+    private List<RepairOrderViewModel> _filteredData = new();
+    private RepairOrderStateType _currentState = (RepairOrderStateType) (-1);
+    private string _currentDevice;
+    private string _currentClient;
+    private List<Guid> _roles = new();
+
+    private IEnumerable<Filter> _clientData;
+    private IEnumerable<Filter> _deviceData;
+
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     
+    private class Filter
+    {
+        public string Text { get; }
+        public string Value { get; }
+
+        public Filter(string text, string value)
+        {
+            Text = text;
+            Value = value;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
         _data = await GetAllRepairOrders();
+        _filteredData = _data;
+        
+        _clientData = _data.GroupBy(g => g.Client, e => e).Select(t => new Filter(t.Key, t.Key));
+        _clientData = _clientData.Append(new Filter("Все Клиенты",""));
+        _clientData = _clientData.Reverse();
+        
+        _deviceData = _data.GroupBy(g => g.Device, e => e).Select(t => new Filter(t.Key, t.Key));
+        _deviceData = _deviceData.Append(new Filter("Все Устройства",""));
+        _deviceData = _deviceData.Reverse();
+        
+        _roles = await AuthService.GetCurrentRoles();
         _isLoaded = true;
     }
 
@@ -100,6 +155,8 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        data.Sort((x, y) => DateTime.Compare(x.LastStateDate, y.LastStateDate));
+        data.Reverse();
         return data;
     }
 
@@ -113,6 +170,7 @@
         _isLoaded = false;
         StateHasChanged();
         _data = await GetAllRepairOrders();
+        _filteredData = _data;
         _isLoaded = true;
     }
     
@@ -123,8 +181,27 @@
         await modal.Result;
         _isLoaded = false;
         _data = await GetAllRepairOrders();
+        _filteredData = _data;
         _isLoaded = true;
 
+    }
+    
+    private async Task OnChangeState()
+    {
+        Console.WriteLine(_currentState);
+        _filteredData = _data.Where(e => _currentState < 0 || e.CurrentState == (int) _currentState).ToList();
+    }
+    
+    private async Task OnChangeDevice()
+    {
+        Console.WriteLine(_currentDevice);
+        _filteredData = _data.Where(e => _currentDevice == "" || e.Device == _currentDevice).ToList();
+    }
+    
+    private async Task OnChangeClient()
+    {
+        Console.WriteLine(_currentClient);
+        _filteredData = _data.Where(e => _currentClient == "" || e.Client == _currentClient).ToList();
     }
 
 }

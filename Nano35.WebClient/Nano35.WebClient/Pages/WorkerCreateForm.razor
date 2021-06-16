@@ -60,6 +60,9 @@
 
 @code
 {
+    
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
     private CreateWorkerHttpBody _model = new();
     private string Error { get; set; }
     private string Phone {
@@ -82,6 +85,11 @@
                 _model.Phone = "";
                 return;
             }
+            if (value.Length < 10)
+                value = value.PadRight(10);
+            if (value.Length > 10)
+                value = value.Substring(0, 10);
+            
             var tmp = Regex.Replace(value, @"[^\d]", "").Remove(0,1);
             _model.Phone = tmp;
         }
@@ -112,6 +120,7 @@
                         NavigationManager.NavigateTo("/instance-view");
                     }
                 });
+            await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
         {

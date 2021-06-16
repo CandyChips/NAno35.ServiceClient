@@ -4,6 +4,7 @@
 @using Append.Blazor.Printing
 @using Nano35.Contexts.Http.Repair
 @using Nano35.Contexts.Http.storage
+@using Nano35.Contracts.Identity.Models
 @using RepairOrderStateType = Nano35.WebClient.Helpers.RepairOrderStateType
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
@@ -125,56 +126,103 @@
                             Style="width: 70%;">
                 <ul class="list-group">
                     <li class="list-group-item alert alert-primary">
-                    @switch (_model.CurrentState)
-                    {
-                        case 0:
+                        @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty))
                         {
-                            <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
-                            break;
-                        };
-                        case 1:
-                        {
-                            <RadzenButton Text="На диагностике" Click="@(SetAsDiagnosted)"/>
-                            break;
-                        };
-                        case 2:
-                        {
-                            <RadzenButton Text="Согласован с клиентом " Click="@(SetAsAgreement)"/>
-                            break;
-                        };
-                        case 3:
-                        {
-                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
-                            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
-                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
-                            break;
-                        };
-                        case 4:
-                        {
-                            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
-                            break;
-                        };
-                        case 5:
-                        {
-                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
-                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
-                            break; 
-                        };
-                        case 6:
-                        {
-                            <RadzenButton Text="Завершен" Click="@(SetAsCompleted)"/>
-                            break; 
-                        };
-                        case 7:
-                        {
-                            <RadzenButton Text="Закрыт" Click="@(SetAsClosed)"/>
-                            break; 
-                        };
-                        case 8:
-                        {
-                            break; 
-                        };
-                    }
+                            @switch (_model.CurrentState)
+                            {
+                                case 0:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                                    }
+                                    @if (_roles.Any(c => c == RolesHelper.Master))
+                                    {
+                                        <RadzenButton Text="Стать исполнителем" Click="@(BecomePerformer)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 1:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="На диагностике" Click="@(SetAsDiagnosted)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 2:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Согласован с клиентом " Click="@(SetAsAgreement)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 3:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
+                                        <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                                        
+                                    }
+                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 4:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 5:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
+                                    }
+                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 6:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Завершен" Click="@(SetAsCompleted)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 7:
+                                {
+                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
+                                    {
+                                        <RadzenButton Text="Закрыт" Click="@(SetAsClosed)"/>
+                                    }
+                                    break;
+                                }
+                                    ;
+                                case 8:
+                                {
+                                    break;
+                                }
+                                    ;
+                            }
+                        }
                     </li>
                     @foreach (var state in _states)
                     {
@@ -187,8 +235,8 @@
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
                    _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
-                 (_roles.Any(c => c == RolesHelper.Master) ||
-                 _roles.Any(c => c == RolesHelper.Admin)))
+                 (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin)) && 
+                 (_model.CurrentState == (int) RepairOrderStateType.OnWork))
             {
                 <RadzenButton Click=@(_ => AddWork())
                               Text="Добавить работу"
@@ -234,7 +282,9 @@
     private UpdateRepairOrdersTroubleHttpBody TroubleEdit { get; set; }
     private UpdateRepairOrdersComplicationHttpBody ComplicationEdit { get; set; }
     
+    private SetPerformerOfRepairOrderHttpQuery SetUserAsPerformerOfRepairOrderQuery { get; set; } = new();
     private List<Guid> _roles = new();
+    private UserViewModel _user = new();
 
     private async Task Update()
     {   
@@ -286,6 +336,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        _user = await AuthService.GetCurrentUser();
         _roles = await AuthService.GetCurrentRoles();
         await Update();
         _isLoaded = true;
@@ -306,10 +357,30 @@
         _isLoaded = true;
     }
 
-    private SetPerformerOfRepairOrderHttpQuery SetUserAsPerformerOfRepairOrderQuery { get; set; } = new();
+    
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
+        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>($"RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        _isLoaded = false;
+        await Update();
+        _isLoaded = true;
+    }
+    
+    private async Task BecomePerformer()
+    {
+        SetUserAsPerformerOfRepairOrderQuery.UserId = _user.Id;
+        SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
+        SetUserAsPerformerOfRepairOrderQuery.NewId = Guid.NewGuid();
         await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>($"RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
             resp =>
             {

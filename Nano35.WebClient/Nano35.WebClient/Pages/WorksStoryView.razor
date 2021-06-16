@@ -2,13 +2,60 @@
 @layout InstanceLayout
 @page "/instance/repairs/story"
 @using Microsoft.AspNetCore.Authorization
+@using Nano35.Contexts.Http.Repair
+@using Nano35.Contracts.Repair.Models
 @using Nano35.WebClient.Services
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
 
-<h3>WorksStoryView</h3>
+<RadzenHeading Text="Виды работ"/>
+<RadzenButton Click=@(_ => NewWork()) Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
+<RadzenGrid AllowPaging="true" PageSize="10" Data="@_works" TItem="WorkViewModel">
+    <Columns>
+        <RadzenGridColumn TItem="WorkViewModel" TextAlign="TextAlign.Center" Property="Name" Title="Наименование" />
+        <RadzenGridColumn TItem="WorkViewModel" TextAlign="TextAlign.Center" Property="Price" Title="Цена" />
+    </Columns>
+</RadzenGrid>
 
 @code {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private List<WorkViewModel>  _works { get; set; } = new();
     
+    protected override async Task OnInitializedAsync()
+    {        
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    _works = resp.Success.Data;
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
+
+    private async Task NewWork()
+    {
+        var modal = Modal.Show<WorkCreateForm>($"Новая работа");
+        await modal.Result;
+        
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    _works = resp.Success.Data;
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
 }

@@ -126,7 +126,7 @@
                             Style="width: 70%;">
                 <ul class="list-group">
                     <li class="list-group-item alert alert-primary">
-                        @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty))
+                     @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty))
                         {
                             @switch (_model.CurrentState)
                             {
@@ -235,8 +235,8 @@
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
                    _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
-                 (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin)) && 
-                 (_model.CurrentState == (int) RepairOrderStateType.OnWork))
+                 (_roles.Any(c => c == RolesHelper.Master) ||
+                 _roles.Any(c => c == RolesHelper.Admin)))
             {
                 <RadzenButton Click=@(_ => AddWork())
                               Text="Добавить работу"
@@ -357,7 +357,6 @@
         _isLoaded = true;
     }
 
-    
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
@@ -395,6 +394,7 @@
         await Update();
         _isLoaded = true;
     }
+
 
     private async Task UpdateDevice()
     {

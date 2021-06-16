@@ -7,22 +7,26 @@
 @inject HttpPost PostRequest
 @inject NavigationManager NavigationManager
 
-<EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <InputField Title="Название работы">
-        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
-    </InputField>
-    <InputField Title="Цена">
-        <Controls><RadzenNumeric ShowUpDown="false" TValue="double" @bind-Value="Model.Price"/></Controls>
-        <Validation><ValidationMessage For="@(() => Model.Price)" /></Validation>
-    </InputField>
-    <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
-    @if (!string.IsNullOrEmpty(Error))
-    {
-        <div class="alert alert-danger mt-3 mb-0">@Error</div>
-    }
-</EditForm>
+<BoxedContent>
+    <LoadingContent IsLoaded="_isLoaded">
+        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <InputField Title="Название работы">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
+            </InputField>
+            <InputField Title="Цена">
+                <Controls><RadzenNumeric ShowUpDown="false" Style="width: 100%;" TValue="double" @bind-Value="Model.Price"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Price)" /></Validation>
+            </InputField>
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
+            @if (!string.IsNullOrEmpty(Error))
+            {
+                <div class="alert alert-danger mt-3 mb-0">@Error</div>
+            }
+        </EditForm>
+    </LoadingContent>
+</BoxedContent>
 
 @code
 {
@@ -31,31 +35,29 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public string Error { get; set; }
 
+    private bool _isLoaded;
+
     protected override async Task OnInitializedAsync()
     {
+        _isLoaded = false;
         Model.NewId = Guid.NewGuid();
         Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        _isLoaded = true;
     }
 
     private async Task HandleValidSubmit()
     {
-        try
-        {   
-            await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>($"Works", Model,
-                resp =>
+        _isLoaded = false;
+        await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>($"Works", Model,
+            resp =>
+            {
+                if (resp.IsSuccess()) {}
+                else
                 {
-                    if (resp.IsSuccess()) {}
-                    else
-                    {
-                        Console.WriteLine(resp.Error);
-                        NavigationManager.NavigateTo("/instance-view");
-                    }
-                });
-            await ModalInstance.CloseAsync();
-        }
-        catch (Exception e)
-        {
-            Error = e.Message;
-        }
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        await ModalInstance.CloseAsync();
     }
 }

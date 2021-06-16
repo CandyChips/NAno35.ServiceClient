@@ -83,19 +83,16 @@
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-
     [Parameter] public Guid Id { get; set; }
+    
     private ArticleViewModel Article { get; set; } = new ();
-    
     private List<ArticleCategoryViewModel> Categories { get; set; }
-    
     private UpdateArticleInfoHttpBody InfoEdit { get; set; }
     private UpdateArticleModelHttpBody ModelEdit { get; set; }
     private UpdateArticleCategoryHttpBody CategoryEdit { get; set; }
     private UpdateArticleBrandHttpBody BrandEdit { get; set; }
     private bool _isLoaded;
 
-    
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
@@ -108,10 +105,12 @@
         await GetRequest.InvokeAsync<GetArticleByIdSuccessHttpResponse>($"Articles/{Id}",
             resp =>
             {
-                if (resp.IsSuccess()) {Article = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    Article = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -119,10 +118,12 @@
             $"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
             resp =>
             {
-                if (resp.IsSuccess()) {Categories = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    Categories = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -137,10 +138,12 @@
             $"Articles/Category", CategoryEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -154,10 +157,12 @@
             $"Articles/Brand", BrandEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -171,10 +176,12 @@
             $"Articles/Model", ModelEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -188,10 +195,12 @@
             $"Articles/Info", InfoEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

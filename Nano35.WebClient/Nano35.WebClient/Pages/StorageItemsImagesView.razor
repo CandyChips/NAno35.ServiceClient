@@ -1,0 +1,36 @@
+@using Nano35.WebClient.Services
+@using Nano35.Contracts.files
+@using Nano35.Contexts.Http.Files
+@using Nano35.Communication
+@inject HttpGet GetRequest
+@inject HttpClient HttpClient
+
+<LoadingContent IsLoaded="_isLoaded">
+    <ConditionalContent IsLoaded="@(ImagesId.Any())">
+        <AllowedContent>
+            @foreach (var image in ImagesId.Select((value, i) => new {i, S = $"https://nano35.ru/files/Images/GetImageOfStorageItem/{value}"}))
+            {
+                <RadzenCard Style="width: 35rem;height: 35rem">
+                    <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
+                </RadzenCard>
+            }
+        </AllowedContent>
+        <RejectedContent>
+            <p>Нет изображений</p>
+        </RejectedContent>
+    </ConditionalContent>
+</LoadingContent>
+
+@code {
+    [Parameter] public Guid StorageItemId { get; set; }
+    private List<Guid> ImagesId { get; set; } = new List<Guid>();
+    private bool _isLoaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        var response = await HttpClient.GetAsync($"https://nano35.ru/files/Images/GetImageIdsOfStorageItem/{StorageItemId}");
+        ImagesId = (await response.Content.ReadFromJsonAsync<GetImageIdsOfStorageItemHttpResponse>())?.Ids;
+        _isLoaded = true;
+    }
+}

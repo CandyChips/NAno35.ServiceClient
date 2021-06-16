@@ -136,14 +136,6 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        
-        _model.Price = (double) StorageItems.FirstOrDefault(a=> a.Id == _model.StorageItemId).PurchasePrice;
-    }
-
-    private async Task PriceCanged()
-    {
-        double.TryParse(Regex.Replace(Price, @"[^\d]", ""), out var res);
-        _model.Price = res;
     }
 
     private async Task CountCanged()

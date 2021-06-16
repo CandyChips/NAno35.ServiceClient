@@ -129,7 +129,6 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        _model.Comment = "";
         await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>($"StorageItemConditions",
             resp =>
             {

@@ -20,30 +20,9 @@
     <RadzenHeading Text="Наличие"/>
     <RadzenGrid EmptyText="Нет изделий на складе."
                 AllowPaging="true"
-                PageSize="10"
+                PageSize="16"
                 Data="@_data"
                 TItem="StorageItemOnUnitViewModel">
-        <Template Context="@(item)">
-            <ConditionalContent IsLoaded="@(item.Item.Images == null || item.Item.Images.Count == 0)">
-                <AllowedContent>
-                    <span>Нет изображений</span>
-                </AllowedContent>
-                <RejectedContent>
-                    <RadzenSteps>
-                        <Steps>
-                            @foreach (var image in item.Item.Images.Select((value, i) => new {i, S = $"https://nano35.ru/api/files/Images/GetImageOfStorageItem/{value}"}))
-                            {
-                                <RadzenStepsItem>
-                                    <RadzenCard Style="width: 35rem;height: 35rem">
-                                        <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
-                                    </RadzenCard>
-                                </RadzenStepsItem>
-                            }
-                        </Steps>
-                    </RadzenSteps>
-                </RejectedContent>
-            </ConditionalContent>
-        </Template>
         <Columns>
             <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
             <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
@@ -59,9 +38,10 @@
                 <Template Context="item">
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                     {
-                        <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
                     }
-                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => OpenStorageItemImages(item.Item)) Text="Изображения" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -111,6 +91,14 @@
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
+    }
+
+    private async Task OpenStorageItemImages(StorageItemWarehouseView storageItem)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(StorageItemsImagesView.StorageItemId), storageItem.Id);
+        var modal = Modal.Show<StorageItemsImagesView>($"{storageItem.Name}", parameters);
+        await modal.Result;
     }
 
     private async Task PrintTicketAsync(Guid itemId)

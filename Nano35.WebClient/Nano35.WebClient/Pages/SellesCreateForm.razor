@@ -40,22 +40,11 @@
                                             EmptyText="Добавте продаваемые товары..."
                                             TItem="CreateSelleDetailViewModel">
                                     <Columns>
-                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                                          Property="PlaceOnStorage"
-                                                          Title="Товар"/>
-                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                                          Property="PlaceOnStorage"
-                                                          Title="Место на складе"/>
-                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                                          Property="Count"
-                                                          Title="Количество"/>
-                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                                          Property="Price"
-                                                          Title="Цена"/>
-                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel"
-                                                          Bubble="false"
-                                                          TextAlign="TextAlign.Center"
-                                                          Width="70px">
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel" TextAlign="TextAlign.Center" Property="PlaceOnStorage" Title="Товар"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel" TextAlign="TextAlign.Center" Property="PlaceOnStorage" Title="Место на складе"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel" TextAlign="TextAlign.Center" Property="Count" Title="Количество"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel" TextAlign="TextAlign.Center" Property="Price" Title="Цена"/>
+                                        <RadzenGridColumn TItem="CreateSelleDetailViewModel" TextAlign="TextAlign.Center" Bubble="false" Width="70px">
                                             <Template Context="item">
                                                 <RadzenButton Click=@(_ => DeleteDetail(item))
                                                               ButtonStyle="ButtonStyle.Danger"

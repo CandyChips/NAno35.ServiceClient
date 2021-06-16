@@ -11,7 +11,7 @@
 
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
-        <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
+        <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
             <FluentValidationValidator/>
             <ValidationSummary/>
             <InputField Title="Подразделение*">
@@ -20,23 +20,23 @@
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     TValue="Guid"
-                                    @bind-Value="Model.UnitId"
+                                    @bind-Value="_model.UnitId"
                                     Style="width: 100%;"
                                     Placeholder="Выберите целевое подразделение..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
                                     AllowFiltering="true"/>
                 </Controls>
-                <Validation><ValidationMessage For="@(() => Model.UnitId)" /></Validation>
+                <Validation><ValidationMessage For="@(() => _model.UnitId)" /></Validation>
             </InputField>
         
             <InputField Title="Комментарий">
                 <Controls>
                     <RadzenTextBox Style="width: 100%;"
                                    Placeholder="Введите коментарий к списанию..."
-                                   @bind-Value="Model.Comment"/>
+                                   @bind-Value="_model.Comment"/>
                 </Controls>
-                <Validation><ValidationMessage For="@(() => Model.Comment)" /></Validation>
+                <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
             </InputField>
         
             <InputField Title="Списываемые товары">
@@ -73,7 +73,7 @@
                                   ButtonStyle="ButtonStyle.Secondary"
                                   style="width: 100%"/>
                 </Controls>
-                <Validation><ValidationMessage For="@(() => Model.Details)" /></Validation>
+                <Validation><ValidationMessage For="@(() => _model.Details)" /></Validation>
             </InputField>
             @if (!string.IsNullOrEmpty(Error))
             {
@@ -93,14 +93,11 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [Parameter] public Guid UnitId { get; set; }
+    
     private bool _isLoaded;
     private List<UnitViewModel> _units = new();
     private List<CreateCancellationDetailViewModel> _details = new();
-    private CreateCancellationHttpBody Model = new()
-    {
-        NewId = Guid.NewGuid(),
-        InstanceId = Guid.Empty
-    };
+    private CreateCancellationHttpBody _model = new(){NewId = Guid.NewGuid(), InstanceId = Guid.Empty};
     
     
     private string Error { get; set; }
@@ -108,18 +105,19 @@
     {
         try
         {
-            Model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>($"Cancellations", Model,
+            _model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
+            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>($"Cancellations", _model,
                 resp =>
                 {
-                    if (resp.IsSuccess()) {}
+                    if (resp.IsSuccess())
+                    {
+                        
+                    }
                     else
                     {
-                        Console.WriteLine(resp.Error);
                         NavigationManager.NavigateTo("/instance-view");
                     }
                 });
-            
             await ModalInstance.CloseAsync(ModalResult.Ok(""));
         }
         catch (Exception e)
@@ -132,14 +130,14 @@
     {
         _isLoaded = false;
         
-        Model = new CreateCancellationHttpBody
+        _model = new CreateCancellationHttpBody
         {
             NewId = Guid.NewGuid(),
             InstanceId = await SessionProvider.GetCurrentInstanceId()
         };
-        Model.Comment = "";
+        _model.Comment = "";
         _units = await LoadUnits();
-        Model.UnitId = await SessionProvider.GetCurrentUnitId();
+        _model.UnitId = await SessionProvider.GetCurrentUnitId();
         _isLoaded = true;
     }
 
@@ -152,18 +150,10 @@
 
     private async Task AddDetail()
     {
-        var modalOpts = new ModalOptions()
-        {
-            DisableBackgroundCancel = true, FocusFirstElement = true
-        };
-        
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
         var moviesModal = Modal.Show<CancellationsDetailForm>("Новая позиция к списанию", modalOpts);
         var result = await moviesModal.Result;
-
-        if (result.Data is CreateCancellationDetailViewModel success)
-        {
-            _details.Add(success);  
-        }
+        if (result.Data is CreateCancellationDetailViewModel success){_details.Add(success);}
     }
     private async Task<List<UnitViewModel>> LoadUnits()
     {
@@ -171,10 +161,12 @@
         await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}
+                if (resp.IsSuccess())
+                {
+                    data = resp.Success.Units.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

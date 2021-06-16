@@ -1,9 +1,10 @@
 
-<div style="width: @(Width)rem;">
+<div style="width: @(Width)rem; overflow-y: scroll;">
     @ChildContent
 </div>
 
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }
     [Parameter] public int Width { get; set; } = 40;
+    [Parameter] public int Height { get; set; } = 20;
 }

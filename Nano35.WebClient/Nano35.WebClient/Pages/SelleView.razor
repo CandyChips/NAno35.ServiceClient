@@ -2,6 +2,7 @@
 @using Nano35.WebClient.Services
 @using Append.Blazor.Printing
 @using Nano35.Contexts.Http.storage
+@using Nano35.WebClient.Helpers
 @attribute [Authorize]
 @layout InstanceLayout
 @page "/instance/storage/sells"
@@ -12,84 +13,53 @@
 @inject NotificationService NotificationService
 @inject HealthService HealthService
 @inject NavigationManager NavigationManager
+@inject IAuthService AuthService
 @inject HttpGet GetRequest
 
 
-@if (_loading)
-{
-    <div class="d-flex justify-content-center" style="margin-top: 5rem; margin-bottom: 5rem">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden"></span>
-      </div>
-    </div>
-}
-else
-{
+<LoadingContent IsLoaded="_loading">
+    
     <RadzenHeading Text="Продажи"/>
     
-    <RadzenButton Click=@(_ => NewSelle()) 
-                  Text="Создать"
-                  Style="margin: 1rem 0;"
-                  ButtonStyle="ButtonStyle.Primary"/>
+    @if (_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin))
+    {
+        <RadzenButton Click=@(_ => NewSelle()) 
+                      Text="Создать"
+                      Style="margin: 1rem 0;"
+                      ButtonStyle="ButtonStyle.Primary"/>
+    }
     
-    <RadzenGrid AllowFiltering="true" 
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                FilterMode="FilterMode.Advanced" 
-                AllowPaging="true"
-                PageSize="10"
-                AllowSorting="true" 
-                Data=@(_data)
-                TItem="SelleViewModel">
+    
+    <RadzenGrid EmptyText="Нет оприходований." AllowPaging="true" PageSize="10" Data=@(_data) TItem="SelleViewModel">
         <Columns>
-            <RadzenGridColumn TItem="SelleViewModel"
-                              Property="Number" 
-                              Width="100px"
-                              Title="Номер" />
-            <RadzenGridColumn TItem="SelleViewModel"
-                              Sortable="false"
-                              Title="Дата">
-                <Template Context="item">
-                    @item.Date.ToString("dd-MM-yyyy hh:mm")
-                </Template>
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Number" Width="100px" Title="Номер" />
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Title="Дата">
+                <Template Context="item">@item.Date.ToString("dd-MM-yyyy hh:mm")</Template>
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="SelleViewModel" 
-                              Property="Unit" 
-                              Title="Подразделение" />
-            <RadzenGridColumn TItem="SelleViewModel"
-                              Property="Date" 
-                              Title="Клиент" />
-            <RadzenGridColumn TItem="SelleViewModel"
-                              Property="Cash"
-                              Title="Цена" />
-            <RadzenGridColumn TItem="SelleViewModel" 
-                              Filterable="false"
-                              Sortable="false"
-                              Width="200px">
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Unit" Title="Подразделение" />
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Клиент" />
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Cash" Title="Цена" />
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Width="200px">
                 <Template Context="item">
-                    <RadzenButton Click=@(_ => { }) 
-                                  Text="Информация"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => PrintSaleAsync(item.Id))
-                                  Text="Этикетка"
-                                  Size="ButtonSize.Small"
-                                  Style="margin: 1rem 0;"
-                                  ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => { }) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => PrintSaleAsync(item.Id)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
                 </Template>
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
-}
+</LoadingContent>
 
 @code
 {
     private IEnumerable<SelleViewModel> _data;
     private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
+    private List<Guid> _roles = new();
 
     protected override async Task OnInitializedAsync()
     {
+        _loading = false;
+        _roles = await AuthService.GetCurrentRoles();
         await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
@@ -100,14 +70,14 @@ else
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        _loading = false;
+        _loading = true;
     }
 
     private async Task NewSelle()
     {
         var modal = Modal.Show<SellesCreateForm>("Новая продажа");
         await modal.Result;
-        _loading = true;
+        _loading = false;
         await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
@@ -118,7 +88,7 @@ else
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        _loading = false;
+        _loading = true;
     }
 
     private async Task PrintSaleAsync(Guid saleId)

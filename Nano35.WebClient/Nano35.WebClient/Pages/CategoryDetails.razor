@@ -13,8 +13,7 @@
             <EditableField OnCancel="@(() => ParentEdit = null)"
                            OnEdit="@(() => ParentEdit = new UpdateCategoryParentCategoryHttpBody() {Id = Category.Id})"
                            OnSave="@(() => UpdateParent())">
-                <View>
-                    <p>@(Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId)?.Name)</p></View>
+                <View><p>@(Categories.FirstOrDefault(f=> f.Id == Category.ParentCategoryId)?.Name)</p></View>
                 <Edit>
                     <RadzenDropDown style="display: flex; "
                                     AllowClear="true"
@@ -32,13 +31,8 @@
                     <EditableField OnCancel="@(() => NameEdit = null)"
                                    OnEdit="@(() => NameEdit = new UpdateCategoryNameHttpBody() {Id = Category.Id})"
                                    OnSave="@(() => UpdateName())">
-                        <View>
-                            <p>@Category.Name</p></View>
-                        <Edit>
-                            <RadzenTextBox style="display: flex;align-items: center"
-                                           @bind-Value="NameEdit.Name"
-                                           Placeholder="@Category.Name"/>
-                        </Edit>
+                        <View><p>@Category.Name</p></View>
+                        <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="NameEdit.Name" Placeholder="@Category.Name"/></Edit>
         	</EditableField>
         </FieldListItem>
 </LoadingContent>
@@ -47,16 +41,13 @@
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    
     [Parameter]public ArticleCategoryViewModel Category { get; set; } = new();
-    private List<ArticleCategoryViewModel> Categories { get; set; } = new();
     
+    private List<ArticleCategoryViewModel> Categories { get; set; } = new();
     private UpdateCategoryNameHttpBody NameEdit { get; set; }
     private UpdateCategoryParentCategoryHttpBody ParentEdit { get; set; }
-    
     private bool _loading = true;
-
-    
+   
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
@@ -70,10 +61,12 @@
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {data = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    data = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -88,10 +81,12 @@
         await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>($"Category/Name", NameEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -107,10 +102,12 @@
         await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>($"Category/ParentCategoryId", ParentEdit,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

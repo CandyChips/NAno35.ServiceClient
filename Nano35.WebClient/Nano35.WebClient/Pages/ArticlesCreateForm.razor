@@ -41,9 +41,7 @@
         </ConditionalContent>
         <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         <ConditionalContent IsLoaded="!string.IsNullOrEmpty(Error)">
-            <AllowedContent>
-                <div class="alert alert-danger mt-3 mb-0">@Error</div>
-            </AllowedContent>
+            <AllowedContent><div class="alert alert-danger mt-3 mb-0">@Error</div></AllowedContent>
         </ConditionalContent>
     </EditForm>
 </LoadingContent>

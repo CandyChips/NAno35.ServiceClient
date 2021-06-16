@@ -105,6 +105,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
+        Model.Selle = 0;
         await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>($"ClientsStates",
             resp =>
             {

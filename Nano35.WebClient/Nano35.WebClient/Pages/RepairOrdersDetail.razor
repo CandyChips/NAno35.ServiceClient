@@ -142,7 +142,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 1:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
@@ -151,7 +150,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 2:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
@@ -160,7 +158,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 3:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
@@ -175,7 +172,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 4:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
@@ -184,7 +180,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 5:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
@@ -197,7 +192,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 6:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
@@ -206,7 +200,6 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 7:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
@@ -215,12 +208,10 @@
                                     }
                                     break;
                                 }
-                                    ;
                                 case 8:
                                 {
                                     break;
                                 }
-                                    ;
                             }
                         }
                     </li>
@@ -235,7 +226,7 @@
                         Style="width: 100%;">
             @if (!(_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) ||
                    _states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed)) &&
-                 (_roles.Any(c => c == RolesHelper.Master) ||
+                 ((_roles.Any(c => c == RolesHelper.Master) && _model.PerformerId == _user.Id) ||
                  _roles.Any(c => c == RolesHelper.Admin)))
             {
                 <RadzenButton Click=@(_ => AddWork())

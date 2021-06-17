@@ -29,6 +29,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<NotificationService>();
+            builder.Services.AddScoped<TooltipService>();
             builder.Services.AddTransient<RequestManager>();
             builder.Services.AddTransient<HealthService>();
             builder.Services.AddTransient<HttpGet>();

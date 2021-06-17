@@ -29,7 +29,7 @@
                 Data="@_data"
                 TItem="ComingViewModel">
         <Columns>
-            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" TextAlign="TextAlign.Left" Width="90px"/>
+            <RadzenGridColumn TItem="ComingViewModel" Property="Number" Title="Номер" TextAlign="TextAlign.Left" Width="70px"/>
             <RadzenGridColumn TItem="ComingViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Дата"/>
             <RadzenGridColumn TItem="ComingViewModel" Property="Unit" TextAlign="TextAlign.Center" Title="Подразделение" />
             <RadzenGridColumn TItem="ComingViewModel" Property="Client" TextAlign="TextAlign.Center" Title="Клиент" />
@@ -77,6 +77,8 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        data.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
+        data.Reverse();
         return data;
     }
 

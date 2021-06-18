@@ -50,7 +50,13 @@
                               Sortable="false"
                               Title="Клиент">
                 <FilterTemplate>
-                    <RadzenDropDown @bind-Value="@_currentClient" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                    <RadzenDropDown @bind-Value="@_currentClient"
+                                     TextProperty="Text"
+                                     ValueProperty="Value"
+                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                     FilterOperator="StringFilterOperator.Contains"
+                                     AllowFiltering="true"
+                                     Style="width:100%"
                                      Change=@OnChangeClient
                                      Data="@(_clientData)" />
                                             
@@ -61,8 +67,15 @@
                               Sortable="false"
                               Title="Изделие">
             <FilterTemplate>
-                <RadzenDropDown @bind-Value="@_currentDevice" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                <RadzenDropDown @bind-Value="@_currentDevice"
+                                 TextProperty="Text" 
+                                 ValueProperty="Value" 
+                                 Style="width:100%"
+                                 FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                 FilterOperator="StringFilterOperator.Contains"
+                                 AllowFiltering="true"
                                  Change=@OnChangeDevice
+                                 Placeholder="..."
                                  Data="@(_deviceData)" />
                             
             </FilterTemplate>
@@ -75,8 +88,12 @@
                     @RepairOrderStateTypesHelper.GetName(item.CurrentState) - @item.LastStateDate
                 </Template>
                 <FilterTemplate>
-                    <RadzenDropDown @bind-Value="@_currentState" TextProperty="Text" ValueProperty="Value" Style="width:100%"
+                    <RadzenDropDown @bind-Value="@_currentState" 
+                                     TextProperty="Text"
+                                     ValueProperty="Value"
+                                     Style="width:100%"
                                      Change=@OnChangeState
+                                     Placeholder="..."
                                      Data="@(Enum.GetValues(typeof(RepairOrderStateType)).Cast<RepairOrderStateType>().Select(t => new { Text = RepairOrderStateTypesHelper.GetName((int) t), Value = t }))" />
                 
                 </FilterTemplate>
@@ -188,19 +205,22 @@
     
     private async Task OnChangeState()
     {
-        Console.WriteLine(_currentState);
+        _currentDevice = "";
+        _currentClient = "";
         _filteredData = _data.Where(e => _currentState < 0 || e.CurrentState == (int) _currentState).ToList();
     }
     
     private async Task OnChangeDevice()
     {
-        Console.WriteLine(_currentDevice);
+        _currentState = 0;
+        _currentClient = "";
         _filteredData = _data.Where(e => _currentDevice == "" || e.Device == _currentDevice).ToList();
     }
     
     private async Task OnChangeClient()
     {
-        Console.WriteLine(_currentClient);
+        _currentDevice = "";
+        _currentState = 0;
         _filteredData = _data.Where(e => _currentClient == "" || e.Client == _currentClient).ToList();
     }
 

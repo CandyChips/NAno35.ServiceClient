@@ -12,18 +12,19 @@
 @inject HttpPost PostRequest
 
 <LoadingContent IsLoaded="_isLoaded">
-    <EditForm Model="_model" OnValidSubmit="HandleValidSubmit">
+    <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator/>
-        <InputField Title="Работа">
+        <InputField Title="Работа"
+                    Helper="...">
             <Controls>
                 <div style="display: flex; width: 100%;">
-                    <RadzenDropDown Data=@(_works.Select(a => new {Id = a.Id, Name = a.Name}))
+                    <RadzenDropDown Data=@(Works.Select(a => new {Id = a.Id, Name = a.Name}))
                                     TextProperty="Name"
                                     ValueProperty="Id"
                                     TValue="Guid"
-                                    @bind-Value="_model.WorkId"
+                                    @bind-Value="Model.WorkId"
                                     Style="width: 100%;"
-                                    Disabled="!_works.Any()"
+                                    Disabled="!Works.Any()"
                                     Placeholder="Выберите выполняемую работу..."
                                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                     FilterOperator="StringFilterOperator.Contains"
@@ -35,9 +36,10 @@
                 </div>
             </Controls>
         </InputField>
-        <InputField Title="">
+        <InputField Title=""
+                    Helper="...">
             <Controls>
-                <RadzenDropDown Data=@(_storageItems.Select(a => new {Id = a.Item.Id, Name = a.Item.Name}))
+                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Item.Id, Name = a.Item.Name}))
                                 TextProperty="Name"
                                 ValueProperty="Id"
                                 TValue="Guid"
@@ -50,9 +52,10 @@
                                 Change="@StorageItemChanged"/>
             </Controls>
         </InputField>
-        <InputField Title="">
+        <InputField Title=""
+                    Helper="...">
             <Controls>
-                <RadzenDropDown Data=@(_places.Select(a => new {Id = a.Id, Name = a.Name}))
+                <RadzenDropDown Data=@(Places.Select(a => new {Id = a.Id, Name = a.Name}))
                                 TextProperty="Name"
                                 ValueProperty="Name"
                                 TValue="string"
@@ -64,12 +67,13 @@
                                 AllowFiltering="true"/>
             </Controls>
         </InputField>
-        <InputField Title="Цена">
+        <InputField Title="Цена"
+                    Helper="...">
             <Controls>
                 <RadzenNumeric ShowUpDown="false" 
                                TValue="double"
                                Placeholder="..."
-                               @bind-Value="@_model.Price"/>
+                               @bind-Value="@Model.Price"/>
             </Controls>
         </InputField>
         <RadzenButton type="submit"
@@ -86,28 +90,30 @@
     [Parameter] public Guid RepairOrderId { get; set; }
     
     private bool _isLoaded;
-    private CreateRepairOrderWorkHttpBody _model { get; set; } = new();
-    private List<WorkViewModel>  _works { get; set; } = new();
-    private List<StorageItemOnUnitViewModel> _storageItems { get; set; } = new();
-    private List<PlaceWithStorageItemOnUnit> _places { get; set; } = new();
+    private CreateRepairOrderWorkHttpBody Model { get; set; } = new();
+    private List<WorkViewModel>  Works { get; set; } = new();
+    private List<StorageItemOnUnitViewModel> StorageItems { get; set; } = new();
+    private List<PlaceWithStorageItemOnUnit> Places { get; set; } = new();
     private string PlaceOnStorage = "";
     private Guid StorageItemId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        _model.NewId = Guid.NewGuid();
-        _model.RepairOrderId = RepairOrderId;
-        _model.UnitId = await SessionProvider.GetCurrentUnitId();
-        _model.InstanceId = await SessionProvider.GetCurrentInstanceId();
+        Model.NewId = Guid.NewGuid();
+        Model.RepairOrderId = RepairOrderId;
+        Model.UnitId = await SessionProvider.GetCurrentUnitId();
+        Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
         
         await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    Works = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -115,10 +121,12 @@
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_storageItems = resp.Success.Contains;}
+                if (resp.IsSuccess())
+                {
+                    StorageItems = resp.Success.Contains;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -130,7 +138,7 @@
         Console.WriteLine(PlaceOnStorage);
         if (StorageItemId != Guid.Empty)
         {
-            _model.UsesDeviceFrom = new CreateCancellationDetailViewModel()
+            Model.UsesDeviceFrom = new CreateCancellationDetailViewModel()
             {
                 NewId = Guid.NewGuid(),
                 StorageItemId = StorageItemId,
@@ -139,13 +147,16 @@
             };
         }
         
-        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>($"RepairOrders/Work", _model,
+        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>($"RepairOrders/Work", Model,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
+                    
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -161,10 +172,12 @@
         await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    Works = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -172,24 +185,27 @@
 
     private async Task WorkChanged()
     {
-        _model.Price = _works.FirstOrDefault(a=> a.Id == _model.WorkId).Price;
+        Model.Price = Works.FirstOrDefault(a=> a.Id == Model.WorkId).Price;
     }
     
     private async Task StorageItemChanged()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_places = resp.Success.Contains.ToList();}
+                if (resp.IsSuccess())
+                {
+                    Places = resp.Success.Contains.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
         
-        _model.Price = _works.First(a=> a.Id == _model.WorkId).Price;
-        _model.Price += _storageItems.First(a => a.Item.Id == StorageItemId).Item.PurchasePrice;
+        Model.Price = Works.First(a=> a.Id == Model.WorkId).Price;
+        Model.Price += StorageItems.First(a => a.Item.Id == StorageItemId).Item.PurchasePrice;
     }
 
     

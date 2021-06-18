@@ -44,8 +44,9 @@
     
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    
     private bool _isLoaded;
-    private IEnumerable<ClientViewModel> _data;
+    private List<ClientViewModel> _data;
     private List<Guid> _roles = new();
     
      protected override async Task OnInitializedAsync()

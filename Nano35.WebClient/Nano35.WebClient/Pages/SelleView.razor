@@ -51,10 +51,10 @@
 
 @code
 {
-    private IEnumerable<SelleViewModel> _data;
-    private bool _loading = true;
     [CascadingParameter] public IModalService Modal { get; set; }
     private List<Guid> _roles = new();
+    private List<SelleViewModel> _data;
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {

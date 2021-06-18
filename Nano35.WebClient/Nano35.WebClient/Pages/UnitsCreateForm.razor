@@ -13,54 +13,38 @@
         <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
     
-            <InputField Title="Название подразделения*">
-                <Controls>
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.Name)" />
-                </Validation>
+            <InputField Title="Название подразделения*"
+                        Helper="...">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
             </InputField>
     
-            <InputField Title="Адресс*">
-                <Controls>
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Address"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.Address)" />
-                </Validation>
+            <InputField Title="Адресс*"
+                        Helper="...">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Address"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Address)" /></Validation>
             </InputField>
     
-            <InputField Title="Формат работы">
-                <Controls>
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.WorkingFormat"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.WorkingFormat)" />
-                </Validation>
+            <InputField Title="Формат работы"
+                        Helper="...">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.WorkingFormat"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.WorkingFormat)" /></Validation>
             </InputField>
     
-            <InputField Title="Номер телефона*">
-                <Controls>
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/>
-                </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.Phone)" />
-                </Validation>
+            <InputField Title="Номер телефона*"
+                        Helper="...">
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/></Controls>
+                <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
             </InputField>
     
-            <InputField Title="Тип подразделения*">
+            <InputField Title="Тип подразделения*"
+                        Helper="...">
                 <Controls>
                     <RadzenDropDown Data=@(_types.Select(a => new {Id = a.Id, Name = a.Name}))
-                                    TextProperty="Name"
-                                    ValueProperty="Id"
-                                    TValue="Guid"
-                                    @bind-Value="Model.UnitTypeId"
-                                    style="width: 100%"/>
+                                    TextProperty="Name" ValueProperty="Id" TValue="Guid"
+                                    @bind-Value="Model.UnitTypeId" style="width: 100%"/>
                 </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => Model.UnitTypeId)" />
-                </Validation>
+                <Validation><ValidationMessage For="@(() => Model.UnitTypeId)" /></Validation>
             </InputField>
                         
             @if (!string.IsNullOrEmpty(Error))
@@ -83,7 +67,8 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoading = false;
-        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>($"UnitsTypes",
+        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
+            $"Units/Types",
             resp =>
             {
                 if (resp.IsSuccess()) {_types = resp.Success.UnitTypes.ToList();}

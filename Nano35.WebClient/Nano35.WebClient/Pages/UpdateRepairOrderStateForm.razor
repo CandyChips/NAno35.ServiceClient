@@ -35,21 +35,16 @@
                                    Placeholder="..."
                                    @bind-Value="@_model.Comment"/>
                 </Controls>
-                <Validation>
-                    <ValidationMessage For="@(() => _model.Comment)" />
-                </Validation>
+                <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
             </InputField>
         }
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     </EditForm>
 </LoadingContent>
 
 @code
 {
-    public enum RepairOrderStateType
+    private enum RepairOrderStateType
     {
         InWork = 1,
         Completed = 2,
@@ -83,10 +78,12 @@
         await PostRequest.InvokeAsync<CreateRepairOrderStateHttpResponse, CreateRepairOrderStateHttpBody>($"RepairOrders/State", _model,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

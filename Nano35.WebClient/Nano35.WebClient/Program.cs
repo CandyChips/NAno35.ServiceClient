@@ -27,6 +27,7 @@ namespace Nano35.WebClient
             builder.Services.AddScoped<IPrintingService, PrintingService>();
             builder.Services.AddScoped<IInstanceService, InstanceService>();
             builder.Services.AddScoped<ISessionProvider, SessionProvider>();
+            builder.Services.AddScoped<IToolTipService, ToolTipService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<TooltipService>();

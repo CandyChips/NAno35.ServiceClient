@@ -51,15 +51,19 @@
                     <Columns>
                         <RadzenGridColumn TItem="CreateMoveDetailViewModel"
                                           Property="PlaceOnStorage" 
+                                          TextAlign="TextAlign.Center" 
                                           Title="Товар" />
                         <RadzenGridColumn TItem="CreateMoveDetailViewModel" 
                                           Property="FromPlaceOnStorage" 
+                                          TextAlign="TextAlign.Center" 
                                           Title="Ячейка отправителя" />
                         <RadzenGridColumn TItem="CreateMoveDetailViewModel" 
                                           Property="ToPlaceOnStorage" 
+                                          TextAlign="TextAlign.Center" 
                                           Title="Ячейка получателя" />
                         <RadzenGridColumn TItem="CreateMoveDetailViewModel"
                                           Property="Count"
+                                          TextAlign="TextAlign.Center" 
                                           Title="Количество" />
                         <RadzenGridColumn TItem="CreateMoveDetailViewModel"
                                           Context="order"
@@ -85,10 +89,7 @@
             <div class="alert alert-danger mt-3 mb-0">@Error</div>
         }
         
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     </EditForm>
 </BoxedContent>
 

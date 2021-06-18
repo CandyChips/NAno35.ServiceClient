@@ -11,31 +11,38 @@
 <BoxedContent Width="40">
     <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <InputField Title="Фио*">
+        <InputField Title="Фио*"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Name"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Name)" /></Validation>
         </InputField>
-        <InputField Title="Эл почта">
+        <InputField Title="Эл почта"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Email"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Email)" /></Validation>
         </InputField>
-        <InputField Title="Номер телефона*">
+        <InputField Title="Номер телефона*"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
         </InputField>
-        <InputField Title="Пароль*">
+        <InputField Title="Пароль*"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Password"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Password)" /></Validation>
         </InputField>
-        <InputField Title="Подтверждение пароля*">
+        <InputField Title="Подтверждение пароля*"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.PasswordConfirm"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.PasswordConfirm)" /></Validation>
         </InputField>
-        <InputField Title="Примечание">
+        <InputField Title="Примечание"
+                    Helper="...">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Comment"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Comment)" /></Validation>
         </InputField>
-        <InputField Title="Должности*">
+        <InputField Title="Должности*"
+                    Helper="...">
             <Controls>
                 <RadzenCheckBoxList @bind-Value="@roles" TValue="Guid" Orientation="Orientation.Horizontal">
                     <Items>

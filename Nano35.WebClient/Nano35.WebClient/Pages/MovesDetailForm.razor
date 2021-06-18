@@ -11,7 +11,8 @@
           OnValidSubmit="HandleValidSubmit">
     @if (_isLoaded)
     {
-        <InputField Title="Товар">
+        <InputField Title="Товар"
+                    Helper="...">
             <Controls>
                 <RadzenDropDown Data=@(StorageItems.Select(a => new { a.Id, Name = $"{a.Article + " " + a.Condition}" }))
                                 TextProperty="Name"
@@ -26,16 +27,13 @@
                                 Change="@GetAllPlacesOfStorageItem"/>
 
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.StorageItemId)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.StorageItemId)" /></Validation>
         </InputField>
         
-        <InputField Title="Ячейка на складе отправителя">
+        <InputField Title="Ячейка на складе отправителя"
+                    Helper="...">
             <Controls>
-                <RadzenDropDown Data=@(FromPlaceOnStorage
-                                         .Select(a => 
-                                             new {Name = a.Name}))
+                <RadzenDropDown Data=@(FromPlaceOnStorage.Select(a => new {a.Name}))
                                 TextProperty="Name"
                                 ValueProperty="Name"
                                 TValue="string"
@@ -47,47 +45,45 @@
                                 AllowFiltering="true"
                                 Change="PlaceOnStorageChanged"/>
             </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.FromPlaceOnStorage)" />
-            </Validation>
+            <Validation><ValidationMessage For="@(() => _model.FromPlaceOnStorage)" /></Validation>
         </InputField>
         
         @if(ToPlaceOnStorage.Any())
-                {
-                    <InputField Title="Ячейка на складе получателя">
-                    <Controls>
-                        <RadzenDropDown Data=@(ToPlaceOnStorage.Select(a => new { Name = a.Name}))
-                                        TextProperty="Name"
-                                        ValueProperty="Name"
-                                        TValue="string"
-                                        @bind-Value="_model.ToPlaceOnStorage"
-                                        Style="width: 100%;"
-                                        Disabled="@(!StorageItems.Any())"
-                                        Placeholder="Выберите из доступных ячеек"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.Contains"
-                                        AllowFiltering="true"/>
-                    </Controls>
-                    <Validation>
-                        <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
-                    </Validation>
-                </InputField>
-                }
-                else
-                {
-                    <InputField Title="Ячейка на складе получателя">
-                        <Controls>
-                            <RadzenTextBox style="display: flex; width: 100%"
-                                           @bind-Value="_model.ToPlaceOnStorage"
-                                           Placeholder="Введите название новой ячейки"/>
-                        </Controls>
-                        <Validation>
-                            <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
-                        </Validation>
-                    </InputField>
-                }
-        
-        <InputField Title="Количество">
+        {
+            <InputField Title="Ячейка на складе получателя"
+                        Helper="...">
+                <Controls>
+                    <RadzenDropDown Data=@(ToPlaceOnStorage.Select(a => new { Name = a.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Name"
+                                    TValue="string"
+                                    @bind-Value="_model.ToPlaceOnStorage"
+                                    Style="width: 100%;"
+                                    Disabled="@(!StorageItems.Any())"
+                                    Placeholder="Выберите из доступных ячеек"
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+                <Validation><ValidationMessage For="@(() => _model.ToPlaceOnStorage)" /></Validation>
+            </InputField>
+        }
+        else
+        {
+            <InputField Title="Ячейка на складе получателя"
+                        Helper="...">
+                <Controls>
+                    <RadzenTextBox style="display: flex; width: 100%"
+                                   @bind-Value="_model.ToPlaceOnStorage"
+                                   Placeholder="Введите название новой ячейки"/>
+                </Controls>
+                <Validation>
+                    <ValidationMessage For="@(() => _model.ToPlaceOnStorage)" />
+                </Validation>
+            </InputField>
+        }
+        <InputField Title="Количество"
+                    Helper="Количество перемещаемых изделий">
                     <Controls>
                         <RadzenNumeric Style="width: 100%;" 
                                        Placeholder="@(_maxItems.ToString())"
@@ -100,10 +96,7 @@
                     </Validation>
                 </InputField>
 
-        <RadzenButton type="submit"
-                      Text="Создать"
-                      ButtonStyle="ButtonStyle.Primary"
-                      Style="width: 100%" />
+        <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
     }
 </EditForm>
 

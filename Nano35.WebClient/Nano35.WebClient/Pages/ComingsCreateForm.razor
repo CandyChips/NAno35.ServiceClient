@@ -3,9 +3,12 @@
 @using Nano35.WebClient.Helpers
 @using Nano35.Contexts.Http.storage
 @using Nano35.Contexts.Http.Instance
+@using Append.Blazor.Printing
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject IAuthService AuthService
+@inject IPrintingService PrintingService
+@inject IToolTipService ToolTipService
 @inject HttpGet GetRequest
 @inject HttpPost PostRequest
 @inject NavigationManager NavigationManager
@@ -15,41 +18,40 @@
         <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
             <ValidationSummary />
-            <InputField Title="Поставщик*">
+            <InputField Title="Поставщик*" 
+                        Helper="Выберите целевое подразделение для оприходования">
                 <Controls>
-                    <div style="display: flex; width: 100%; align-items: center;">
-                        <RadzenDropDown Data=@(_clients.Select(a => new {a.Id, Name = $"{a.Name} - {a.Phone}"}))
-                                        TextProperty="Name"
-                                        ValueProperty="Id"
-                                        TValue="Guid"
-                                        @bind-Value="Model.ClientId"
-                                        Style="width: 100%;"
-                                        Disabled="@(!_clients.Any())"
-                                        Placeholder="Выберите поставщика..."
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.Contains"
-                                        AllowFiltering="true"/>
-                        <RadzenButton Click=@(_ => NewClient()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary" Style="margin-left: 5px"/>
-                        <HelpIcon Text="Text"/>
-                    </div>
+                    <RadzenDropDown Data=@(_clients.Select(a => new {a.Id, Name = $"{a.Name} - {a.Phone}"}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="Model.ClientId"
+                                    Style="width: 100%;"
+                                    Disabled="@(!_clients.Any())"
+                                    Placeholder="Выберите поставщика..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                    <RadzenButton Click=@(_ => NewClient()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary" Style="margin-left: 5px"/>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.ClientId)" /></Validation>
             </InputField>
         
-            <ConditionalContent IsLoaded="@_roles.Contains(RolesHelper.Manager)">
+            <ConditionalContent IsLoaded="@(_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))">
                 <AllowedContent>
-                    <InputField Title="Подразделение*">
+                    <InputField Title="Подразделение*" 
+                                Helper="Выберите целевое подразделение для оприходования">
                         <Controls>
                             <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
-                                            TextProperty="Name" 
-                                            ValueProperty="Id"
-                                            TValue="Guid" 
-                                            @bind-Value="Model.UnitId"
-                                            Disabled="@(!_units.Any())"
-                                            Style="width: 100%;"
-                                            Placeholder="Выберите целевое подразделение..."
-                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                                            FilterOperator="StringFilterOperator.Contains"
+                                                TextProperty="Name" 
+                                                ValueProperty="Id"
+                                                TValue="Guid" 
+                                                @bind-Value="Model.UnitId"
+                                                Disabled="@(!_units.Any())"
+                                                Style="width: 100%;"
+                                                Placeholder="Выберите целевое подразделение..."
+                                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                                                FilterOperator="StringFilterOperator.Contains"
                                             AllowFiltering="true"/>
                         </Controls>
                         <Validation><ValidationMessage For="@(() => Model.UnitId)" /></Validation>
@@ -57,32 +59,33 @@
                 </AllowedContent>
             </ConditionalContent>
 
-            <InputField Title="Комментарий">
+            <InputField Title="Комментарий" 
+                        Helper="Введите произвольный комментарий к оприходованию">
                 <Controls>
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Comment" />
+                    <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Comment"/>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.Comment)" /></Validation>
             </InputField>
-        
-            <RadzenFieldset Text="Оприходуемые товары">           
-                
             
-                <RadzenGrid Data="@_details" EmptyText="Добавте оприходуемые товары..." TItem="CreateComingDetailViewModel">
-                    <Columns>
-                        <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="PlaceOnStorage" Title="Товар" />
-                        <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="PlaceOnStorage" Title="Место на складе" />
-                        <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="Count" Title="Количество" />
-                        <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="Price" Title="Цена" />
-                        <RadzenGridColumn TItem="CreateComingDetailViewModel" Context="order" Bubble="false" TextAlign="TextAlign.Center">
-                            <Template Context="item">
-                                <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="close" Size="ButtonSize.Small"></RadzenButton>
-                                <a href="https://nano35.ru/api/Docs/StorageItems/GenerateTicket?storageItemId=@item.StorageItemId" target="_blank">Этикетка</a>
-                            </Template>
-                        </RadzenGridColumn>
-                    </Columns>
-                </RadzenGrid>
-                <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%; margin-top: 1rem" />
-            </RadzenFieldset>
+            <InputField Title="Оприходуемые товары"
+                        Helper="...">
+                <Controls>
+                    <RadzenGrid Data="@_details" EmptyText="Добавте оприходуемые товары..." TItem="CreateComingDetailViewModel">
+                        <Columns>
+                            <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="PlaceOnStorage" Title="Товар" />
+                            <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="PlaceOnStorage" Title="Ячейка" />
+                            <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="Count" Title="Количество" />
+                            <RadzenGridColumn TItem="CreateComingDetailViewModel" Property="Price" Title="Цена" />
+                            <RadzenGridColumn TItem="CreateComingDetailViewModel" Context="order" Bubble="false" TextAlign="TextAlign.Center">
+                                <Template Context="item">
+                                    <RadzenButton Click=@(_ => PrintTicketAsync(item.StorageItemId)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                                </Template>
+                            </RadzenGridColumn>
+                        </Columns>
+                    </RadzenGrid>
+                    <RadzenButton Click=@(_ => AddDetail()) Text="Добавить изделия" ButtonStyle="ButtonStyle.Secondary" Style="width: 100%; margin-top: 1rem" />
+                </Controls>
+            </InputField>
             <ValidationMessage For="@(() => Model.Details)" />
             @if (!string.IsNullOrEmpty(Error))
             {
@@ -108,6 +111,11 @@
     
     private bool _isLoaded;
     private string Error { get; set; }
+    
+    private async Task PrintTicketAsync(Guid itemId)
+    {
+        await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/StorageItemTicket/{itemId}");
+    }
     
     private async Task HandleValidSubmit()
     {

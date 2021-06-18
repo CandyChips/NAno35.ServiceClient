@@ -1,8 +1,10 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.Contexts.Http.storage
+@using Append.Blazor.Printing
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IPrintingService PrintingService
 @inject NotificationService NotificationService
 @inject HttpGet GetRequest
 @inject NavigationManager NavigationManager
@@ -32,8 +34,7 @@
             <RadzenGridColumn TItem="ComingDetailViewModel" Property="Price" Title="Цена" />
             <RadzenGridColumn TItem="ComingDetailViewModel" Bubble="false" Sortable="false" Filterable="false" Width="120px" TextAlign="TextAlign.Center">
                 <Template Context="item">
-                    <a href="http://192.168.100.124:5002/StorageItems/Ticket?storageItemId=@item.StorageItemId.ToString()" target="_blank">Этикетка</a>
-                </Template>
+                    <RadzenButton Click=@(_ => PrintTicketAsync(item.StorageItemId)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>                </Template>
             </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
@@ -43,6 +44,11 @@
 {
     [Parameter] public ComingViewModel Coming { get; set; }
     private List<ComingDetailViewModel> Details { get; set; }
+    
+    private async Task PrintTicketAsync(Guid itemId)
+    {
+        await PrintingService.Print($"https://nano35.ru/api/docs/StorageItems/StorageItemTicket/{itemId}");
+    }
     
     protected override async Task OnInitializedAsync()
     {

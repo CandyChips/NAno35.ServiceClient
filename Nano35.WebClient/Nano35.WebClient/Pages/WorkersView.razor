@@ -39,12 +39,9 @@
                     </RadzenButton>
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                     {
-                        <RadzenButton Text="Выплатить ЗП"
-                                      Size="ButtonSize.Small"
-                                      Disabled="true"
-                                      ButtonType="ButtonType.Button"
-                                      ButtonStyle="ButtonStyle.Info"
-                                      Click="@(_ => NewWage(item))">
+                        <RadzenButton Text="Выплатить ЗП" Size="ButtonSize.Small"
+                                      Disabled="true" ButtonType="ButtonType.Button"
+                                      ButtonStyle="ButtonStyle.Info" Click="@(_ => NewWage(item))">
                         </RadzenButton>
                     }
                 </Template>
@@ -55,7 +52,7 @@
 
 @code
 {
-    private IEnumerable<WorkerViewModel> _data;
+    private List<WorkerViewModel> _data;
     private bool _loading;
     [CascadingParameter] public IModalService Modal { get; set; }
     private List<Guid> _roles = new();
@@ -86,7 +83,7 @@
         await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>($"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
-                if (resp.IsSuccess()) {_data = resp.Success.Workers;}
+                if (resp.IsSuccess()) {_data = resp.Success.Workers as List<WorkerViewModel>;}
                 else
                 {
                     Console.WriteLine(resp.Error);

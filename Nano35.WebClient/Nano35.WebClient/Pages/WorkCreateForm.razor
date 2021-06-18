@@ -11,11 +11,13 @@
     <LoadingContent IsLoaded="_isLoaded">
         <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
-            <InputField Title="Название работы">
+            <InputField Title="Название работы"
+                        Helper="...">
                 <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
             </InputField>
-            <InputField Title="Цена">
+            <InputField Title="Цена"
+                        Helper="...">
                 <Controls><RadzenNumeric ShowUpDown="false" Style="width: 100%;" TValue="double" @bind-Value="Model.Price"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Price)" /></Validation>
             </InputField>
@@ -51,7 +53,10 @@
         await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>($"Works", Model,
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
                     Console.WriteLine(resp.Error);

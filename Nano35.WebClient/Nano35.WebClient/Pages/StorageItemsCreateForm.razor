@@ -12,12 +12,14 @@
     <LoadingContent IsLoaded="_loaded">    
         <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
-            <InputField Title="Наименование*">
+            <InputField Title="Наименование*"
+                        Helper="Выберите наименование изделия">
                 <Controls>
                     <div style="display: flex; width: 100%">
                         <RadzenDropDown TValue="Guid" @bind-Value="_model.ArticleId"
                                         Data=@(_articles.Select(a => new {a.Id, Name = $"{a.Category} {a.Brand} {a.Model}"}))
-                                        TextProperty="Name" ValueProperty="Id"
+                                        TextProperty="Name"
+                                        ValueProperty="Id"
                                         Disabled="@(!_articles.Any())"
                                         style="width: 100%;"
                                         AllowClear="true"
@@ -30,7 +32,8 @@
                 <Validation><ValidationMessage For="@(() => _model.ArticleId)" /></Validation>
             </InputField>
 
-            <InputField Title="Состояние*">
+            <InputField Title="Состояние*"
+                        Helper="Выберите состояние описывающее изделие лучше всего">
                 <Controls>
                     <RadzenDropDown TValue="Guid" @bind-Value="_model.ConditionId"
                                     Data="@(_conditions.Select(a => new {a.Id, a.Name}))"
@@ -46,22 +49,25 @@
                 </Validation>
             </InputField>
                         
-            <InputField Title="Скрытый комментарий">
+            <InputField Title="Скрытый комментарий"
+                        Helper="Опционально введите скрытый комментарий">
                 <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.HiddenComment"/></Controls>
                 <Validation><ValidationMessage For="@(() => _model.HiddenComment)" /></Validation>
             </InputField>
                         
-            <InputField Title="Закупочная цена">
+            <InputField Title="Закупочная цена"
+                        Helper="Укажите закупочную цену за изделие">
                 <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.RetailPrice"/></Controls>
                 <Validation><ValidationMessage For="@(() => _model.RetailPrice)" /></Validation>
             </InputField>
                         
-            <InputField Title="Цена продажи">
+            <InputField Title="Цена продажи"
+                        Helper="Укажите цену продажи за изделие">
                 <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="_model.PurchasePrice"/></Controls>
                 <Validation><ValidationMessage For="@(() => _model.PurchasePrice)" /></Validation>
             </InputField>
                         
-            <RadzenUpload @ref="upload"
+            <RadzenUpload @ref="_upload"
                           Auto="false"
                           Multiple="true"
                           Url=@($"https://nano35.ru/files/images/CreateStorageItemImage/{_model.NewId}") 
@@ -69,9 +75,9 @@
                           Accept="image/*"
                           Progress=@(args => OnProgress(args, "Manual Upload")) />
             
-            @if (progress != 0)
+            @if (_progress != 0)
             {
-                <RadzenProgressBar @bind-Value="@progress" Style="margin-bottom: 20px" />
+                <RadzenProgressBar @bind-Value="@_progress" Style="margin-bottom: 20px" />
             }
                     
             @if (!string.IsNullOrEmpty(Error))
@@ -79,7 +85,7 @@
                 <div class="alert alert-danger mt-3 mb-0">@Error</div>
             }
             
-            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Disabled="@(progress != 0)" Style="width: 100%" />
+            <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Disabled="@(_progress != 0)" Style="width: 100%" />
         </EditForm>
     </LoadingContent>
 </BoxedContent>
@@ -91,16 +97,16 @@
     private CreateStorageItemHttpBody _model = new();
     private string Error { get; set; } = "";
     private bool _loaded;
-    double progress = 0;
-    private bool shouldRender;
+    private double _progress = 0;
+    private bool _shouldRender;
     private List<ArticleViewModel> _articles = new();
     private List<StorageItemConditionViewModel> _conditions = new();
     private readonly int _maxAllowedFiles = 3;
-    RadzenUpload upload;
+    private RadzenUpload _upload;
     
     private async Task HandleValidSubmit()
     {
-        await upload.Upload();
+        await _upload.Upload();
         _loaded = false;
         try
         {
@@ -189,10 +195,10 @@
     
     void OnProgress(UploadProgressArgs args, string name)
     {
-        this.progress = args.Progress;
+        this._progress = args.Progress;
         if (args.Progress == 100)
         {
-            this.progress = 0;
+            this._progress = 0;
         }
     }
 }

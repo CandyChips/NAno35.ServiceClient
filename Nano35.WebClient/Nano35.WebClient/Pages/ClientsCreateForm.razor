@@ -13,25 +13,30 @@
     <LoadingContent IsLoaded="_isLoaded">
         <EditForm Model="@Model" OnSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
-            <InputField Title="Статус клиента*">
+            <InputField Title="Статус клиента*"
+                        Helper="...">
                 <Controls><RadzenDropDown Data="@(_state.Select(a => new {a.Id, a.Name}))" TextProperty="Name" ValueProperty="Id" TValue="Guid" @bind-Value="Model.ClientStateId" style="width: 100%"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.ClientStateId)" /></Validation>
             </InputField>
             <InputField Title="@(Model.ClientStateId != Guid.Empty && Model.ClientStateId == _state.First().Id ?
                                    "ФИО клиента*" : 
-                                   "Название организации*")">
+                                   "Название организации*")"
+                        Helper="...">
                 <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Name"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Name)" /></Validation>
             </InputField>
-            <InputField Title="Эл почта">
+            <InputField Title="Эл почта"
+                        Helper="...">
                 <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Email"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Email)" /></Validation>
             </InputField>
-            <InputField Title="Номер телефона*">
+            <InputField Title="Номер телефона*"
+                        Helper="...">
                 <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
             </InputField>
-            <InputField Title="Скидка %">
+            <InputField Title="Скидка %"
+                        Helper="...">
                 <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Selle"/></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Selle)" /></Validation>
             </InputField>
@@ -83,7 +88,8 @@
         _isLoaded = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateClientHttpResponse, CreateClientHttpBody>($"Clients", Model,
+            await PostRequest.InvokeAsync<CreateClientHttpResponse, CreateClientHttpBody>(
+                $"Clients", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -106,7 +112,8 @@
     {
         _isLoaded = false;
         Model.Selle = 0;
-        await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>($"ClientsStates",
+        await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>(
+            $"Clients/States",
             resp =>
             {
                 if (resp.IsSuccess()) {_state = resp.Success.Data.ToList();}

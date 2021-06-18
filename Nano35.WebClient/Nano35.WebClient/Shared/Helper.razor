@@ -1,0 +1,19 @@
+﻿@using Nano35.WebClient.Services
+@inject IToolTipService ToolTipService
+      
+<ConditionalContent IsLoaded="@(ChildContent == null)">
+    <AllowedContent>
+        <RadzenIcon Icon="help_outline" MouseEnter="@(args => ToolTipService.ShowToolTip(args, Text))"/>
+    </AllowedContent>
+    <RejectedContent>
+        <div style="display: flex; width: 100%; align-items: center;">
+            <RadzenIcon Icon="help_outline" MouseEnter="@(args => ToolTipService.ShowToolTip(args, Text))"/>
+            @ChildContent
+        </div>
+    </RejectedContent>
+</ConditionalContent>
+
+@code {
+    [Parameter] public string Text { get; set; }
+    [Parameter] public RenderFragment ChildContent {get;set;}
+}

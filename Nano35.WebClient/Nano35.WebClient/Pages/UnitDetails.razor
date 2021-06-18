@@ -35,11 +35,7 @@
                                OnEdit="@(() => NameEdit = new UpdateUnitsNameHttpBody(){UnitId = Unit.Id})"
                                OnSave="@(async () => await UpdateName())">
                     <View>@Unit.Name</View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="NameEdit.Name"
-                                       Placeholder="@Unit.Name"/>
-                    </Edit>
+                    <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="NameEdit.Name" Placeholder="@Unit.Name"/></Edit>
                 </EditableField>
             </FieldListItem>
             
@@ -48,11 +44,7 @@
                                OnEdit="@(() => PhoneEdit = new UpdateUnitsPhoneHttpBody(){UnitId = Unit.Id})"
                                OnSave="@(async () => await UpdatePhone())">
                     <View>@Unit.Phone</View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="PhoneEdit.Phone"
-                                       Placeholder="@Unit.Phone"/>
-                    </Edit>
+                    <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="PhoneEdit.Phone" Placeholder="@Unit.Phone"/></Edit>
                 </EditableField>
             </FieldListItem>
             
@@ -61,11 +53,7 @@
                                OnEdit="@(() => AddressEdit = new UpdateUnitsAddressHttpBody(){UnitId = Unit.Id})"
                                OnSave="@(async () => await UpdateAddress())">
                     <View>@Unit.Address</View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="AddressEdit.Address"
-                                       Placeholder="@Unit.Address"/>
-                    </Edit>
+                    <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="AddressEdit.Address" Placeholder="@Unit.Address"/></Edit>
                 </EditableField>
             </FieldListItem>
             
@@ -74,11 +62,7 @@
                                OnEdit="@(() => WorkingFormatEdit = new UpdateUnitsWorkingFormatHttpBody(){UnitId = Unit.Id})"
                                OnSave="@(async () => await UpdateWorkingFormat())">
                     <View>@Unit.WorkingFormat</View>
-                    <Edit>
-                        <RadzenTextBox style="display: flex;align-items: center"
-                                       @bind-Value="WorkingFormatEdit.WorkingFormat"
-                                       Placeholder="@Unit.WorkingFormat"/>
-                    </Edit>
+                    <Edit><RadzenTextBox style="display: flex;align-items: center" @bind-Value="WorkingFormatEdit.WorkingFormat" Placeholder="@Unit.WorkingFormat"/></Edit>
                 </EditableField>
             </FieldListItem>
         </FieldList>

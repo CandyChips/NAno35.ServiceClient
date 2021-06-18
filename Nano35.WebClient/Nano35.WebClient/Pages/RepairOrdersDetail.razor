@@ -125,7 +125,6 @@
             <RadzenFieldset Text="Состояние"
                             Style="width: 70%;">
                 <ul class="list-group">
-                    <li class="list-group-item alert alert-primary">
                      @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty))
                         {
                             @switch (_model.CurrentState)
@@ -134,11 +133,15 @@
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
+                                        </li>
                                     }
                                     @if (_roles.Any(c => c == RolesHelper.Master))
                                     {
-                                        <RadzenButton Text="Стать исполнителем" Click="@(BecomePerformer)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Стать исполнителем" Click="@(BecomePerformer)"/>
+                                        </li>
                                     }
                                     break;
                                 }
@@ -146,7 +149,9 @@
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="На диагностике" Click="@(SetAsDiagnosted)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="На диагностике" Click="@(SetAsDiagnosted)"/>
+                                        </li>
                                     }
                                     break;
                                 }
@@ -154,34 +159,40 @@
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="Согласован с клиентом " Click="@(SetAsAgreement)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Согласование с клиентом " Click="@(SetAsAgreement)"/>
+                                        </li>
                                     }
                                     break;
                                 }
                                 case 3:
                                 {
+                                    <li class="list-group-item alert alert-primary">
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
                                         <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
                                         <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
-                                        
                                     }
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
                                         <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
                                     }
+                                    </li>
                                     break;
                                 }
                                 case 4:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                                        </li>
                                     }
                                     break;
                                 }
                                 case 5:
                                 {
+                                    <li class="list-group-item alert alert-primary">
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
                                         <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
@@ -190,13 +201,16 @@
                                     {
                                         <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
                                     }
+                                    </li>
                                     break;
                                 }
                                 case 6:
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="Завершен" Click="@(SetAsCompleted)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Завершен" Click="@(SetAsCompleted)"/>
+                                        </li>
                                     }
                                     break;
                                 }
@@ -204,7 +218,9 @@
                                 {
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="Закрыт" Click="@(SetAsClosed)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Закрыт" Click="@(SetAsClosed)"/>
+                                        </li>
                                     }
                                     break;
                                 }
@@ -214,7 +230,6 @@
                                 }
                             }
                         }
-                    </li>
                     @foreach (var state in _states)
                     {
                         <li class="list-group-item alert alert-primary">@($"{state.Date:dd/MM/yyyy} - {state.Comment}")</li>

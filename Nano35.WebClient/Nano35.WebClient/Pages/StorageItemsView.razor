@@ -18,54 +18,59 @@
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
-    <RadzenGrid EmptyText="Нет изделий на складе."
-                AllowPaging="true"
-                PageSize="16"
-                Data="@_data"
-                TItem="StorageItemOnUnitViewModel">
-        <Columns>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
-                <Template Context="item">@item.Item.RetailPrice руб.</Template>
-            </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Закуп. стоимость">
-                <Template Context="item">@item.Item.PurchasePrice руб.</Template>
-            </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="100px" Title="Наличие">
-                <Template Context="item">@item.Count шт.</Template>
-            </RadzenGridColumn>
-            <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Context="coming" Bubble="false" Width="400px" TextAlign="TextAlign.Center">
-                <Template Context="item">
-                    @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
-                    {
-                        <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
-                    }
-                    <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => OpenStorageItemImages(item.Item)) Text="Изображения" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
-                </Template>
-            </RadzenGridColumn>
-        </Columns>
-    </RadzenGrid>
-    <RadzenTree style="width: 100%" Change=@Filter >
-        @foreach (var item in _categories)
-        {
-            <TreeNode Item=@item></TreeNode>
-        }
-    </RadzenTree>
+    <InputText Placeholder="Поиск по штрихкоду" type="text" style="width: 100%; margin-top: 1rem; margin-bottom: 1rem;"/>
+    <div style="display: flex;">
+        <RadzenGrid EmptyText="Нет изделий на складе." AllowPaging="true"
+                    Style="width: 100%" PageSize="16" Data="@_data" 
+                    TItem="StorageItemOnUnitViewModel">
+            <Columns>
+                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Property="Item.Name" Title="Изделие"/>
+                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Цена продажи">
+                    <Template Context="item">@item.Item.RetailPrice руб.</Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="140px" Title="Закуп. стоимость">
+                    <Template Context="item">@item.Item.PurchasePrice руб.</Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Width="100px" Title="Наличие">
+                    <Template Context="item">@item.Count шт.</Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="StorageItemOnUnitViewModel" Context="coming" Bubble="false" Width="400px" TextAlign="TextAlign.Center">
+                    <Template Context="item">
+                        @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
+                        {
+                            <RadzenButton Click=@(_ => OpenStorageItem(item)) Text="Изменить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                        }
+                        <RadzenButton Click=@(_ => PrintTicketAsync(item.Item.Id)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton Click=@(_ => OpenStorageItemImages(item.Item)) Text="Изображения" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                    </Template>
+                </RadzenGridColumn>
+            </Columns>
+        </RadzenGrid>
+        <RadzenTree Change=@Filter Style="width: 20rem; margin: 2rem;">
+            @foreach (var item in _categories)
+            {
+                <TreeNode Item=@item></TreeNode>
+            }
+        </RadzenTree>
+    </div>
 </LoadingContent>
 
 @code
 {
-    
-    // <img src="https://nano35.ru/api/files/StorageItems/@image.value" alt="Не удалось загрузить изображение" style="height: 100%"/>
-    // <RadzenTreeLevel TextProperty="Name" ChildrenProperty="Categories"  HasChildren=@(e => (e as CategoryViewModel).Categories.Any()) />
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    private IEnumerable<StorageItemOnUnitViewModel> _data;
+    private List<StorageItemOnUnitViewModel> _data;
     private List<Guid> _roles = new();
     private List<CategoryViewModel> _categories = new();
     
     private bool _isLoaded;
+
+    private string bare = "";
+    private string bareInput = "";
+    void HandleKeyUp(KeyboardEventArgs e)
+    {
+        bareInput = bare;
+    }    
     
 
     protected override async Task OnInitializedAsync()

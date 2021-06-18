@@ -11,25 +11,30 @@
 <LoadingContent IsLoaded="_isLoaded">
     <EditForm Model="@_model" OnValidSubmit="HandleValidSubmit">
         <DataAnnotationsValidator />
-        <InputField Title="Категория">
+        <InputField Title="Категория*" 
+                    Helper="Выберите именную группу">
             <Controls><ArticlesFormCategory @bind-Value="_model.CategoryId"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.CategoryId)" /></Validation>
         </InputField>
-        <InputField Title="Бренд">
+        <InputField Title="Бренд*" 
+                    Helper="Укажите бренд">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Model"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Brand)" /></Validation>
         </InputField>
-        <InputField Title="Модель">
+        <InputField Title="Модель*" 
+                    Helper="Укажите модель">
             <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Brand"/></Controls>
             <Validation><ValidationMessage For="@(() => _model.Model)" /></Validation>
         </InputField>
         <ConditionalContent IsLoaded="IsExpandedView">
             <AllowedContent>
-                <InputField Title="Описание">
+                <InputField Title="Описание" 
+                            Helper="Опцианально укажите описание наименования">
                     <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Info"/></Controls>
                     <Validation><ValidationMessage For="@(() => _model.Info)" /></Validation>
                 </InputField>
-                <InputField Title="Харрактеристики">
+                <InputField Title="Харрактеристики" 
+                            Helper="Опцианально укажите харрактеристику наименования">
                     <Controls><ArticlesFormSpecification @bind-Value="_model.Specs"/></Controls>
                     <Validation><ValidationMessage For="@(() => _model.Specs)"/></Validation>
                 </InputField>
@@ -71,7 +76,7 @@
                     }
                     else
                     {
-                        NavigationManager.NavigateTo("/instance-view");
+                        Error = resp.Error;
                     }
                 });
             

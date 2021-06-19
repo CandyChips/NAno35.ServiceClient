@@ -18,7 +18,6 @@
 
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Наличие"/>
-    <InputText Placeholder="Поиск по штрихкоду" type="text" style="width: 100%; margin-top: 1rem; margin-bottom: 1rem;"/>
     <div style="display: flex;">
         <RadzenGrid EmptyText="Нет изделий на складе." AllowPaging="true"
                     Style="width: 100%" PageSize="16" Data="@_data" 
@@ -59,19 +58,11 @@
 {
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
-    private List<StorageItemOnUnitViewModel> _data;
+    private List<StorageItemOnUnitViewModel> _data;//+79005443233
     private List<Guid> _roles = new();
     private List<CategoryViewModel> _categories = new();
     
     private bool _isLoaded;
-
-    private string bare = "";
-    private string bareInput = "";
-    void HandleKeyUp(KeyboardEventArgs e)
-    {
-        bareInput = bare;
-    }    
-    
 
     protected override async Task OnInitializedAsync()
     {        

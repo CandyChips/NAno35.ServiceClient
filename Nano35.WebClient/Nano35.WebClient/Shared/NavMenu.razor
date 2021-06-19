@@ -13,24 +13,33 @@
         @if(_roles.Contains(RolesHelper.Admin) || _roles.Contains(RolesHelper.Manager))
         {
             <RadzenPanelMenuItem Text="Подразделения" Path="/instance/units"></RadzenPanelMenuItem>
+        @if (_roles.Contains(RolesHelper.Admin))
+        {
             <RadzenPanelMenuItem Text="Сотрудники" Path="/instance/workers"></RadzenPanelMenuItem>
+        }
             <RadzenPanelMenuItem Text="Клиенты" Path="/instance/clients"></RadzenPanelMenuItem>
         }
-        @if(_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin) )
+        @if(_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin) || _roles.Contains(RolesHelper.Manager))
         {
             <RadzenPanelMenuItem Text="Склад">
                 <RadzenPanelMenuItem Text="Наличие" Path="/instance/storage/warehouse"></RadzenPanelMenuItem>
+            @if (_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin))
+            {
                 <RadzenPanelMenuItem Text="Оприходования" Path="/instance/storage/coming"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Списания" Path="/instance/storage/cancellations"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Продажи" Path="/instance/storage/sells"></RadzenPanelMenuItem>
                 <RadzenPanelMenuItem Text="Перемещения" Path="/instance/storage/moves"></RadzenPanelMenuItem>
+            }
             </RadzenPanelMenuItem>
         }
         @if(_roles.Contains(RolesHelper.Master) || _roles.Contains(RolesHelper.Admin) || _roles.Contains(RolesHelper.Manager))
         {
             <RadzenPanelMenuItem Text="Заказы на ремонт">
                 <RadzenPanelMenuItem Text="Заказ наряды" Path="/instance/repairs"></RadzenPanelMenuItem>
+            @if (_roles.Contains(RolesHelper.Master) || _roles.Contains(RolesHelper.Admin))
+            {
                 <RadzenPanelMenuItem Text="Мои ремонты" Path="/instance/repairs/my"></RadzenPanelMenuItem>
+            }
                 <RadzenPanelMenuItem Text="Виды работ" Path="/instance/repairs/story"></RadzenPanelMenuItem>
             </RadzenPanelMenuItem>
         }

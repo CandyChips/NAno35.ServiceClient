@@ -3,9 +3,11 @@
 @using Nano35.Contexts.Http.Repair
 @using Nano35.Contexts.Http.storage
 @using Nano35.Contexts.Http.Instance
+@using Append.Blazor.Printing
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
+@inject IPrintingService PrintingService
 @inject NavigationManager NavigationManager
 @inject HttpPost PostRequest
 @inject HttpGet GetRequest
@@ -120,7 +122,10 @@
             await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>($"RepairOrders", Model,
                 resp =>
                 {
-                    if (resp.IsSuccess()) {}
+                    if (resp.IsSuccess())
+                    {
+                        PrintingService.Print($"https://nano35.ru/docs/StorageItems/RepairOrderReceipt/{Model.NewId}&{Model.InstanceId}");
+                    }
                     else
                     {
                         Console.WriteLine(resp.Error);
@@ -138,12 +143,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Model = new CreateRepairOrderHttpBody
-        {
-            NewId = Guid.NewGuid(),
-            InstanceId = await SessionProvider.GetCurrentInstanceId(),
-           
-        };
+        Model = new CreateRepairOrderHttpBody {NewId = Guid.NewGuid(), InstanceId = await SessionProvider.GetCurrentInstanceId()};
         _isLoaded = false;
         Model.Condition = "";
         Model.Complication = "";
@@ -155,7 +155,8 @@
     private async Task<List<ClientViewModel>> LoadClients()
     {
         var data = new List<ClientViewModel>();
-        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>($"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
+            $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

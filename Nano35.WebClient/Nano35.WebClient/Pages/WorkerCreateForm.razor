@@ -87,16 +87,11 @@
         }
         set
         {
-            if (string.IsNullOrEmpty(value) || value == "+7" || value == "8")
+            if (string.IsNullOrEmpty(value))
             {
                 _model.Phone = "";
                 return;
             }
-            if (value.Length < 10)
-                value = value.PadRight(10);
-            if (value.Length > 10)
-                value = value.Substring(0, 10);
-            
             var tmp = Regex.Replace(value, @"[^\d]", "").Remove(0,1);
             _model.Phone = tmp;
         }

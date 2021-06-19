@@ -35,14 +35,14 @@
                             Style="width: 100%;">
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <RadzenButton Click=@(async _ => await PrintingService.Print($"http://localhost:5009/StorageItems/RepairOrderReceipt/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                        <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/docs/StorageItems/RepairOrderReceipt/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                       Text="Акт приема"
                                       Size="ButtonSize.Small"
                                       Style="margin: 1rem 0;"
                                       ButtonStyle="ButtonStyle.Secondary"/>
                         @if(_works.Any())
                         {
-                            <RadzenButton Click=@(async _ => await PrintingService.Print($"http://localhost:5009/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                            <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                           Text="Акт выполненых работ"
                                           Size="ButtonSize.Small"
                                           Style="margin: 1rem 0;"
@@ -117,7 +117,13 @@
                     @if (_model.Performer != "")
                     {
                         <li class="list-group-item ">
-                            <b>Исполнитель: @_model.Performer</b>
+                            <b>
+                                Исполнитель: @_model.Performer
+                                @if (_model.Wage != 0)
+                                {
+                                    <b>(@(_model.Wage)% в зарплату)</b>
+                                }
+                            </b>
                         </li>
                     }
                 </ul>
@@ -137,7 +143,7 @@
                                             <RepairOrdersSetPerformer FormSubmitted="SetPerformer" Model="SetUserAsPerformerOfRepairOrderQuery"/>
                                         </li>
                                     }
-                                    @if (_roles.Any(c => c == RolesHelper.Master))
+                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
                                         <li class="list-group-item alert alert-primary">
                                             <RadzenButton Text="Стать исполнителем" Click="@(BecomePerformer)"/>
@@ -167,17 +173,13 @@
                                 }
                                 case 3:
                                 {
-                                    <li class="list-group-item alert alert-primary">
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
-                                        <RadzenButton Text="В работе" Click="@(SetAsOnWork)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
+                                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                                        </li>
                                     }
-                                    @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
-                                    {
-                                        <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
-                                    }
-                                    </li>
                                     break;
                                 }
                                 case 4:
@@ -297,20 +299,24 @@
         await GetRequest.InvokeAsync<GetRepairOrderByIdHttpResponse>($"RepairOrders/{Id}",
             resp =>
             {
-                if (resp.IsSuccess()) {_model = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    _model = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
         await GetRequest.InvokeAsync<GetAllRepairOrderStatesHttpResponse>($"RepairOrders/{Id}/States",
             resp =>
             {
-                if (resp.IsSuccess()) {_states = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    _states = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -319,10 +325,12 @@
         await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>($"RepairOrders/{Id}/Works",
             resp =>
             {
-                if (resp.IsSuccess()) {_works = resp.Success.Data;}
+                if (resp.IsSuccess())
+                {
+                    _works = resp.Success.Data;
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -404,7 +412,8 @@
 
     private async Task UpdateDevice()
     {
-        await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>($"RepairOrders/Device", DeviceEdit,
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>(
+            $"RepairOrders/Device", DeviceEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -419,7 +428,8 @@
     }
     private async Task UpdateSerial()
     {
-        await PatchRequest.InvokeAsync<UpdateRepairOrdersSerialHttpResponse, UpdateRepairOrdersSerialHttpBody>($"RepairOrders/Serial", SerialEdit,
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersSerialHttpResponse, UpdateRepairOrdersSerialHttpBody>(
+            $"RepairOrders/Serial", SerialEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -434,7 +444,8 @@
     }
     private async Task UpdateCondition()
     {
-        await PatchRequest.InvokeAsync<UpdateRepairOrdersConditionHttpResponse, UpdateRepairOrdersConditionHttpBody>($"RepairOrders/Condition", ConditionEdit,
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersConditionHttpResponse, UpdateRepairOrdersConditionHttpBody>(
+            $"RepairOrders/Condition", ConditionEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -449,7 +460,8 @@
     }
     private async Task UpdateTrouble()
     {
-        await PatchRequest.InvokeAsync<UpdateRepairOrdersTroubleHttpResponse, UpdateRepairOrdersTroubleHttpBody>($"RepairOrders/Trouble", TroubleEdit,
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersTroubleHttpResponse, UpdateRepairOrdersTroubleHttpBody>(
+            $"RepairOrders/Trouble", TroubleEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -464,7 +476,8 @@
     }
     private async Task UpdateComplication()
     {
-        await PatchRequest.InvokeAsync<UpdateRepairOrdersComplicationHttpResponse, UpdateRepairOrdersComplicationHttpBody>($"RepairOrders/Complication", ComplicationEdit,
+        await PatchRequest.InvokeAsync<UpdateRepairOrdersComplicationHttpResponse, UpdateRepairOrdersComplicationHttpBody>(
+            $"RepairOrders/Complication", ComplicationEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -480,13 +493,16 @@
 
     private async Task SetAsDiagnosted()
     {
-        await PostRequest.InvokeAsync<SetRepairOrderAsDiagnosedHttpResponse, SetRepairOrderAsDiagnosedHttpBody>($"RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsDiagnosedHttpResponse, SetRepairOrderAsDiagnosedHttpBody>(
+            $"RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -495,13 +511,16 @@
 
     private async Task SetAsAgreement()
     {
-        await PostRequest.InvokeAsync<SetRepairOrderAsAgreementHttpResponse, SetRepairOrderAsAgreementHttpBody>($"RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsAgreementHttpResponse, SetRepairOrderAsAgreementHttpBody>(
+            $"RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -509,15 +528,18 @@
     }
     private async Task SetAsReady()
     {
-        var modal = Modal.Show<ReadyResult>($"Оплата за заказ наряд");
+        var modal = Modal.Show<ReadyResult>($"Зарплата мастеру за заказ(%)*");
         var res = await modal.Result;
-        await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>($"RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody(){RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
+        await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
+            $"RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -526,13 +548,16 @@
     }
     private async Task SetAsOnWait()
     {        
-        await PostRequest.InvokeAsync<SetRepairOrderAsOnWaitHttpResponse, SetRepairOrderAsOnWaitHttpBody>($"RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsOnWaitHttpResponse, SetRepairOrderAsOnWaitHttpBody>(
+            $"RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -540,13 +565,16 @@
     }
     private async Task SetAsOnWork()
     {
-        await PostRequest.InvokeAsync<SetRepairOrderAsOnWorkHttpResponse, SetRepairOrderAsOnWorkHttpBody>($"RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsOnWorkHttpResponse, SetRepairOrderAsOnWorkHttpBody>(
+            $"RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -554,13 +582,17 @@
     }
     private async Task SetAsCompleted()
     {
-        await PostRequest.InvokeAsync<SetRepairOrderAsCompletedHttpResponse, SetRepairOrderAsCompletedHttpBody>($"RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsCompletedHttpResponse, SetRepairOrderAsCompletedHttpBody>(
+            $"RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
+                    
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -568,13 +600,16 @@
     }
     private async Task SetAsClosed()
     {
-        await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>($"RepairOrders/Close", new SetRepairOrderAsClosedHttpBody(){RepairOrderId = _model.Id},
+        await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>(
+            $"RepairOrders/Close", new SetRepairOrderAsClosedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
-                if (resp.IsSuccess()) {}
+                if (resp.IsSuccess())
+                {
+                    
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

@@ -1,5 +1,5 @@
 ﻿<RadzenNumeric style="display: flex;align-items: center; justify-content: center" @bind-Value="Result"/>
-<RadzenButton Click="@(() => Submit())" Text="Отправить" Style="display: flex;align-items: center; justify-content: center"/>
+<RadzenButton Click="@(() => Submit())" Text="Сохранить" Style="display: flex;align-items: center; justify-content: center"/>
 @code {
     
     [CascadingParameter] public IModalService Modal { get; set; }

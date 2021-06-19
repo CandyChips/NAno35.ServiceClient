@@ -95,7 +95,11 @@
     {
         var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
         var moviesModal = Modal.Show<StorageItemsCreateForm>("Новое изделие", modalOpts);
-        await moviesModal.Result;
+        var res = await moviesModal.Result;
+        if (!res.Cancelled)
+        {
+            _model.StorageItemId = (Guid) res.Data;
+        }
         StorageItems = await GetAllStorageItems();
     }
     

@@ -57,7 +57,7 @@
                                      FilterOperator="StringFilterOperator.Contains"
                                      AllowFiltering="true"
                                      Style="width:100%"
-                                     Change=@OnChangeClient
+                                     Change=@OnChange
                                      Data="@(_clientData)" />
                                             
                 </FilterTemplate>
@@ -74,7 +74,7 @@
                                  FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                  FilterOperator="StringFilterOperator.Contains"
                                  AllowFiltering="true"
-                                 Change=@OnChangeDevice
+                                 Change=@OnChange
                                  Placeholder="..."
                                  Data="@(_deviceData)" />
                             
@@ -92,9 +92,9 @@
                                      TextProperty="Text"
                                      ValueProperty="Value"
                                      Style="width:100%"
-                                     Change=@OnChangeState
+                                     Change=@OnChange
                                      Placeholder="..."
-                                     Data="@(Enum.GetValues(typeof(RepairOrderStateType)).Cast<RepairOrderStateType>().Select(t => new { Text = RepairOrderStateTypesHelper.GetName((int) t), Value = t }))" />
+                                     Data="@(Enum.GetValues(typeof(RepairOrderStateType)).Cast<RepairOrderStateType>().Select(t => new { Text = RepairOrderStateTypesHelper.GetName((int) t), Value = t }).Reverse())" />
                 
                 </FilterTemplate>
             </RadzenGridColumn>
@@ -119,8 +119,8 @@
     private List<RepairOrderViewModel> _data;
     private List<RepairOrderViewModel> _filteredData = new();
     private RepairOrderStateType _currentState = (RepairOrderStateType) (-1);
-    private string _currentDevice;
-    private string _currentClient;
+    private string _currentDevice = "";
+    private string _currentClient = "";
     private List<Guid> _roles = new();
 
     private IEnumerable<Filter> _clientData;
@@ -203,25 +203,18 @@
 
     }
     
-    private async Task OnChangeState()
+    private async Task OnChange()
     {
-        _currentDevice = "";
-        _currentClient = "";
-        _filteredData = _data.Where(e => _currentState < 0 || e.CurrentState == (int) _currentState).ToList();
+        
+        var filter = _data
+            .Where(e => _currentState < 0 || e.CurrentState == (int) _currentState)
+            .Where(e => _currentDevice == "" || e.Device == _currentDevice)
+            .Where(e => _currentClient == "" || e.Client == _currentClient)
+            .ToList();
+
+        _filteredData = filter;
     }
     
-    private async Task OnChangeDevice()
-    {
-        _currentState = 0;
-        _currentClient = "";
-        _filteredData = _data.Where(e => _currentDevice == "" || e.Device == _currentDevice).ToList();
-    }
     
-    private async Task OnChangeClient()
-    {
-        _currentDevice = "";
-        _currentState = 0;
-        _filteredData = _data.Where(e => _currentClient == "" || e.Client == _currentClient).ToList();
-    }
 
 }

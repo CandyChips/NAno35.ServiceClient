@@ -11,7 +11,11 @@
             @foreach (var image in ImagesId.Select((value, i) => new {i, S = $"https://nano35.ru/files/Images/GetImageOfStorageItem/{value}"}))
             {
                 <RadzenCard Style="width: 35rem;height: 35rem">
-                    <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
+                    <ZoomableImageComponent ImageUrlPath=@image.S
+                                            ImageWidthInPx=500
+                                            ImageHeightInPx=500
+                                            ShowResetButton=false
+                                            DefaultScaleBy=0.1f />
                 </RadzenCard>
             }
         </AllowedContent>
@@ -22,6 +26,8 @@
 </LoadingContent>
 
 @code {
+    
+    // <WheelZoom Image=@image.S height="100%"  alt="Не удалось загрузить изображение"/>
     [Parameter] public Guid StorageItemId { get; set; }
     private List<Guid> ImagesId { get; set; } = new List<Guid>();
     private bool _isLoaded;

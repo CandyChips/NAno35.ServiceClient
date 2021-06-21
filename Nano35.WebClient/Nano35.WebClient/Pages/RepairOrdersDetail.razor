@@ -42,7 +42,7 @@
                                       ButtonStyle="ButtonStyle.Secondary"/>
                         @if(_works.Any())
                         {
-                            <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
+                            <RadzenButton Click=@(async _ => await PrintingService.Print($"https://nano35.ru/docs/StorageItems/RepairOrderDetails/{Id}&{await SessionProvider.GetCurrentInstanceId()}"))
                                           Text="Акт выполненых работ"
                                           Size="ButtonSize.Small"
                                           Style="margin: 1rem 0;"
@@ -131,7 +131,7 @@
             <RadzenFieldset Text="Состояние"
                             Style="width: 70%;">
                 <ul class="list-group">
-                     @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty))
+                     @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty) || _roles.Any(c => c == RolesHelper.Admin))
                         {
                             @switch (_model.CurrentState)
                             {
@@ -528,7 +528,7 @@
     }
     private async Task SetAsReady()
     {
-        var modal = Modal.Show<ReadyResult>($"Зарплата мастеру за заказ(%)*");
+        var modal = Modal.Show<SetPerformerWage>($"Зарплата мастеру за заказ(%)*");
         var res = await modal.Result;
         await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
             $"RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},

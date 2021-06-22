@@ -151,7 +151,7 @@
     private async Task<List<RepairOrderViewModel>> GetAllOpenedRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}",
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"repair/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}
@@ -166,7 +166,7 @@
     private async Task<List<RepairOrderViewModel>> GetAllClosedRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}&LastStateType={RepairOrderStateType.Closed}",
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"repair/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}&PerformerId={User}&LastStateType={RepairOrderStateType.Closed}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

@@ -74,7 +74,7 @@
     {            
         _isLoading = false;        
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -95,7 +95,7 @@
         _categories.Clear();
         _selectedCategories.Add(selected);
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -137,7 +137,7 @@
             });
         
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={body.NewId}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={body.NewId}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -151,7 +151,7 @@
         _selectedCategories.Add(new ArticleCategoryViewModel() { Id = body.NewId, Name = body.Name, ParentCategoryId = body.ParentCategoryId });
         
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}
@@ -170,7 +170,7 @@
         _categories.Clear();
         _selectedCategories.RemoveRange(index, _selectedCategories.Count - index);
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}&InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_categories = resp.Success.Data;}

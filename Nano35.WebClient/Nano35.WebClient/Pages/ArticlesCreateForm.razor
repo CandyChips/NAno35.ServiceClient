@@ -67,7 +67,7 @@
         try
         {
             await PostRequest.InvokeAsync<CreateArticleSuccessHttpResponse, CreateArticleHttpBody>(
-                $"Articles", _model,
+                $"storage/Articles", _model,
                 resp =>
                 {
                     if (resp.IsSuccess())

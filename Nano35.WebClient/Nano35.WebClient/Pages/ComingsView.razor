@@ -67,7 +67,8 @@
     private async Task<List<ComingViewModel>> GetAllComings()
     {
         var data = new List<ComingViewModel>();
-        await GetRequest.InvokeAsync<GetAllComingsSuccessHttpResponse>($"Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllComingsSuccessHttpResponse>(
+            $"storage/Comings?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}

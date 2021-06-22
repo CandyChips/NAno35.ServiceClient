@@ -60,7 +60,7 @@
     private async Task GetData()
     {
         await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
-            $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"instance/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

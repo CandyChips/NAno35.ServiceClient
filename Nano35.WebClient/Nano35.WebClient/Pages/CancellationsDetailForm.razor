@@ -79,7 +79,8 @@
 
     private async Task GetAllPlacesOfStorageItem()
     {
-        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>($"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
+            $"storage/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={_model.StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Warehouse = resp.Success.Contains.ToList();}
@@ -99,7 +100,8 @@
     {
         var data = new List<StorageItemViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>($"StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsSuccessHttpResponse>(
+            $"storage/StorageItems?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}

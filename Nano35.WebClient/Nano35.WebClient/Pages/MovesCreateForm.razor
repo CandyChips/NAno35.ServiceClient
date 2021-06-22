@@ -121,7 +121,8 @@
                 ToPlaceOnStorage = a.ToPlaceOnStorage, 
                 StorageItemId = a.StorageItemId
             }).ToList();
-            await PostRequest.InvokeAsync<CreateMoveSuccessHttpResponse, CreateMoveHttpBody>($"Moves", Model,
+            await PostRequest.InvokeAsync<CreateMoveSuccessHttpResponse, CreateMoveHttpBody>(
+                $"storage/Moves", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -162,7 +163,8 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

@@ -59,7 +59,8 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}
@@ -78,7 +79,8 @@
         _isLoaded = false;
         var modal = Modal.Show<UnitsCreateForm>("Новое подразделение");
         await modal.Result;
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}

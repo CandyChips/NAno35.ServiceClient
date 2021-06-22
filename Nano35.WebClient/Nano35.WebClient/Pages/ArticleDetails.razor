@@ -102,7 +102,7 @@
 
     private async Task LoadData()
     {
-        await GetRequest.InvokeAsync<GetArticleByIdSuccessHttpResponse>($"Articles/{Id}",
+        await GetRequest.InvokeAsync<GetArticleByIdSuccessHttpResponse>($"storage/Articles/{Id}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -115,7 +115,7 @@
                 }
             });
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
+            $"storage/ArticleCategories?I{await SessionProvider.GetCurrentInstanceId()}&ParentId={Guid.Parse("F50EBC56-3D91-481C-8F61-16E47555B136")}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -135,7 +135,7 @@
     private async Task UpdateCategory()
     {
         await PatchRequest.InvokeAsync<UpdateArticleCategorySuccessHttpResponse, UpdateArticleCategoryHttpBody>(
-            $"Articles/Category", CategoryEdit,
+            $"storage/Articles/Category", CategoryEdit,
             resp =>
             {
                 if (resp.IsSuccess())
@@ -154,7 +154,7 @@
     private async Task UpdateBrand()
     {
         await PatchRequest.InvokeAsync<UpdateArticleBrandSuccessHttpResponse, UpdateArticleBrandHttpBody>(
-            $"Articles/Brand", BrandEdit,
+            $"storage/Articles/Brand", BrandEdit,
             resp =>
             {
                 if (resp.IsSuccess())
@@ -173,7 +173,7 @@
     private async Task UpdateModel()
     {
         await PatchRequest.InvokeAsync<UpdateArticleModelSuccessHttpResponse, UpdateArticleModelHttpBody>(
-            $"Articles/Model", ModelEdit,
+            $"storage/Articles/Model", ModelEdit,
             resp =>
             {
                 if (resp.IsSuccess())
@@ -192,7 +192,7 @@
     private async Task UpdateInfo()
     {
         await PatchRequest.InvokeAsync<UpdateArticleInfoSuccessHttpResponse, UpdateArticleInfoHttpBody>(
-            $"Articles/Info", InfoEdit,
+            $"storage/Articles/Info", InfoEdit,
             resp =>
             {
                 if (resp.IsSuccess())

@@ -58,7 +58,8 @@
     private async Task<List<ArticleCategoryViewModel>> GetCategories()
     {
         var data = new List<ArticleCategoryViewModel>();
-        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>($"ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            $"storage/ArticleCategories?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -78,7 +79,8 @@
     private async Task UpdateName()
     {
         _loading = true;
-        await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>($"Category/Name", NameEdit,
+        await PatchRequest.InvokeAsync<UpdateCategoryNameSuccessHttpResponse, UpdateCategoryNameHttpBody>(
+            $"storage/Category/Name", NameEdit,
             resp =>
             {
                 if (resp.IsSuccess())
@@ -99,7 +101,8 @@
     private async Task UpdateParent()
     {
         _loading = true;
-        await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>($"Category/ParentCategoryId", ParentEdit,
+        await PatchRequest.InvokeAsync<UpdateCategoryParentCategoryIdSuccessHttpResponse, UpdateCategoryParentCategoryHttpBody>(
+            $"storage/Category/ParentCategoryId", ParentEdit,
             resp =>
             {
                 if (resp.IsSuccess())

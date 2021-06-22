@@ -1,6 +1,10 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.Contracts.Instance.Models
 @using Nano35.Contexts.Http.Instance
+@using Nano35.Contracts.Instance.Artifacts
+@using Nano35.Communication
+@using Newtonsoft.Json
+@using System.Text
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -14,9 +18,7 @@
         
         <InputField Title="Название сервиса">
             <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Name"/>
+                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Name"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Name)" />
@@ -25,9 +27,7 @@
         
         <InputField Title="Эл почта">
             <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Email"/>
+                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Email"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Email)" />
@@ -36,9 +36,7 @@
         
         <InputField Title="Номер телефона">
             <Controls>
-                <RadzenTextBox Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Phone"/>
+                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Phone"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Phone)" />
@@ -47,9 +45,7 @@
         
         <InputField Title="Название организации">
             <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.RealName"/>
+                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.RealName"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.RealName)" />
@@ -58,9 +54,7 @@
         
         <InputField Title="Описание">
             <Controls>
-                <RadzenNumeric Style="width: 100%;" 
-                               Placeholder="..."
-                               @bind-Value="_model.Info"/>
+                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Info"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.Info)" />
@@ -89,8 +83,7 @@
                                 ValueProperty="Id"
                                 TValue="Guid"
                                 @bind-Value="_model.TypeId"
-                                style="width: 100%"
-                                Placeholder="..."/>
+                                style="width: 100%"/>
             </Controls>
             <Validation>
                 <ValidationMessage For="@(() => _model.TypeId)" />
@@ -120,16 +113,10 @@
     {
         try
         {
-            await PostRequest.InvokeAsync<CreateInstanceHttpResponse, CreateInstanceHttpBody>($"Instances", _model,
-                resp =>
-                {
-                    if (resp.IsSuccess()) {}
-                    else
-                    {
-                        Console.WriteLine(resp.Error);
-                        NavigationManager.NavigateTo("/instance-view");
-                    }
-                });
+            var req = new StringContent(JsonConvert.SerializeObject(_model), Encoding.UTF8, "application/json");
+            var response = await HttpClient.PostAsync($"http://localhost:8080/Instances", req);
+            await response.Content.ReadFromJsonAsync<UseCaseResponse<CreateInstanceHttpResponse>>();
+            
         }
         catch (Exception e)
         {
@@ -141,7 +128,8 @@
     {
         _model = new CreateInstanceHttpBody { NewId = Guid.NewGuid() };
         
-        await GetRequest.InvokeAsync<GetAllInstanceTypesHttpResponse>($"InstancesTypes",
+        await GetRequest.InvokeAsync<GetAllInstanceTypesHttpResponse>(
+            $"instance/Instances/Types",
             resp =>
             {
                 if (resp.IsSuccess()) {_types = resp.Success.Data.ToList();}
@@ -151,10 +139,11 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllRegionsHttpResponse>($"InstancesRegions",
+        await GetRequest.InvokeAsync<GetAllRegionsResultContract>(
+            $"instance/Instances/Regions",
             resp =>
             {
-                if (resp.IsSuccess()) {_regions = resp.Success.Data.ToList();}
+                if (resp.IsSuccess()) {_regions = resp.Success.Regions.ToList();}
                 else
                 {
                     Console.WriteLine(resp.Error);

@@ -296,7 +296,7 @@
 
     private async Task Update()
     {   
-        await GetRequest.InvokeAsync<GetRepairOrderByIdHttpResponse>($"RepairOrders/{Id}",
+        await GetRequest.InvokeAsync<GetRepairOrderByIdHttpResponse>($"repair/RepairOrders/{Id}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -308,7 +308,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllRepairOrderStatesHttpResponse>($"RepairOrders/{Id}/States",
+        await GetRequest.InvokeAsync<GetAllRepairOrderStatesHttpResponse>($"repair/RepairOrders/{Id}/States",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -322,7 +322,7 @@
             });
         _states.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
         _states.Reverse();
-        await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>($"RepairOrders/{Id}/Works",
+        await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>($"repair/RepairOrders/{Id}/Works",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -334,7 +334,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"storage/Articles",
             resp =>
             {
                 if (resp.IsSuccess()) {_devices = resp.Success.Data;}
@@ -374,7 +374,8 @@
     private async Task SetPerformer()
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
-        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>($"RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
+        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
+            $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -394,7 +395,8 @@
         SetUserAsPerformerOfRepairOrderQuery.UserId = _user.Id;
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
         SetUserAsPerformerOfRepairOrderQuery.NewId = Guid.NewGuid();
-        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>($"RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
+        await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
+            $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -413,7 +415,7 @@
     private async Task UpdateDevice()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>(
-            $"RepairOrders/Device", DeviceEdit,
+            $"repair/RepairOrders/Device", DeviceEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -429,7 +431,7 @@
     private async Task UpdateSerial()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersSerialHttpResponse, UpdateRepairOrdersSerialHttpBody>(
-            $"RepairOrders/Serial", SerialEdit,
+            $"repair/RepairOrders/Serial", SerialEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -445,7 +447,7 @@
     private async Task UpdateCondition()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersConditionHttpResponse, UpdateRepairOrdersConditionHttpBody>(
-            $"RepairOrders/Condition", ConditionEdit,
+            $"repair/RepairOrders/Condition", ConditionEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -461,7 +463,7 @@
     private async Task UpdateTrouble()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersTroubleHttpResponse, UpdateRepairOrdersTroubleHttpBody>(
-            $"RepairOrders/Trouble", TroubleEdit,
+            $"repair/RepairOrders/Trouble", TroubleEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -477,7 +479,7 @@
     private async Task UpdateComplication()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersComplicationHttpResponse, UpdateRepairOrdersComplicationHttpBody>(
-            $"RepairOrders/Complication", ComplicationEdit,
+            $"repair/RepairOrders/Complication", ComplicationEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -494,7 +496,7 @@
     private async Task SetAsDiagnosted()
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsDiagnosedHttpResponse, SetRepairOrderAsDiagnosedHttpBody>(
-            $"RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -512,7 +514,7 @@
     private async Task SetAsAgreement()
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsAgreementHttpResponse, SetRepairOrderAsAgreementHttpBody>(
-            $"RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -531,7 +533,7 @@
         var modal = Modal.Show<ReadyResult>($"Зарплата мастеру за заказ(%)*");
         var res = await modal.Result;
         await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
-            $"RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
+            $"repair/RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -549,7 +551,7 @@
     private async Task SetAsOnWait()
     {        
         await PostRequest.InvokeAsync<SetRepairOrderAsOnWaitHttpResponse, SetRepairOrderAsOnWaitHttpBody>(
-            $"RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -566,7 +568,7 @@
     private async Task SetAsOnWork()
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsOnWorkHttpResponse, SetRepairOrderAsOnWorkHttpBody>(
-            $"RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -583,7 +585,7 @@
     private async Task SetAsCompleted()
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsCompletedHttpResponse, SetRepairOrderAsCompletedHttpBody>(
-            $"RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())
@@ -601,7 +603,7 @@
     private async Task SetAsClosed()
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>(
-            $"RepairOrders/Close", new SetRepairOrderAsClosedHttpBody {RepairOrderId = _model.Id},
+            $"repair/RepairOrders/Close", new SetRepairOrderAsClosedHttpBody {RepairOrderId = _model.Id},
             resp =>
             {
                 if (resp.IsSuccess())

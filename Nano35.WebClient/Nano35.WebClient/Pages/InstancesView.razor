@@ -61,7 +61,7 @@
     {
         _loading = false;
         await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
-            $"Instances/Current",
+            $"instance/Instances/Current",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -87,7 +87,7 @@
         await modal.Result;
         _loading = false;
         await GetRequest.InvokeAsync<GetAllInstancesHttpResponse>(
-            $"Instances/Current",
+            $"instance/Instances/Current",
             resp =>
             {
                 if (resp.IsSuccess()) 

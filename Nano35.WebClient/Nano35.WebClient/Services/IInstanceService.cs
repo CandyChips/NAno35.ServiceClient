@@ -40,7 +40,7 @@ namespace Nano35.WebClient.Services
 
         public async Task SetInstanceById(Guid id)
         {
-            await _get.InvokeAsync<GetInstanceByIdHttpResponse>($"Instances/{id}",
+            await _get.InvokeAsync<GetInstanceByIdHttpResponse>($"instance/Instances/{id}",
                 resp =>
                 {
                     if (resp.IsSuccess()) {Instance = resp.Success.Data;}

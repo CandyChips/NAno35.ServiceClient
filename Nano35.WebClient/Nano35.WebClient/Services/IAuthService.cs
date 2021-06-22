@@ -61,7 +61,7 @@ namespace Nano35.WebClient.Services
         {
             var response = new UserViewModel();
             await _get.InvokeAsync<GetUserFromTokenHttpResponse>(
-                $"Identity/FromToken",
+                $"identity/Identity/FromToken",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Data;}
@@ -76,7 +76,8 @@ namespace Nano35.WebClient.Services
         public async Task<List<Guid>> GetCurrentRoles()
         {
             var response = new List<Guid>();
-            await _get.InvokeAsync<GetAllRolesByUserHttpResponse>($"Workers/Current/Roles",
+            await _get.InvokeAsync<GetAllRolesByUserHttpResponse>(
+                $"instance/Workers/Current/Roles",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Roles.ToList();}

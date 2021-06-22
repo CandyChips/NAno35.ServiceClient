@@ -51,7 +51,8 @@
     {
         var data = new List<CancellationViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllCancellationsSuccessHttpResponse>($"Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllCancellationsSuccessHttpResponse>(
+            $"storage/Cancellations?InstanceId={await SessionProvider.GetCurrentInstanceId()}&UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

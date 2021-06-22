@@ -122,7 +122,8 @@
         _isLoaded = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateComingSuccessHttpResponse, CreateComingHttpBody>($"Comings", Model,
+            await PostRequest.InvokeAsync<CreateComingSuccessHttpResponse, CreateComingHttpBody>(
+                $"storage/Comings", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -158,7 +159,8 @@
     {
         var data = new List<ClientViewModel>();
 
-        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>($"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
+            $"instance/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data.ToList();}
@@ -175,7 +177,8 @@
     {
         var data = new List<UnitViewModel>();
         
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

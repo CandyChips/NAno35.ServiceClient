@@ -48,7 +48,8 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>($"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}",
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
+            $"instance/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}&WorkersRoleId={RolesHelper.Master}",
             resp =>
             {
                 if (resp.IsSuccess()) {_workers = resp.Success.Workers.ToList();}

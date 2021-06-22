@@ -162,7 +162,7 @@
     private async Task<List<RepairOrderViewModel>> GetAllRepairOrders()
     {
         var data = new List<RepairOrderViewModel>(); 
-        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllRepairOrdersHttpResponse>($"repair/RepairOrders?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Data;}

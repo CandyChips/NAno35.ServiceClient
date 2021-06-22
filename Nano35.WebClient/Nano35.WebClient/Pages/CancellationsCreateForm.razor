@@ -106,7 +106,8 @@
         try
         {
             _model.Details = _details.Select(a => new CreateCancellationDetailViewModel() { NewId = a.NewId, Count = a.Count, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
-            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>($"Cancellations", _model,
+            await PostRequest.InvokeAsync<CreateCancellationSuccessHttpResponse, CreateCancellationHttpBody>(
+                $"storage/Cancellations", _model,
                 resp =>
                 {
                     if (resp.IsSuccess())
@@ -158,7 +159,8 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
+            $"storage/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

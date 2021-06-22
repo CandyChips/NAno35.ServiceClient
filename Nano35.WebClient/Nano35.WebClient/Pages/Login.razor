@@ -51,7 +51,8 @@
 
     private async Task HandleValidSubmit()
     {
-        await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>($"Identity/Authenticate", _model,
+        await PostRequest.InvokeAsync<GenerateUserTokenHttpResponse, GenerateUserTokenHttpBody>(
+            $"identity/Identity/Authenticate", _model,
             resp =>
             {
                 if (resp.IsSuccess())

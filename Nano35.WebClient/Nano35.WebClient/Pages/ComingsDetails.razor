@@ -52,7 +52,8 @@
     
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllComingDetailsSuccessHttpResponse>($"Comings/{Coming.Id}/Details",
+        await GetRequest.InvokeAsync<GetAllComingDetailsSuccessHttpResponse>(
+            $"storage/Comings/{Coming.Id}/Details",
             resp =>
             {
                 if (resp.IsSuccess()) {Details = resp.Success.Data;}

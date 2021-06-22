@@ -89,7 +89,7 @@
         try
         {
             await PostRequest.InvokeAsync<CreateClientHttpResponse, CreateClientHttpBody>(
-                $"Clients", Model,
+                $"instance/Clients", Model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -113,7 +113,7 @@
         _isLoaded = false;
         Model.Selle = 0;
         await GetRequest.InvokeAsync<GetAllClientStatesHttpResponse>(
-            $"Clients/States",
+            $"instance/Clients/States",
             resp =>
             {
                 if (resp.IsSuccess()) {_state = resp.Success.Data.ToList();}

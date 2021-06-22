@@ -156,7 +156,7 @@
     {
         var data = new List<ClientViewModel>();
         await GetRequest.InvokeAsync<GetAllClientsHttpResponse>(
-            $"Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"instance/Clients?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -174,7 +174,8 @@
     private async Task<List<ArticleViewModel>> LoadArticles()
     {
         var data = new List<ArticleViewModel>();
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            $"storage/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

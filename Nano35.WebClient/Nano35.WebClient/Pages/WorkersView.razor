@@ -40,7 +40,7 @@
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                     {
                         <RadzenButton Text="Выплатить ЗП" Size="ButtonSize.Small"
-                                      Disabled="true" ButtonType="ButtonType.Button"
+                                      Disabled="false" ButtonType="ButtonType.Button"
                                       ButtonStyle="ButtonStyle.Info" Click="@(_ => NewWage(item))">
                         </RadzenButton>
                     }

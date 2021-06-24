@@ -30,7 +30,7 @@
                                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         FilterOperator="StringFilterOperator.Contains"
                                         AllowFiltering="true"/>
-                        <RadzenButton Click=@(_ => OpenCreateClient()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton Click=@(_ => OpenCreateClient()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary" style="margin-left: 10px;"/>
                     </div>
                 </Controls>
             </InputField>
@@ -47,7 +47,7 @@
                                         FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                                         FilterOperator="StringFilterOperator.Contains"
                                         AllowFiltering="true"/>
-                        <RadzenButton Click=@(_ => OpenCreateArticle()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary"/>
+                        <RadzenButton Click=@(_ => OpenCreateArticle()) Text="Добавить" ButtonStyle="ButtonStyle.Secondary" style="margin-left: 10px;"/>
                     </div>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.DeviceId)" /></Validation>
@@ -62,9 +62,9 @@
                 <Controls>
                     <div style="width: 100%; display: flex;">
                         <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Condition"/>
-                        @if(_isCond1Shown) { <RadzenButton Text="Б/У" Click="@(_ => { Model.Condition += " Б/У "; _isCond1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
-                        @if(_isCond2Shown) { <RadzenButton Text="Царапины" Click="@(_ => { Model.Condition += " царапины "; _isCond2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
-                        @if(_isCond3Shown) { <RadzenButton Text="Потертости" Click="@(_ => { Model.Condition += " потертости "; _isCond3Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/> }
+                        @if(_isCond1Shown) { <RadzenButton Text="Б/У" Click="@(_ => { Model.Condition += " Б/У "; _isCond1Shown = false; })" ButtonStyle="ButtonStyle.Secondary" style="margin-left: 10px;" /> }
+                        @if(_isCond2Shown) { <RadzenButton Text="Царапины" Click="@(_ => { Model.Condition += " царапины "; _isCond2Shown = false; })" ButtonStyle="ButtonStyle.Secondary" style="margin-left: 10px;" /> }
+                        @if(_isCond3Shown) { <RadzenButton Text="Потертости" Click="@(_ => { Model.Condition += " потертости "; _isCond3Shown = false; })" ButtonStyle="ButtonStyle.Secondary" style="margin-left: 10px;" /> }
                     </div>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.Condition)" /></Validation>
@@ -79,8 +79,14 @@
                 <Controls>
                     <div style="width: 100%; display: flex;">
                         <RadzenTextBox Style="width: 100%;" @bind-Value="Model.Complication"/>
-                        @if(_isComplected1Shown) { <RadzenButton Text="Устройство" Click="@(_ => { Model.Complication += " устройство "; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
-                        @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += " блок питания "; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary"/>}
+                        @if(_isComplected1Shown) { <RadzenButton Text="Устройство" Click="@(_ => { Model.Complication += " устройство "; _isComplected1Shown = false; })" ButtonStyle="ButtonStyle.Secondary" Style="padding-left: 5px;
+                                                                                                                                                                                                                     padding-right: 5px;
+                                                                                                                                                                                                                     margin-right: 10px;
+                                                                                                                                                                                                                     margin-left: 10px;" />}
+                        @if(_isComplected2Shown) { <RadzenButton Text="Блок питания" Click="@(_ => { Model.Complication += " блок питания "; _isComplected2Shown = false; })" ButtonStyle="ButtonStyle.Secondary" Style="padding-left: 0px;
+                                                                                                                                                                                                                         padding-right: 0px;
+                                                                                                                                                                                                                         width: 120px;
+                                                                                                                                                                                                                         flex-shrink: 0;" />}
                     </div>
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.Complication)" /></Validation>
@@ -102,7 +108,7 @@
     {
         NewId = Guid.NewGuid(),
         InstanceId = Guid.Empty
-    };
+    };  
 
     private bool _isCond1Shown = true;
     private bool _isCond2Shown = true;

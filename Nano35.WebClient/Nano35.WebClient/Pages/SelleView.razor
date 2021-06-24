@@ -60,7 +60,7 @@
     {
         _loading = false;
         _roles = await AuthService.GetCurrentRoles();
-        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"storage/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}
@@ -78,7 +78,7 @@
         var modal = Modal.Show<SellesCreateForm>("Новая продажа");
         await modal.Result;
         _loading = false;
-        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllSellsSuccessHttpResponse>($"storage/Sells?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Data;}

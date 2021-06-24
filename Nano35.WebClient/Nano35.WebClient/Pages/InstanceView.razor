@@ -15,7 +15,5 @@
     {
         if (!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
-        if(!await HealthService.CheckAsync())
-            NavigationManager.NavigateTo("/instances");
     }
 }

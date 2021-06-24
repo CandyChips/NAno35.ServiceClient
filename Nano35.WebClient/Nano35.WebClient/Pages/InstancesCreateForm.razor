@@ -113,9 +113,13 @@
     {
         try
         {
-            var req = new StringContent(JsonConvert.SerializeObject(_model), Encoding.UTF8, "application/json");
-            var response = await HttpClient.PostAsync($"http://localhost:8080/Instances", req);
-            await response.Content.ReadFromJsonAsync<UseCaseResponse<CreateInstanceHttpResponse>>();
+            await PostRequest.InvokeAsync<CreateInstanceHttpResponse, CreateInstanceHttpBody>(
+                $"instance/Instances", _model,
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else{}
+                });
             
         }
         catch (Exception e)

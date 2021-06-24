@@ -69,10 +69,10 @@
         _isLoaded = false;
         _roles = await AuthService.GetCurrentRoles();
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            $"storage/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
         await GetRequest.InvokeAsync<GetCategoryTreeByRootHttpResponse>(
-            $"Category/TreeByRoot",
+            $"storage/Category/TreeByRoot",
             resp => {if (resp.IsSuccess()){_categories.Add(resp.Success.Data);}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }
@@ -84,7 +84,8 @@
         var modal = Modal.Show<StorageItemsDetails>($"{value.Item.Name}", parameters);
         await modal.Result;
         _isLoaded = false;
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            $"storage/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }
@@ -106,7 +107,7 @@
     {
         Console.WriteLine(args.Value);
         await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
-            $"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}&CategoryId={args.Value}",
+            $"storage/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}&CategoryId={args.Value}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
         
         StateHasChanged();

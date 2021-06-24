@@ -23,24 +23,28 @@
                 }
             </ol>
         </nav>
+        <RadzenButton Click="@(_ => OnClearCategory())" Text="Отчистить"/>
         <RadzenTabs>
             <Tabs>
-                <RadzenTabsItem Text="Добавить существующую подкатегория">
-                    <div style="display: flex;">
-                        <RadzenDropDown Data="@(_categories)"
-                                        style="width: 100%;"
-                                        @bind-Value="_selectedCategory"
-                                        Change="@(_ => OnAddCategory(_selectedCategory))"
-                                        TValue="ArticleCategoryViewModel"
-                                        AllowClear="true"
-                                        Disabled="@(!_categories.Any())"
-                                        Placeholder=@(_selectedCategories.Any() ? $"Выберите подкатегорию к {_selectedCategories.Last().Name}" : "Выберите категорию")
-                                        TextProperty="Name"
-                                        FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                        FilterOperator="StringFilterOperator.Contains"
-                                        AllowFiltering="true"/>
-                    </div>
-                </RadzenTabsItem>
+                @if (_categories.Any())
+                {
+                    <RadzenTabsItem Text="Добавить существующую подкатегория">
+                        <div style="display: flex;">
+                            <RadzenDropDown Data="@(_categories)"
+                                            style="width: 100%;"
+                                            @bind-Value="_selectedCategory"
+                                            Change="@(_ => OnAddCategory(_selectedCategory))"
+                                            TValue="ArticleCategoryViewModel"
+                                            AllowClear="true"
+                                            Disabled="@(!_categories.Any())"
+                                            Placeholder=@(_selectedCategories.Any() ? $"Выберите подкатегорию к {_selectedCategories.Last().Name}" : "Выберите категорию")
+                                            TextProperty="Name"
+                                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                            FilterOperator="StringFilterOperator.Contains"
+                                            AllowFiltering="true"/>
+                        </div>
+                    </RadzenTabsItem>
+                }
                 @if (_selectedCategories.Any())
                 {
                     <RadzenTabsItem Text="Создать подкатегорию">
@@ -86,7 +90,22 @@
             });
         _isLoading = true;
     }
-    
+
+    private async Task OnClearCategory()
+    {
+        _selectedCategories = new List<ArticleCategoryViewModel>();
+        await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_categories = resp.Success.Data;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
     
     private async Task OnAddCategory(ArticleCategoryViewModel selected)
     {
@@ -95,7 +114,7 @@
         _categories.Clear();
         _selectedCategories.Add(selected);
         await GetRequest.InvokeAsync<GetAllArticleCategoriesSuccessHttpResponse>(
-            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={selected.Id}",
+            $"storage/Category?InstanceId={await SessionProvider.GetCurrentInstanceId()}&ParentId={_selectedCategories.Last().Id}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -123,7 +142,7 @@
             ParentCategoryId = _selectedCategories.Count != 0 ? _selectedCategories.Last().Id : Guid.Empty
         };
         await PostRequest.InvokeAsync<CreateCategorySuccessHttpResponse, CreateCategoryHttpBody>(
-            $"Category", body,
+            $"storage/Category", body,
             resp =>
             {
                 if (resp.IsSuccess())

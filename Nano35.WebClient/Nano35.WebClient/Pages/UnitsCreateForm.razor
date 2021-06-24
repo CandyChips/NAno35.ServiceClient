@@ -59,6 +59,8 @@
 
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateUnitHttpBody Model = new();
     private string Error { get; set; }
     private List<UnitTypeViewModel> _types = new();
@@ -68,15 +70,11 @@
     {
         _isLoading = false;
         await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
-            $"Units/Types",
+            $"instance/Units/Types",
             resp =>
             {
                 if (resp.IsSuccess()) {_types = resp.Success.UnitTypes.ToList();}
-                else
-                {
-                    Console.WriteLine(resp.Error);
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                else {NavigationManager.NavigateTo("/instance-view");}
             });
         Model = new CreateUnitHttpBody
         {
@@ -91,12 +89,13 @@
         _isLoading = false;
         try
         {
-            await PostRequest.InvokeAsync<CreateUnitHttpResponse, CreateUnitHttpBody>($"Units", Model,
+            await PostRequest.InvokeAsync<CreateUnitHttpResponse, CreateUnitHttpBody>(
+                $"instance/Units", Model,
                 resp =>
                 {
                     if (resp.IsSuccess())
                     {
-                        
+                        ModalInstance.CloseAsync();
                     }
                     else
                     {   

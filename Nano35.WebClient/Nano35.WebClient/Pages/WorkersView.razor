@@ -19,6 +19,7 @@
     <RadzenButton Click=@(_ => NewWorker())
                   Text="Создать"
                   Style="margin: 1rem 0;"
+                  EmptyText="..."
                   ButtonStyle="ButtonStyle.Primary"/>
     <RadzenGrid Data="@_data" EmptyText="Добавте новых сотрудников..." TItem="WorkerViewModel">
         <Columns>
@@ -80,7 +81,8 @@
     
     private async Task LoadWorkers()
     {
-        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>($"Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorkersHttpResponse>(
+            $"instance/Workers?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {_data = resp.Success.Workers as List<WorkerViewModel>;}
@@ -102,7 +104,8 @@
 
         var currentUnit = "";
         
-        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>($"Units/{await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            $"instance/Units/{await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {currentUnit = resp.Success.Data.Name;}

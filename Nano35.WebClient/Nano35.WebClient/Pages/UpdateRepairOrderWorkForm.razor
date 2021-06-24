@@ -36,41 +36,47 @@
                 </div>
             </Controls>
         </InputField>
-        <InputField Title=""
-                    Helper="...">
-            <Controls>
-                <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Item.Id, Name = a.Item.Name}))
-                                TextProperty="Name"
-                                ValueProperty="Id"
-                                TValue="Guid"
-                                @bind-Value="@StorageItemId"
-                                Style="width: 100%;"
-                                Placeholder="Выберите используемый предмет..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"
-                                Change="@StorageItemChanged"/>
-            </Controls>
-        </InputField>
-        <InputField Title=""
-                    Helper="...">
-            <Controls>
-                <RadzenDropDown Data=@(Places.Select(a => new {Id = a.Id, Name = a.Name}))
-                                TextProperty="Name"
-                                ValueProperty="Name"
-                                TValue="string"
-                                @bind-Value="@PlaceOnStorage"
-                                Style="width: 100%;"
-                                Placeholder="Выберите место предмета на складе..."
-                                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                FilterOperator="StringFilterOperator.Contains"
-                                AllowFiltering="true"/>
-            </Controls>
-        </InputField>
+        <RadzenCheckBox @bind-Value=@_isWithItems TValue="bool" />
+        <RadzenLabel Text="С использованием материалов со склада" Style="margin-left: 5px" Component="CheckBox2" />
+        @if (_isWithItems)
+        {
+            <InputField Title=""
+                        Helper="...">
+                <Controls>
+                    <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Item.Id, Name = a.Item.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Id"
+                                    TValue="Guid"
+                                    @bind-Value="@StorageItemId"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите используемый предмет..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"
+                                    Change="@StorageItemChanged"/>
+                </Controls>
+            </InputField>
+            <InputField Title=""
+                        Helper="...">
+                <Controls>
+                    <RadzenDropDown Data=@(Places.Select(a => new {Id = a.Id, Name = a.Name}))
+                                    TextProperty="Name"
+                                    ValueProperty="Name"
+                                    TValue="string"
+                                    @bind-Value="@PlaceOnStorage"
+                                    Style="width: 100%;"
+                                    Placeholder="Выберите место предмета на складе..."
+                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    FilterOperator="StringFilterOperator.Contains"
+                                    AllowFiltering="true"/>
+                </Controls>
+            </InputField>
+        }
         <InputField Title="Цена"
                     Helper="...">
             <Controls>
                 <RadzenNumeric ShowUpDown="false" 
+                               Disabled="@(Model.Price == 0)"
                                TValue="double"
                                Placeholder="..."
                                @bind-Value="@Model.Price"/>
@@ -88,7 +94,8 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid RepairOrderId { get; set; }
-    
+
+    private bool _isWithItems;
     private bool _isLoaded;
     private CreateRepairOrderWorkHttpBody Model { get; set; } = new();
     private List<WorkViewModel>  Works { get; set; } = new();
@@ -105,7 +112,8 @@
         Model.UnitId = await SessionProvider.GetCurrentUnitId();
         Model.InstanceId = await SessionProvider.GetCurrentInstanceId();
         
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            $"repair/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -118,7 +126,8 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>($"Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
+        await GetRequest.InvokeAsync<GetAllStorageItemsOnUnitSuccessHttpResponse>(
+            $"storage/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -127,7 +136,7 @@
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/instance-view");
+                    
                 }
             });
         _isLoaded = true;
@@ -147,7 +156,8 @@
             };
         }
         
-        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>($"RepairOrders/Work", Model,
+        await PostRequest.InvokeAsync<CreateRepairOrderWorkHttpResponse, CreateRepairOrderWorkHttpBody>(
+            $"repair/RepairOrders/Work", Model,
             resp =>
             {
                 if (resp.IsSuccess())
@@ -157,7 +167,6 @@
                 else
                 {
                     
-                    NavigationManager.NavigateTo("/instance-view");
                 }
             });
         
@@ -167,9 +176,10 @@
     private async Task NewWork()
     {
         var modal = Modal.Show<WorkCreateForm>($"Новая работа");
-        await modal.Result;
-        
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        var modalResp = await modal.Result;
+        Model.WorkId = (Guid) modalResp.Data;
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            $"repair/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -191,7 +201,7 @@
     private async Task StorageItemChanged()
     {
         await GetRequest.InvokeAsync<GetAllPlacesOfStorageItemOnUnitSuccessHttpResponse>(
-            $"Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
+            $"storage/Warehouse/PlacesOfStorageItemOnUnit?StorageItemId={StorageItemId}&UnitContainsStorageItemId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {
                 if (resp.IsSuccess())

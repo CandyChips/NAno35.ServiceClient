@@ -84,7 +84,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>($"UnitsTypes",
+        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
+            $"instance/Units/Types",
             resp =>
             {
                 if (resp.IsSuccess()) {UnitTypes = resp.Success.UnitTypes.ToList();}
@@ -99,7 +100,8 @@
 
     private async Task LoadData()
     {
-        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>($"UnitsTypes",
+        await GetRequest.InvokeAsync<GetAllUnitTypesHttpResponse>(
+            $"instance/Units/Types",
             resp =>
             {
                 if (resp.IsSuccess()) {UnitTypes = resp.Success.UnitTypes.ToList();}
@@ -110,7 +112,8 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>($"Units/{Unit.Id}",
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            $"instance/Units/{Unit.Id}",
             resp =>
             {
                 if (resp.IsSuccess()) {Unit = resp.Success.Data;}
@@ -126,7 +129,8 @@
 
     private async Task UpdateName()
     {
-        await PatchRequest.InvokeAsync<UpdateUnitsNameHttpResponse, UpdateUnitsNameHttpBody>($"Units/{NameEdit.UnitId}/Name", NameEdit,
+        await PatchRequest.InvokeAsync<UpdateUnitsNameHttpResponse, UpdateUnitsNameHttpBody>(
+            $"instance/Units/{NameEdit.UnitId}/Name", NameEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -144,7 +148,8 @@
     
     private async Task UpdatePhone()
     {
-        await PatchRequest.InvokeAsync<UpdateUnitsPhoneHttpResponse, UpdateUnitsPhoneHttpBody>($"Units/{PhoneEdit.UnitId}/Phone", PhoneEdit,
+        await PatchRequest.InvokeAsync<UpdateUnitsPhoneHttpResponse, UpdateUnitsPhoneHttpBody>(
+            $"instance/Units/{PhoneEdit.UnitId}/Phone", PhoneEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -160,7 +165,8 @@
     
     private async Task UpdateAddress()
     {
-        await PatchRequest.InvokeAsync<UpdateUnitsAddressHttpResponse, UpdateUnitsAddressHttpBody>($"Units/{AddressEdit.UnitId}/Address", AddressEdit,
+        await PatchRequest.InvokeAsync<UpdateUnitsAddressHttpResponse, UpdateUnitsAddressHttpBody>(
+            $"instance/Units/{AddressEdit.UnitId}/Address", AddressEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -177,7 +183,8 @@
     
     private async Task UpdateType()
     {
-        await PatchRequest.InvokeAsync<UpdateUnitsTypeHttpResponse, UpdateUnitsTypeHttpBody>($"Units/{TypeEdit.UnitId}/Type", TypeEdit,
+        await PatchRequest.InvokeAsync<UpdateUnitsTypeHttpResponse, UpdateUnitsTypeHttpBody>(
+            $"instance/Units/{TypeEdit.UnitId}/Type", TypeEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}
@@ -194,7 +201,8 @@
     
     private async Task UpdateWorkingFormat()
     {
-        await PatchRequest.InvokeAsync<UpdateUnitsWorkingFormatHttpResponse, UpdateUnitsWorkingFormatHttpBody>($"Units/{WorkingFormatEdit.UnitId}/WorkingFormat", WorkingFormatEdit,
+        await PatchRequest.InvokeAsync<UpdateUnitsWorkingFormatHttpResponse, UpdateUnitsWorkingFormatHttpBody>(
+            $"instance/Units/{WorkingFormatEdit.UnitId}/WorkingFormat", WorkingFormatEdit,
             resp =>
             {
                 if (resp.IsSuccess()) {}

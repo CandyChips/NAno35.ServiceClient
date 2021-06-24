@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Nano35.Communication
 @using Nano35.Contexts.Http.Instance
 @using Nano35.Contracts.Instance.Models
 @using Nano35.WebClient.Services
@@ -90,7 +91,7 @@
             $"instance/Instances/Current",
             resp =>
             {
-                if (resp.IsSuccess()) 
+                if (resp.IsSuccess())
                 {
                     _data = resp.Success.Data as List<InstanceViewModel>;
                 }

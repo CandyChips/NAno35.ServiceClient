@@ -1,15 +1,16 @@
 ﻿<div class="form-group">
     <b>@Title</b>
     <div class="input-group">
-        <ConditionalContent IsLoaded="@(string.IsNullOrEmpty(Helper) == false)">
-            <AllowedContent><Helper Text="@Helper">@Controls</Helper></AllowedContent>
-            <RejectedContent>@Controls</RejectedContent>
+        <ConditionalContent IsLoaded="@(string.IsNullOrEmpty(Helper) || IsHasHelper)">
+            <AllowedContent>@Controls</AllowedContent>
+            <RejectedContent><Helper Text="@Helper">@Controls</Helper></RejectedContent>
         </ConditionalContent>
     </div>
     @Validation
 </div>
 
 @functions {
+    public bool IsHasHelper { get;set; } = true;
     [Parameter] public string Helper { get; set; }
     [Parameter] public string Title { get; set; }
     [Parameter] public RenderFragment Controls { get; set; }

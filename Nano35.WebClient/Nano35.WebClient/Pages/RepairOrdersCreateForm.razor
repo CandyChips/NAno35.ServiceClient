@@ -119,7 +119,8 @@
         try
         {
             Model.UnitId = await SessionProvider.GetCurrentUnitId();
-            await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>($"RepairOrders", Model,
+            await PostRequest.InvokeAsync<CreateRepairOrderHttpResponse, CreateRepairOrderHttpBody>(
+                $"repair/RepairOrders", Model,
                 resp =>
                 {
                     if (resp.IsSuccess())

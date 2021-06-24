@@ -75,14 +75,10 @@
     private string Phone {
         get
         {
-            if (string.IsNullOrEmpty(_model.Phone))
-                return "+7";
+            if (string.IsNullOrEmpty(_model.Phone)) return "+7";
             var resp = _model.Phone;
-            if (resp.Length < 10)
-                resp = resp.PadRight(10);
-            if (resp.Length > 10)
-                resp = resp.Substring(0, 10);
-
+            if (resp.Length < 10) resp = resp.PadRight(10);
+            if (resp.Length > 10) resp = resp.Substring(0, 10);
             return $"+7 ({resp.Substring(0, 3)}) {resp.Substring(3, 3)}-{resp.Substring(6, 2)}-{resp.Substring(8, 2)}";
         }
         set
@@ -101,10 +97,8 @@
     protected override async Task OnInitializedAsync()
     {
         _model = new CreateWorkerHttpBody
-        {
-            NewId = Guid.NewGuid(),
-            InstanceId = await SessionProvider.GetCurrentInstanceId()
-        };
+            {NewId = Guid.NewGuid(),
+             InstanceId = await SessionProvider.GetCurrentInstanceId()};
     }
     
     private async Task HandleValidSubmit()
@@ -115,10 +109,12 @@
             await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>($"Workers", _model,
                 resp =>
                 {
-                    if (resp.IsSuccess()) {}
+                    if (resp.IsSuccess())
+                    {
+                        
+                    }
                     else
                     {
-                        Console.WriteLine(resp.Error);
                         NavigationManager.NavigateTo("/instance-view");
                     }
                 });

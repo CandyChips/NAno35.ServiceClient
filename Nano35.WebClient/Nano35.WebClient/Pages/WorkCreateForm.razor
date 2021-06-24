@@ -50,7 +50,8 @@
     private async Task HandleValidSubmit()
     {
         _isLoaded = false;
-        await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>($"Works", Model,
+        await PostRequest.InvokeAsync<CreateWorkHttpResponse, CreateWorkHttpBody>(
+            $"repair/Works", Model,
             resp =>
             {
                 if (resp.IsSuccess())

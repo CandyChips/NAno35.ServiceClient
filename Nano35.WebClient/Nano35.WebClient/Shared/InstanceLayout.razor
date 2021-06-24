@@ -30,7 +30,6 @@
     {
         _loading = false;
         _roles = await AuthService.GetCurrentRoles();
-        _serverAvailable = await HealthService.CheckAsync();
         if(!await SessionProvider.IsCurrentSessionIdExist())
             NavigationManager.NavigateTo("/instances");
         await InstanceService.IsInstanceExist();

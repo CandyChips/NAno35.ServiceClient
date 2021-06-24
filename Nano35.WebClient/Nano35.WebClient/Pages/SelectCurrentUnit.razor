@@ -8,35 +8,29 @@
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
 
-<ConditionalContent IsLoaded="_isNewShown">
-    <AllowedContent>
-        <RadzenButton Click=@(_ => NewUnit()) 
-                      Text="Создать"
-                      Style="width: 100%"
-                      ButtonStyle="ButtonStyle.Primary"/>
-    </AllowedContent>
-    <RejectedContent>
-        <LoadingContent IsLoaded="_isLoaded">
-            <InputField Title="Подразделение*">
-                <Controls>
-                    <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
-                                    TextProperty="Name" 
-                                    ValueProperty="Id"
-                                    TValue="Guid" 
-                                    @bind-Value="SelectedUnitId"
-                                    Disabled="@(!_units.Any())"
-                                    Style="width: 100%;"
-                                    Placeholder="Выберите текущее подразделение..."
-                                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                                    FilterOperator="StringFilterOperator.Contains"
-                                    AllowFiltering="true"/>
-                </Controls>
-                <Validation>
-                </Validation>
-            </InputField>
-        </LoadingContent>
-    </RejectedContent>
-</ConditionalContent>
+<LoadingContent IsLoaded="_isLoaded">
+    <InputField Title="Подразделение*">
+        <Controls>
+            <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))
+                            TextProperty="Name" 
+                            ValueProperty="Id"
+                            TValue="Guid" 
+                            @bind-Value="SelectedUnitId"
+                            Disabled="@(!_units.Any())"
+                            Style="width: 100%;"
+                            Placeholder="Выберите текущее подразделение..."
+                            FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                            FilterOperator="StringFilterOperator.Contains"
+                            AllowFiltering="true"/>
+        </Controls>
+        <Validation>
+        </Validation>
+    </InputField>
+</LoadingContent>
+<RadzenButton Click=@(_ => NewUnit()) 
+              Text="Создать новое подразделение"
+              Style="width: 100%"
+              ButtonStyle="ButtonStyle.Primary"/>
 
 @code
 {
@@ -44,7 +38,6 @@
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private List<UnitViewModel> _units = new();
     private bool _isLoaded;
-    private bool _isNewShown;
     private Guid _selectedUnitId { get; set; }
     private Guid SelectedUnitId
     {
@@ -70,7 +63,6 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }
     
@@ -84,13 +76,8 @@
             resp =>
             {
                 if (resp.IsSuccess()) {_units = resp.Success.Units.ToList();}
-                else
-                {
-                    Console.WriteLine(resp.Error);
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                else { NavigationManager.NavigateTo("/instance-view"); }
             });
-        if (!_units.Any()) _isNewShown = true;
         _isLoaded = true;
     }
 }

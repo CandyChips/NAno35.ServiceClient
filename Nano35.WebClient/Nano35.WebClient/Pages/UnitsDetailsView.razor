@@ -21,8 +21,9 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        
-        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>($"Units/{await SessionProvider.GetCurrentUnitId()}",
+        var unitId = await SessionProvider.GetCurrentUnitId();
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            $"instance/Units/{unitId}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -35,7 +36,7 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        
         _isLoaded = true;
+        
     }
 }

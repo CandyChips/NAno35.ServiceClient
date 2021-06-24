@@ -113,7 +113,8 @@
             if (await HealthService.CheckAsync() == false)
             NavigationManager.NavigateTo("/instance-view");
             
-            await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>($"StorageItems", _model,
+            await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>(
+                $"storage/StorageItems", _model,
                 resp =>
                 {
                     if (resp.IsSuccess()) {}
@@ -135,7 +136,8 @@
     protected override async Task OnInitializedAsync()
     {
         _loaded = false;
-        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>($"StorageItemConditions",
+        await GetRequest.InvokeAsync<GetAllStorageItemConditionsSuccessHttpResponse>(
+            $"storage/StorageItems/Conditions",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -148,7 +150,8 @@
                 }
             });
         
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            $"storage/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -179,7 +182,8 @@
             _model.ArticleId = (Guid) res.Data;
         }
         
-        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>(
+            $"storage/Articles?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

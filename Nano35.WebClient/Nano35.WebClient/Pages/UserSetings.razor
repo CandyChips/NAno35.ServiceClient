@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.WebClient.Services
 @using Append.Blazor.Printing
+@using Nano35.Contexts.Http.Settings
 @using Nano35.Contexts.Http.storage
 @using Nano35.WebClient.Helpers
 @attribute [Authorize]
@@ -19,18 +20,38 @@
 
 <LoadingContent IsLoaded="_loading">
     
-    <RadzenHeading Text="Настройки пользователя"/>
+    <RadzenFieldset Text="Настройки Сотрудника" Style="width: 80%;">
+            <RadzenDataList WrapItems="true" AllowPaging="true" Data="@Settings" >
+                <Template Context="setting" >
+                    <li class="list-group-item" style="margin-top:5px">@setting.Key: <b>@setting.Value</b></li>
+                </Template>
+            </RadzenDataList>
+        </RadzenFieldset>
     
-    </LoadingContent>
+</LoadingContent>
 
 @code
 {
     [CascadingParameter] public IModalService Modal { get; set; }
+    private Dictionary<string,bool> Settings { get; set; }
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
+        Settings.Add("Alive",true);
+        Settings.Add("IsAlive",false);
+        await GetRequest.InvokeAsync<GetWorkerSettingsByIdHttpResponse>(
+            $"settings/Settings/WorkerSettingsById?WorkerId={AuthService.GetCurrentUser().Result.Id}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {Settings = resp.Success.Settings;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _loading = true;
     }
 }

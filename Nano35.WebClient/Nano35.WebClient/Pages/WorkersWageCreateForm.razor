@@ -46,7 +46,7 @@
 
 @code {
 
-    [Parameter] public CreateWageOperationHttpBody Model { get; set; } = new();
+    [Parameter] public CreateWageOfRepairOrderCashOperationRequestContract Model { get; set; } = new();
     [Parameter] public EventCallback FormSubmitted { get; set; }
     [Parameter] public string Error { get; set; }
     [Parameter] public Guid UserId { get; set; }
@@ -60,16 +60,16 @@
         _isLoaded = false;
         
         Model.NewId = Guid.NewGuid();
-        await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>($"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
-            resp =>
-            {
-                if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
-                else
-                {
-                    Console.WriteLine(resp.Error);
-                    NavigationManager.NavigateTo("/instance-view");
-                }
-            });
+        //await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>($"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
+        //    resp =>
+        //    {
+        //        if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
+        //        else
+        //        {
+        //            Console.WriteLine(resp.Error);
+        //            NavigationManager.NavigateTo("/instance-view");
+        //        }
+        //    });
         _isLoaded = true;
     }
 
@@ -78,16 +78,16 @@
         
         try
         {
-            await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>($"Cashbox/WageOperations", Model,
-                resp =>
-                {
-                    if (resp.IsSuccess()) {}
-                    else
-                    {
-                        Console.WriteLine(resp.Error);
-                        NavigationManager.NavigateTo("/instance-view");
-                    }
-                });
+            //await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>($"Cashbox/WageOperations", Model,
+            //    resp =>
+            //    {
+            //        if (resp.IsSuccess()) {}
+            //        else
+            //        {
+            //            Console.WriteLine(resp.Error);
+            //            NavigationManager.NavigateTo("/instance-view");
+            //        }
+            //    });
             await ModalInstance.CloseAsync();
         }
         catch (Exception e)

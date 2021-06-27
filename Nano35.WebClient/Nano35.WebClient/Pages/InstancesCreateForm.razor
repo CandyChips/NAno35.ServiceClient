@@ -35,30 +35,18 @@
         </InputField>
         
         <InputField Title="Номер телефона">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Phone"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Phone)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Phone"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
         </InputField>
         
         <InputField Title="Название организации">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.RealName"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.RealName)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.RealName"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.RealName)" /></Validation>
         </InputField>
         
         <InputField Title="Описание">
-            <Controls>
-                <RadzenTextBox Style="width: 100%;" @bind-Value="_model.Info"/>
-            </Controls>
-            <Validation>
-                <ValidationMessage For="@(() => _model.Info)" />
-            </Validation>
+            <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="_model.Info"/></Controls>
+            <Validation><ValidationMessage For="@(() => _model.Info)" /></Validation>
         </InputField>
         
         <InputField Title="Регион">
@@ -104,6 +92,7 @@
 
 @code
 {
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private CreateInstanceHttpBody _model;
     private string Error { get; set; }
     private List<InstanceTypeViewModel> _types = new();
@@ -117,8 +106,10 @@
                 $"instance/Instances", _model,
                 resp =>
                 {
-                    if (resp.IsSuccess()) {}
-                    else{}
+                    if (resp.IsSuccess())
+                    {
+                        ModalInstance.CloseAsync();
+                    }
                 });
             
         }
@@ -136,10 +127,12 @@
             $"instance/Instances/Types",
             resp =>
             {
-                if (resp.IsSuccess()) {_types = resp.Success.Data.ToList();}
+                if (resp.IsSuccess())
+                {
+                    _types = resp.Success.Data.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -147,10 +140,12 @@
             $"instance/Instances/Regions",
             resp =>
             {
-                if (resp.IsSuccess()) {_regions = resp.Success.Regions.ToList();}
+                if (resp.IsSuccess())
+                {
+                    _regions = resp.Success.Regions.ToList();
+                }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });

@@ -16,7 +16,7 @@
 <LoadingContent IsLoaded="_isLoaded">
     <RadzenHeading Text="Клиентская база"/>
     <RadzenButton Click="@(_ => OpenCreateClient())" Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
-    <RadzenGrid EmptyText="Добавте оприходуемые товары..." AllowPaging="true" PageSize="10" Data="@_data" TItem="ClientViewModel">
+    <RadzenGrid EmptyText="Добавте своих первых клиентов..." AllowPaging="true" PageSize="10" Data="@_data" TItem="ClientViewModel">
         <Columns>
             <RadzenGridColumn TItem="ClientViewModel" TextAlign="TextAlign.Left" Property="Name" Title="Фио" />
             <RadzenGridColumn TItem="ClientViewModel" TextAlign="TextAlign.Center" Property="Email" Title="Почта" />

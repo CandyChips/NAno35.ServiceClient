@@ -1,11 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Nano35.WebClient.Services
 @using Append.Blazor.Printing
+@using Nano35.Contexts.Http.Identity
 @using Nano35.Contexts.Http.Settings
 @using Nano35.Contexts.Http.storage
+@using Nano35.Contracts.Identity.Artifacts
+@using Nano35.Contracts.Identity.Models
 @using Nano35.WebClient.Helpers
 @attribute [Authorize]
-@layout InstanceLayout
+@layout MainLayout
 @page "/user-settings"
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
@@ -16,42 +19,157 @@
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService
 @inject HttpGet GetRequest
+@inject HttpPatch PatchRequest
 
 
-<LoadingContent IsLoaded="_loading">
-    
-    <RadzenFieldset Text="Настройки Сотрудника" Style="width: 80%;">
-            <RadzenDataList WrapItems="true" AllowPaging="true" Data="@Settings" >
-                <Template Context="setting" >
-                    <li class="list-group-item" style="margin-top:5px">@setting.Key: <b>@setting.Value</b></li>
-                </Template>
-            </RadzenDataList>
-        </RadzenFieldset>
-    
-</LoadingContent>
+<CenterContent Width="60">
+    <LoadingContent IsLoaded="_loading">
+        <FieldList Title="Настройки пользователя">
+            <FieldListItem Title="Номер телефона">
+                <EditableField OnCancel="@(() => UpdatePhoneHttpBody = null)"
+                               OnEdit="@(() => UpdatePhoneHttpBody = new UpdatePhoneHttpBody() { UserId = AuthService.GetCurrentUser().Result.Id, Phone = User.Phone})"
+                               OnSave="@(async () => await UpdatePhone())">
+                    <View><p>@User.Phone</p></View>
+                    <Edit><RadzenTextBox Style="width: 100%;" @bind-Value="UpdatePhoneHttpBody.Phone"/></Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Пароль">
+                <EditableField OnCancel="@(() => UpdatePasswordHttpBody = null)"
+                               OnEdit="@(() => UpdatePasswordHttpBody = new UpdatePasswordHttpBody() { UserId = AuthService.GetCurrentUser().Result.Id})"
+                               OnSave="@(async () => await UpdatePassword())">
+                    <View><p>*********</p></View>
+                    <Edit><RadzenTextBox Style="width: 100%;" @bind-Value="UpdatePasswordHttpBody.Password"/></Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Ф.И.О.">
+                <EditableField OnCancel="@(() => UpdateNameHttpBody = null)"
+                               OnEdit="@(() => UpdateNameHttpBody = new UpdateNameHttpBody() { UserId = AuthService.GetCurrentUser().Result.Id, Name = User.Name })"
+                               OnSave="@(async () => await UpdateName())">
+                    <View><p>@User.Name</p></View>
+                    <Edit><RadzenTextBox Style="width: 100%;" @bind-Value="UpdateNameHttpBody.Name"/></Edit>
+                </EditableField>
+            </FieldListItem>
+            <FieldListItem Title="Электронная почта">
+                <EditableField OnCancel="@(() => UpdateEmailHttpBody = null)"
+                               OnEdit="@(() => UpdateEmailHttpBody = new UpdateEmailHttpBody() { UserId = AuthService.GetCurrentUser().Result.Id, Email = User.Email })"
+                               OnSave="@(async () => await UpdateEmail())">
+                    <View><p>@User.Email</p></View>
+                    <Edit><RadzenTextBox Style="width: 100%;" @bind-Value="UpdateEmailHttpBody.Email"/></Edit>
+                </EditableField>
+            </FieldListItem>
+        </FieldList>
+    </LoadingContent>
+</CenterContent>
 
 @code
 {
-    [CascadingParameter] public IModalService Modal { get; set; }
-    private Dictionary<string,bool> Settings { get; set; }
-    private bool _loading = true;
-
-    protected override async Task OnInitializedAsync()
+    private bool _loading;
+    private UserViewModel User { get; set; }
+    
+    private UpdatePhoneHttpBody UpdatePhoneHttpBody { get; set; } = new();
+    private async Task UpdatePhone()
     {
-        _loading = false;
-        Settings.Add("Alive",true);
-        Settings.Add("IsAlive",false);
-        await GetRequest.InvokeAsync<GetWorkerSettingsByIdHttpResponse>(
-            $"settings/Settings/WorkerSettingsById?WorkerId={AuthService.GetCurrentUser().Result.Id}",
-            resp =>
+        await PatchRequest.InvokeAsync<UpdatePhoneHttpResponse, UpdatePhoneHttpBody>(
+            $"identity/identity/{User.Id}/phone", UpdatePhoneHttpBody,
+            async resp =>
             {
-                if (resp.IsSuccess()) {Settings = resp.Success.Settings;}
+                if (resp.IsSuccess())
+                {
+                    _loading = false;
+                    await GetUser();
+                    _loading = true;
+                }
                 else
                 {
                     Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        UpdatePhoneHttpBody = null;
+    }
+    
+    private UpdatePasswordHttpBody UpdatePasswordHttpBody { get; set; } = new();
+    private async Task UpdatePassword()
+    {
+        await PatchRequest.InvokeAsync<UpdatePasswordHttpResponse, UpdatePasswordHttpBody>(
+            $"identity/identity/{User.Id}/password", UpdatePasswordHttpBody,
+            async resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    _loading = false;
+                    await GetUser();
+                    _loading = true;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        UpdatePasswordHttpBody = null;
+    }
+    
+    private UpdateNameHttpBody UpdateNameHttpBody { get; set; } = new();
+    private async Task UpdateName()
+    {
+        await PatchRequest.InvokeAsync<UpdateNameHttpResponse, UpdateNameHttpBody>(
+            $"identity/identity/{User.Id}/name", UpdateNameHttpBody,
+            async resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    _loading = false;
+                    await GetUser();
+                    _loading = true;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        UpdateNameHttpBody = null;
+    }
+
+    private UpdateEmailHttpBody UpdateEmailHttpBody { get; set; } = new();
+    private async Task UpdateEmail()
+    {
+        await PatchRequest.InvokeAsync<UpdateEmailHttpResponse, UpdateEmailHttpBody>(
+            $"identity/identity/{User.Id}/email", UpdateEmailHttpBody,
+            async resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    _loading = false;
+                    await GetUser();
+                    _loading = true;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        UpdateEmailHttpBody = null;
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = false;
+        await GetUser();
         _loading = true;
     }
+
+    private async Task GetUser()
+    {
+        await GetRequest.InvokeAsync<GetUserByIdHttpResponse>(
+            $"identity/identity/current",
+            resp =>
+            {
+                if (resp.IsSuccess()){User = resp.Success.User;}
+                else{NavigationManager.NavigateTo("/instance-view");}
+            });
+    }
+    
 }

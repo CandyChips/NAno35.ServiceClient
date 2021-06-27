@@ -4,11 +4,11 @@ namespace Nano35.WebClient.Helpers
 {
     public class RolesHelper
     {
-        public static Guid Storage => Guid.Parse("0474cdca-29f0-43f4-b365-3accddfc1a27");
-        public static Guid Manager => Guid.Parse("45050ae0-06c8-4d5c-ae5c-4e6831504ca3");
-        public static Guid Cashbox => Guid.Parse("35075b7c-74b6-415d-9d16-5fb089c5b4be");
-        public static Guid Master => Guid.Parse("bdee02b1-1b7a-4aab-a269-7a9235287af9");
-        public static Guid Admin => Guid.Parse("58688ab3-a30c-4385-9310-f20fea1d4082");
+        public static Guid Storage => Guid.Parse("66f8433d-904d-44bb-907a-b24a68ca90c2");
+        public static Guid Manager => Guid.Parse("ac914c57-fb98-41ff-8819-9d7108bda148");
+        public static Guid Cashbox => Guid.Parse("1c2cb188-c1c6-4836-86a3-b2425fcaf6ca");
+        public static Guid Master  => Guid.Parse("aac06f8a-6170-4de8-b18c-8f21c9b72bee");
+        public static Guid Admin => Guid.Parse("ca47010e-155d-4344-a190-9915eb82bf36");
 
         public static string GetName(Guid id)
         {

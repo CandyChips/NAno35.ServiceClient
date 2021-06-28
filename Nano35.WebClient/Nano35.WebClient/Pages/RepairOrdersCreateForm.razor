@@ -15,8 +15,7 @@
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
         <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
-            <FluentValidationValidator/>
-            <ValidationSummary/>
+            <DataAnnotationsValidator />
             <InputField Title="Клиент*"
                         Helper="...">
                 <Controls>

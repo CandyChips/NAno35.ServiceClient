@@ -67,9 +67,10 @@
     }
     
     private async Task NewUnit()
-    {
+    {   
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var modal = Modal.Show<UnitsCreateForm>("Новое подразделение", modalOpts);
         _isLoaded = false;
-        var modal = Modal.Show<UnitsCreateForm>("Новое подразделение");
         await modal.Result;
         await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
             $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",

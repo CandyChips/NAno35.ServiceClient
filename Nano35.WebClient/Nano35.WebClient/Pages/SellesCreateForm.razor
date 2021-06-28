@@ -17,8 +17,7 @@
             <RadzenTabsItem Text="Продажа со склада">
                 <LoadingContent IsLoaded="_isLoaded">
                     <EditForm Model="@Model" OnValidSubmit="Create">
-                        <ValidationSummary/>
-                        <FluentValidationValidator/>
+                        <DataAnnotationsValidator />
                         <InputField Title="Подразделение*">
                             <Controls>
                                 <RadzenDropDown Data=@(_units.Select(a => new {a.Id, Name = $"{a.Name} - {a.Address}"}))

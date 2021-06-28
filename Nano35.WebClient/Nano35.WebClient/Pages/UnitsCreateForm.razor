@@ -1,6 +1,7 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.Contracts.Instance.Models
 @using Nano35.Contexts.Http.Instance
+@using System.Text.RegularExpressions
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
@@ -9,7 +10,6 @@
 
 
 <BoxedContent Width="40">
-    <LoadingContent IsLoaded="_isLoading">
         <EditForm Model="@Model" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator />
     
@@ -33,10 +33,11 @@
     
             <InputField Title="Номер телефона*"
                         Helper="...">
-                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Phone"/></Controls>
+                <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change="PhoneMask" /></Controls>
                 <Validation><ValidationMessage For="@(() => Model.Phone)" /></Validation>
             </InputField>
     
+        <LoadingContent IsLoaded="_isLoading">
             <InputField Title="Тип подразделения*"
                         Helper="...">
                 <Controls>
@@ -46,6 +47,7 @@
                 </Controls>
                 <Validation><ValidationMessage For="@(() => Model.UnitTypeId)" /></Validation>
             </InputField>
+        </LoadingContent>
                         
             @if (!string.IsNullOrEmpty(Error))
             {
@@ -54,7 +56,6 @@
             
             <RadzenButton type="submit" Text="Создать" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
         </EditForm>
-    </LoadingContent>
 </BoxedContent>
 
 @code
@@ -64,6 +65,7 @@
     private CreateUnitHttpBody Model = new();
     private string Error { get; set; }
     private List<UnitTypeViewModel> _types = new();
+    private string Phone { get ; set ; } = "+7";
     private bool _isLoading;
     
     protected override async Task OnInitializedAsync()
@@ -108,5 +110,29 @@
         {
             Error = e.Message;
         }
+    }
+    
+    private async Task PhoneMask()
+    {
+
+        Phone = Regex.Replace(Phone, @"[^\d]", "");
+
+        var countryCode = "+7";
+
+        if (Phone.StartsWith("7"))
+            Phone = Phone.Remove(0, 1);
+
+        if (Phone.StartsWith("8"))
+            Phone = Phone.Remove(0, 1);
+
+        if (Phone.Length < 10)
+            Phone = Phone.PadRight(10);
+
+        if (Phone.Length > 10)
+            Phone = Phone.Substring(0, 10);
+        
+        Model.Phone = Phone;
+        
+        Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
     }
 }

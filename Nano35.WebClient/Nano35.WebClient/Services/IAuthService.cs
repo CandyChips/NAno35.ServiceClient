@@ -54,6 +54,8 @@ namespace Nano35.WebClient.Services
         public async Task LogOut()
         {
             await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("CurrentUnitId");
+            await _localStorage.RemoveItemAsync("CurrentInstanceId");
             ((CustomAuthenticationStateProvider) _customAuthenticationStateProvider).NotifyAsLogout();
         }
 
@@ -61,7 +63,7 @@ namespace Nano35.WebClient.Services
         {
             var response = new UserViewModel();
             await _get.InvokeAsync<GetUserFromTokenHttpResponse>(
-                $"identity/Identity/FromToken",
+                $"identity/Identity/current",
                 resp =>
                 {
                     if (resp.IsSuccess()) {response = resp.Success.Data;}

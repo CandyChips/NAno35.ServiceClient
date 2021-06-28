@@ -3,7 +3,6 @@
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider 
 @inject HttpClient HttpClient 
-@inject HealthService HealthService
 @inject NavigationManager NavigationManager
 @inject HttpGet GetRequest
 @inject HttpPost PostRequest
@@ -110,9 +109,6 @@
         _loaded = false;
         try
         {
-            if (await HealthService.CheckAsync() == false)
-            NavigationManager.NavigateTo("/instance-view");
-            
             await PostRequest.InvokeAsync<CreateStorageItemSuccessHttpResponse, CreateStorageItemHttpBody>(
                 $"storage/StorageItems", _model,
                 resp =>

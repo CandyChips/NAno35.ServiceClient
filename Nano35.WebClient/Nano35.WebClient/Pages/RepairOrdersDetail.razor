@@ -18,8 +18,7 @@
 @inject IPrintingService PrintingService
 
 <LoadingContent IsLoaded="_isLoaded">
-    
-    <div style="width: 60rem; height: 40rem; overflow-y: scroll;">
+<div style="width: 60rem; height: 40rem; overflow-y: scroll;">
         @if (_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Completed) &&
              !_states.Select(e => e.Type).Contains((int) RepairOrderStateType.Closed) &&
              _roles.Any(c => c == RolesHelper.Manager || c == RolesHelper.Admin))
@@ -94,8 +93,7 @@
                     }
                 </ul>
             </RadzenFieldset>
-            <RadzenFieldset Text="Состояние"
-                            Style="width: 70%;">
+            <RadzenFieldset Text="Состояние" Style="width: 70%;">
                 <ul class="list-group">
                      @if ((_user.Id == _model.PerformerId) || (_model.PerformerId == Guid.Empty) || _roles.Any(c => c == RolesHelper.Admin))
                         {
@@ -142,7 +140,6 @@
                                     @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
                                         <li class="list-group-item alert alert-primary">
-                                            <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
                                             <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
                                         </li>
                                     }
@@ -160,16 +157,12 @@
                                 }
                                 case 5:
                                 {
-                                    <li class="list-group-item alert alert-primary">
-                                    @if (_roles.Any(c => c == RolesHelper.Master) || _roles.Any(c => c == RolesHelper.Admin))
-                                    {
-                                        <RadzenButton Text="Ожидает поставки запчастей" Click="@(SetAsOnWait)"/>
-                                    }
                                     @if (_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin))
                                     {
-                                        <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Готов" Click="@(SetAsReady)"/>
+                                        </li>
                                     }
-                                    </li>
                                     break;
                                 }
                                 case 6:
@@ -229,8 +222,6 @@
 
 @code
 {
-    
-    
     [CascadingParameter] public BlazoredModalInstance ModalInstance { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [Parameter] public Guid Id { get; set; }

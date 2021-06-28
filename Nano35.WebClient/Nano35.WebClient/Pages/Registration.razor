@@ -17,7 +17,7 @@
                         <Validation><ValidationMessage For="@(() => _model.Name)" /></Validation>
                     </InputField>
                     <InputField Title="Номер телефона">
-                         <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
+                        <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Phone" Change=@(PhoneMask) /></Controls>
                         <Validation><ValidationMessage For="@(() => _model.Phone)" /></Validation>
                     </InputField>
                     <InputField Title="Электронная почта">
@@ -71,28 +71,17 @@
             _error = ex.Message;
         }
     }
-
-    private async Task PhoneMask()
+    
+    private void PhoneMask()
     {
-
+        Console.WriteLine("PhoneMask");
         Phone = Regex.Replace(Phone, @"[^\d]", "");
-
         var countryCode = "+7";
-
-        if (Phone.StartsWith("7"))
-            Phone = Phone.Remove(0, 1);
-
-        if (Phone.StartsWith("8"))
-            Phone = Phone.Remove(0, 1);
-
-        if (Phone.Length < 10)
-            Phone = Phone.PadRight(10);
-
-        if (Phone.Length > 10)
-            Phone = Phone.Substring(0, 10);
-        
+        if (Phone.StartsWith("7")) Phone = Phone.Remove(0,1);
+        if (Phone.StartsWith("8")) Phone = Phone.Remove(0,1);
+        if (Phone.Length < 10) Phone = Phone.PadRight(10);
+        if (Phone.Length > 10) Phone = Phone.Substring(0, 10);
         _model.Phone = Phone;
-        
         Phone = $"{countryCode}({Phone.Substring(0, 3)}) {Phone.Substring(3, 3)}-{Phone.Substring(6, 2)}-{Phone.Substring(8, 2)}";
     }
 }

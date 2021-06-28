@@ -106,7 +106,8 @@
         try
         {
             _model.Roles = roles.ToList();
-            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>($"Workers", _model,
+            await PostRequest.InvokeAsync<CreateWorkerHttpResponse, CreateWorkerHttpBody>(
+                $"instance/workers", _model,
                 resp =>
                 {
                     if (resp.IsSuccess())

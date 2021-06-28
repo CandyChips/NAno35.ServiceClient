@@ -160,7 +160,7 @@
     {
         var data = new List<UnitViewModel>();
         await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>(
-            $"storage/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

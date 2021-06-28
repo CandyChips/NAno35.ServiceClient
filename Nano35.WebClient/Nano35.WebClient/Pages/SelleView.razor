@@ -18,19 +18,12 @@
 
 
 <LoadingContent IsLoaded="_loading">
-    
     <RadzenHeading Text="Продажи"/>
-    
     @if (_roles.Contains(RolesHelper.Storage) || _roles.Contains(RolesHelper.Admin))
     {
-        <RadzenButton Click=@(_ => NewSelle()) 
-                      Text="Создать"
-                      Style="margin: 1rem 0;"
-                      ButtonStyle="ButtonStyle.Primary"/>
+        <RadzenButton Click=@(_ => NewSelle()) Text="Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
     }
-    
-    
-    <RadzenGrid EmptyText="Нет оприходований." AllowPaging="true" PageSize="10" Data=@(_data) TItem="SelleViewModel">
+    <RadzenGrid EmptyText="Нет продаж." AllowPaging="true" PageSize="10" Data=@(_data) TItem="SelleViewModel">
         <Columns>
             <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Number" Width="100px" Title="Номер" />
             <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Title="Дата">

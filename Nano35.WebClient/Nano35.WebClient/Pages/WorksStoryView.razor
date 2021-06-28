@@ -26,7 +26,8 @@
     
     protected override async Task OnInitializedAsync()
     {        
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            $"repair/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())
@@ -45,7 +46,8 @@
         var modal = Modal.Show<WorkCreateForm>($"Новая работа");
         await modal.Result;
         
-        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>($"Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllWorksHttpResponse>(
+            $"repair/Works?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess())

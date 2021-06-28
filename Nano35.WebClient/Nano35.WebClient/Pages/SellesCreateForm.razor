@@ -163,7 +163,8 @@
                 new CreateSelleDetailViewModel() { NewId = a.NewId, Count = a.Count, Price = a.Price, PlaceOnStorage = a.PlaceOnStorage, StorageItemId = a.StorageItemId}).ToList();
             try
             {
-                await PostRequest.InvokeAsync<CreateSelleSuccessHttpResponse, CreateSelleHttpBody>($"Sells", Model,
+                await PostRequest.InvokeAsync<CreateSelleSuccessHttpResponse, CreateSelleHttpBody>(
+                    $"storage/Sells", Model,
                     resp =>
                     {
                         if (resp.IsSuccess()) {}
@@ -184,7 +185,7 @@
     private async Task<List<UnitViewModel>> LoadUnits()
     {
         var data = new List<UnitViewModel>();
-        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+        await GetRequest.InvokeAsync<GetAllUnitsHttpResponse>($"instance/Units?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {data = resp.Success.Units.ToList();}

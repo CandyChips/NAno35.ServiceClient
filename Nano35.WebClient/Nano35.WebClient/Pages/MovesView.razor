@@ -14,22 +14,49 @@
 <LoadingContent IsLoaded="_loading">
     <RadzenHeading Text="Перемещения"/>
     <RadzenButton Click=@(_ => NewMove()) Text=" Создать" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary"/>
-    <RadzenGrid AllowPaging="true"
-                PageSize="10"
-                Data="@_data"
-                TItem="MoveViewModel">
-        <Columns>
-            <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Number" Title="Номер" Width="70px" />
-            <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Дата" />
-            <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="ToUnit" Title="Подразделение получатель" />
-            <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="FromUnit" Title="Подразделение отправитель" />
-            <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Width="130px">
-                <Template Context="item">
-                    <RadzenButton Click=@(_ => OpenMove(item)) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary"/>
-                </Template>
-            </RadzenGridColumn>
-        </Columns>
-    </RadzenGrid>
+    <RadzenTabs>
+        <Tabs>
+            <RadzenTabsItem Text="Проведенные">
+                <RadzenGrid AllowPaging="true"
+                            PageSize="10"
+                            Data="@_data"
+                            EmptyText="Нет проведенных оприходований"
+                            TItem="MoveViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Number" Title="Номер" Width="70px" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Дата" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="ToUnit" Title="Подразделение получатель" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="FromUnit" Title="Подразделение отправитель" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Width="130px">
+                            <Template Context="item">
+                                <RadzenButton Click=@(_ => OpenMove(item)) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary"/>
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Ожидают проведения">
+                <RadzenGrid AllowPaging="true"
+                            PageSize="10"
+                            Data="@_data"
+                            EmptyText="Нет ожидающих проведения оприходований"
+                            TItem="MoveViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Number" Title="Номер" Width="70px" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Дата" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="ToUnit" Title="Подразделение получатель" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Property="FromUnit" Title="Подразделение отправитель" />
+                        <RadzenGridColumn TItem="MoveViewModel" TextAlign="TextAlign.Center" Width="130px">
+                            <Template Context="item">
+                                <RadzenButton Click=@(_ => OpenMoveCheck(item)) Text="Провести" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Primary"/>
+                                <RadzenButton Click=@(_ => OpenMove(item)) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
 </LoadingContent>
 
 @code
@@ -75,6 +102,17 @@
         var parameters = new ModalParameters();
         parameters.Add(nameof(MovesDetails.Move), value);
         var modal = Modal.Show<MovesDetails>($"Перемещение", parameters);
+        await modal.Result;
+        _loading = false;
+        _data = await GetAllMoves();
+        _loading = true;
+    }
+
+    private async Task OpenMoveCheck(MoveViewModel value)
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(MovesCheck.Move), value);
+        var modal = Modal.Show<MovesCheck>($"Перемещение", parameters);
         await modal.Result;
         _loading = false;
         _data = await GetAllMoves();

@@ -1,11 +1,12 @@
-﻿@using Nano35.WebClient.Services
+@using Nano35.WebClient.Services
 @using Nano35.Contexts.Http.storage
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
-@inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
+@inject HttpPost PostRequest
 @inject HttpGet GetRequest
+
 
 <RadzenFieldset Text="Оприходование"
             Style="width: 100%;">
@@ -48,14 +49,18 @@
     </RadzenGrid>
 </RadzenFieldset>
 
+
 @code
 {
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private bool _isLoaded;
     [Parameter] public MoveViewModel Move { get; set; }
     private List<MoveDetailViewModel> Details { get; set; }
     
     protected override async Task OnInitializedAsync()
     {
-        await GetRequest.InvokeAsync<GetAllMoveDetailsSuccessHttpResponse>($"storage/Moves/{Move.Id}/Details",
+        await GetRequest.InvokeAsync<GetAllMoveDetailsSuccessHttpResponse>($"Moves/{Move.Id}/Details",
             resp =>
             {
                 if (resp.IsSuccess()) {Details = resp.Success.Data;}

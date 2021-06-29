@@ -64,6 +64,6 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await ModalInstance.CloseAsync();
+        await ModalInstance.CloseAsync(ModalResult.Ok(Model.NewId));
     }
 }

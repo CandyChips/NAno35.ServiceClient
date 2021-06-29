@@ -72,7 +72,7 @@
                           Url=@($"https://nano35.ru/files/images/CreateStorageItemImage/{_model.NewId}") 
                           Style="margin-bottom: 20px; width: 100%;"
                           Accept="image/*"
-                          Progress=@(args => OnProgress(args, "Manual Upload")) />
+                          Progress=@(args => OnProgress(args)) />
             
             @if (_progress != 0)
             {
@@ -96,11 +96,9 @@
     private CreateStorageItemHttpBody _model = new();
     private string Error { get; set; } = "";
     private bool _loaded;
-    private double _progress = 0;
-    private bool _shouldRender;
+    private double _progress;
     private List<ArticleViewModel> _articles = new();
     private List<StorageItemConditionViewModel> _conditions = new();
-    private readonly int _maxAllowedFiles = 3;
     private RadzenUpload _upload;
     
     private async Task HandleValidSubmit()
@@ -193,12 +191,12 @@
             });
     }
     
-    void OnProgress(UploadProgressArgs args, string name)
+    void OnProgress(UploadProgressArgs args)
     {
-        this._progress = args.Progress;
+        _progress = args.Progress;
         if (args.Progress == 100)
         {
-            this._progress = 0;
+            _progress = 0;
         }
     }
 }

@@ -326,12 +326,11 @@
     {
         SetUserAsPerformerOfRepairOrderQuery.RepairOrderId = _model.Id;
         await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
-            $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
-            resp =>
+            $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery, async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -350,11 +349,11 @@
         SetUserAsPerformerOfRepairOrderQuery.NewId = Guid.NewGuid();
         await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
             $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -371,11 +370,11 @@
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>(
             $"repair/RepairOrders/Device", DeviceEdit,
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -389,11 +388,11 @@
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersSerialHttpResponse, UpdateRepairOrdersSerialHttpBody>(
             $"repair/RepairOrders/Serial", SerialEdit,
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -407,11 +406,11 @@
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersConditionHttpResponse, UpdateRepairOrdersConditionHttpBody>(
             $"repair/RepairOrders/Condition", ConditionEdit,
-            resp =>
+            async  resp=>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -460,11 +459,11 @@
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsDiagnosedHttpResponse, SetRepairOrderAsDiagnosedHttpBody>(
             $"repair/RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -477,11 +476,11 @@
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsAgreementHttpResponse, SetRepairOrderAsAgreementHttpBody>(
             $"repair/RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -496,11 +495,11 @@
         var res = await modal.Result;
         await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
             $"repair/RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -514,11 +513,11 @@
     {        
         await PostRequest.InvokeAsync<SetRepairOrderAsOnWaitHttpResponse, SetRepairOrderAsOnWaitHttpBody>(
             $"repair/RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -531,11 +530,11 @@
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsOnWorkHttpResponse, SetRepairOrderAsOnWorkHttpBody>(
             $"repair/RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -548,11 +547,11 @@
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsCompletedHttpResponse, SetRepairOrderAsCompletedHttpBody>(
             $"repair/RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {
@@ -565,11 +564,11 @@
     {
         await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>(
             $"repair/RepairOrders/Close", new SetRepairOrderAsClosedHttpBody {RepairOrderId = _model.Id},
-            resp =>
+            async resp =>
             {
                 if (resp.IsSuccess())
                 {
-                    Update();
+                    await Update();
                 }
                 else
                 {

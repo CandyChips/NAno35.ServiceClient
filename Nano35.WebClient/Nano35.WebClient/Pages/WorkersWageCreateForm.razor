@@ -17,15 +17,15 @@
         <RadzenFieldset Text="Ожидаемые выплаты" Style="width: 100%;">
             <EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
-                <RadzenGrid Data="@_operations" EmptyText="Нет ожидаемых выплат" TItem="WageOperationViewModel">
+                <RadzenGrid Data="@_operations" EmptyText="Нет ожидаемых выплат" TItem="OperationViewModel">
                     <Columns>
-                        <RadzenGridColumn TItem="WageOperationViewModel" Title="Дата">
+                        <RadzenGridColumn TItem="OperationViewModel" Title="Дата">
                             <Template Context="item">
                                 @item.Date.ToString("d")
                             </Template>
                         </RadzenGridColumn>
                         
-                        <RadzenGridColumn TItem="WageOperationViewModel" Title="К выплате">
+                        <RadzenGridColumn TItem="OperationViewModel" Title="К выплате">
                            <Template Context="item">
                                @item.Cash руб.
                            </Template>
@@ -52,7 +52,7 @@
     [Parameter] public Guid UserId { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    private List<WageOperationViewModel> _operations = new();
+    private List<OperationViewModel> _operations = new();
     private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()

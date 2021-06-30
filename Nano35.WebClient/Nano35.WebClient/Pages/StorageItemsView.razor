@@ -72,7 +72,7 @@
             $"storage/Warehouse/StorageItemsOnUnit?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){_data = resp.Success.Contains;} else{NavigationManager.NavigateTo("/instance-view");}});
         await GetRequest.InvokeAsync<GetCategoryTreeByRootHttpResponse>(
-            $"storage/Category/TreeByRoot",
+            $"storage/Category/TreeByRoot?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp => {if (resp.IsSuccess()){_categories.Add(resp.Success.Data);}else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
     }

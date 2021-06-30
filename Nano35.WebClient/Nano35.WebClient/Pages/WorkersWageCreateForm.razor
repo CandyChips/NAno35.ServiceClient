@@ -15,21 +15,26 @@
 <BoxedContent Width="40">
     <LoadingContent IsLoaded="_isLoaded">
         <RadzenFieldset Text="Ожидаемые выплаты" Style="width: 100%;">
-            <EditForm Model=@(Model) OnValidSubmit="HandleValidSubmit">
+            <EditForm Model=@(Model) >
                 <DataAnnotationsValidator />
-                <RadzenGrid Data="@_operations" EmptyText="Нет ожидаемых выплат" TItem="OperationViewModel">
+                <RadzenGrid Data="@_operations" EmptyText="Нет ожидаемых выплат" TItem="WageOfRepairOrderViewModel">
                     <Columns>
-                        <RadzenGridColumn TItem="OperationViewModel" Title="Дата">
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" Title="Дата">
                             <Template Context="item">
                                 @item.Date.ToString("d")
                             </Template>
                         </RadzenGridColumn>
                         
-                        <RadzenGridColumn TItem="OperationViewModel" Title="К выплате">
-                           <Template Context="item">
-                               @item.Cash руб.
-                           </Template>
-                       </RadzenGridColumn>
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" Title="К выплате">
+                            <Template Context="item">
+                                @item.Cash руб.
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" >
+                            <Template Context="item">
+                                <radzenbutton text="Выплатить" click="HandleValidSubmit"/>
+                            </Template>
+                        </RadzenGridColumn>
                     </Columns>
                 </RadzenGrid>
             </EditForm>
@@ -52,7 +57,7 @@
     [Parameter] public Guid UserId { get; set; }
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
-    private List<OperationViewModel> _operations = new();
+    private List<WageOfRepairOrderViewModel> _operations = new();
     private bool _isLoaded;
     
     protected override async Task OnInitializedAsync()
@@ -60,34 +65,34 @@
         _isLoaded = false;
         
         Model.NewId = Guid.NewGuid();
-        //await GetRequest.InvokeAsync<GetAllWageOperationsHttpResponse>($"Cashbox/WageOperations?unitId={await SessionProvider.GetCurrentUnitId()}&userId={Model.CreatorId}&isWageConfirmed={(int) WageSelection.NotConfirmed}",
-        //    resp =>
-        //    {
-        //        if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
-        //        else
-        //        {
-        //            Console.WriteLine(resp.Error);
-        //            NavigationManager.NavigateTo("/instance-view");
-        //        }
-        //    });
+        await GetRequest.InvokeAsync<AllWagesOfRepairOrdersHttpResponse>($"cashbox/Cashbox/AllWageOfRepairOrders?UnitId ={await SessionProvider.GetCurrentUnitId()}&WorkerId={UserId}&isWageConfirmed={OperationState.Created}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {_operations = resp.Success.Operations;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
     }
 
-    private async Task HandleValidSubmit()
+    private async Task HandleValidSubmit(Guid it)
     {
         
         try
         {
-            //await PostRequest.InvokeAsync<CreateWageOperationHttpResponse, CreateWageOperationHttpBody>($"Cashbox/WageOperations", Model,
-            //    resp =>
-            //    {
-            //        if (resp.IsSuccess()) {}
-            //        else
-            //        {
-            //            Console.WriteLine(resp.Error);
-            //            NavigationManager.NavigateTo("/instance-view");
-            //        }
-            //    });
+            await GetRequest.InvokeAsync<ChangeOperationStateHttpResponse>($"cashbox/Cashbox/ChangeOperationState?operationId={it}&state=1",
+                resp =>
+                {
+                    if (resp.IsSuccess()) {}
+                    else
+                    {
+                        Console.WriteLine(resp.Error);
+                        NavigationManager.NavigateTo("/instance-view");
+                    }
+                });
             await ModalInstance.CloseAsync();
         }
         catch (Exception e)

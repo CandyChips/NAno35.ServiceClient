@@ -46,11 +46,8 @@
     protected override async Task OnInitializedAsync()
     {
         _loading = false;
-        
-        Settings.Add("Alive",true);
-        Settings.Add("IsAlive",false);
         await GetRequest.InvokeAsync<GetInstanceSettingsByIdHttpResponse>(
-            $"settings/Settings/InstanceSettingsById?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
+            $"setings/Settings/InstanceSettingsById?InstanceId={await SessionProvider.GetCurrentInstanceId()}",
             resp =>
             {
                 if (resp.IsSuccess()) {Settings = resp.Success.Settings;}

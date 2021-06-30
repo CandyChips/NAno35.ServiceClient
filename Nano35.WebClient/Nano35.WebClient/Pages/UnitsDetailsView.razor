@@ -1,6 +1,8 @@
 ﻿@using Nano35.WebClient.Services
 @using Nano35.Contracts.Instance.Models
 @using Nano35.Contexts.Http.Instance
+@using Nano35.Contracts.Cashbox.Artifacts
+@using Nano35.Contexts.Http.Cashbox
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
@@ -12,9 +14,18 @@
     <h3>Аддресс: @(Unit.Address)</h3>
     <h3>График работы: @(Unit.WorkingFormat)</h3>
     <h3>В кассе: @(Unit.Cashbox) руб.</h3>
+    
+    <RadzenButton Text="Добавить приход" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=NewFreeOperation />
+    
+    <RadzenButton Text="Все кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=GetAllOperations />
+    
+    <RadzenButton Text="Все прочие кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=GetAllFreeOperations />
 </LoadingContent>
 
 @code {
+    
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private UnitViewModel Unit { get; set; }
     private bool _isLoaded;
 
@@ -36,7 +47,57 @@
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
+        await GetRequest.InvokeAsync<GetCashOnUnitHttpResponse>(
+            $"cashbox/Cashbox/CashOnUnit?unitId={unitId}",
+            resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    Unit.Cashbox = resp.Success.Cash;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
         _isLoaded = true;
         
     }
+
+    private async Task NewFreeOperation()
+    {
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var modal = Modal.Show<FreeOperationCreateForm>("Прочий приход", modalOpts);
+        await modal.Result;
+        await GetRequest.InvokeAsync<GetCashOnUnitHttpResponse>(
+            $"cashbox/Cashbox/CashOnUnit?unitId={await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess())
+                {
+                    Unit.Cashbox = resp.Success.Cash;
+                }
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+    }
+
+    private async Task GetAllOperations()
+    {
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var modal = Modal.Show<CashboxOperationsView>("Все кассовые операции", modalOpts);
+        await modal.Result;
+    }
+
+    private async Task GetAllFreeOperations()
+    {
+        var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
+        var modal = Modal.Show<CashboxFreeOperationsView>("Все прочие кассовые операции", modalOpts);
+        await modal.Result;
+    }
+
 }

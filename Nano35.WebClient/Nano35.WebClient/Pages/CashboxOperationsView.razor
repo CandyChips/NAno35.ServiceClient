@@ -1,0 +1,51 @@
+﻿@using Nano35.WebClient.Services
+@using Nano35.Contracts.Instance.Models
+@using Nano35.Contexts.Http.storage
+@using Nano35.Contexts.Http.Instance
+@using Nano35.Contexts.Http.Cashbox
+@using Nano35.Contracts.Cashbox.Models
+@inject HttpClient HttpClient
+@inject RequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject NotificationService NotificationService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
+
+<div style="width: 40rem;">
+        <LoadingContent IsLoaded="_isLoaded">
+            <RadzenGrid EmptyText="Нет кассовых операций." AllowPaging="true"
+                                Style="width: 100%" PageSize="16" Data="@Data" 
+                                TItem="OperationViewModel">
+                        <Columns>
+                            <RadzenGridColumn TItem="OperationViewModel" Property="Item.Date" Title="Дата" />
+                            <RadzenGridColumn TItem="OperationViewModel" Property="Item.Cash" Width="140px" Title="Сумма" />
+                            <RadzenGridColumn TItem="OperationViewModel" Width="100px" Title="Статус" >
+                            <Template Context="item"> @item.State </Template>
+                            </RadzenGridColumn>
+                            
+                        </Columns>
+                    </RadzenGrid>
+        </LoadingContent>
+</div>
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private List<OperationViewModel> Data { get; set; } = new();
+    private string Error { get; set; }
+
+    private bool _isLoaded;
+    private int Count;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        await GetRequest.InvokeAsync<AllCashOperationsHttpResponse>(
+            $"cashbox/Cashbox/AllCashOperations?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp => {if (resp.IsSuccess()){Data = resp.Success.Operations;} else{NavigationManager.NavigateTo("/instance-view");}});
+        _isLoaded = true;
+    }
+}

@@ -35,6 +35,7 @@
                             <RadzenGridColumn TItem="UnitViewModel" Bubble="false" TextAlign="TextAlign.Center">
                                 <Template Context="item">
                                     <RadzenButton Click=@(_ => OpenUnit(item)) Text="Изменить" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                                    <RadzenButton Click=@(_ => OpenUnit(item)) Text="Все Операции" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
                                 </Template>
                             </RadzenGridColumn>
                         }

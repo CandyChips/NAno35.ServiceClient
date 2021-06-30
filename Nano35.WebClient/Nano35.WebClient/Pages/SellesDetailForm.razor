@@ -9,7 +9,7 @@
 
 <EditForm Model="@(_model)" OnValidSubmit="HandleValidSubmit">
     <LoadingContent IsLoaded="_isLoaded">
-        <DataAnnotationsValidator/>
+    
         <InputField Title="Товар">
             <Controls>
                 <RadzenDropDown Data=@(StorageItems.Select(a => new {Id = a.Id,  Name = $"{a.Article + " " + a.Condition}"}))

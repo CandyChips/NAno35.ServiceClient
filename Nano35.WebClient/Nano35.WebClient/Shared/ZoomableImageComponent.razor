@@ -3,7 +3,7 @@
 
 <div id="mainImageContainer" style="display: block;width:@($"{ImageWidthInPx}px");height:@($"{ImageHeightInPx}px");overflow: hidden;">
     <div id="imageMover"
-         @onmousewheel="MouseWheelZooming"
+         @onwheel="MouseWheelZooming"
          style="@MoveImageStyle">
         <div id="imageContainer"
              @onmousemove="MouseMoving"
@@ -62,7 +62,7 @@
     /// 2 or 3 seems to work best.
     /// </summary>
     [Parameter]
-    public double DefaultMoveBy { get; set; } = 1;
+    public double DefaultMoveBy { get; set; } = 2;
 
     //defaults
     double _CurrentScale = 1.0f;

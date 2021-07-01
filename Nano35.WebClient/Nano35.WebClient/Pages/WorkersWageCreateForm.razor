@@ -1,0 +1,106 @@
+@using Nano35.Contracts.Cashbox.Artifacts
+@using Nano35.Contracts.Cashbox.Models
+@using Nano35.WebClient.Services
+@using Nano35.Contexts.Http.Cashbox
+@inject HttpClient HttpClient
+@inject RequestManager RequestManager
+@inject ISessionProvider SessionProvider
+@inject IAuthService AuthService
+@inject HealthService HealthService
+@inject NavigationManager NavigationManager
+@inject HttpGet GetRequest
+@inject HttpPost PostRequest
+@inject HttpPatch PatchRequest
+
+
+<BoxedContent Width="40">
+    <LoadingContent IsLoaded="_isLoaded">
+            <RadzenFieldset Text="Ожидаемые выплаты" Style="width: 100%;">
+                <RadzenGrid Data="@_operations" EmptyText="Нет ожидаемых выплат" TItem="WageOfRepairOrderViewModel">
+                    <Columns>
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" Title="Дата">
+                            <Template Context="item">
+                                @item.Date.ToString("d")
+                            </Template>
+                        </RadzenGridColumn>
+
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" Title="К выплате">
+                            <Template Context="item">
+                                @item.Cash руб.
+                            </Template>
+                        </RadzenGridColumn>
+                        <RadzenGridColumn TItem="WageOfRepairOrderViewModel" Width="110px">
+                            <Template Context="item">
+                                <RadzenButton Click=@(_ => PayWage(item.Id))
+                                              Size="ButtonSize.Small"
+                                              Text="Выплатить"
+                                              ButtonStyle="ButtonStyle.Secondary"/>
+                            </Template>
+                        </RadzenGridColumn>
+                    </Columns>
+                </RadzenGrid>
+            </RadzenFieldset>
+            <RadzenFieldset Text="Сумма к выплате"
+                            Style="width: 100%;">
+                <div style="text-align: center">
+                    @_operations.Sum(e => e.Cash) руб.
+                </div>
+            </RadzenFieldset>
+            <RadzenButton Click=@(_ => PayAllWage()) Text="Выплатить из кассы" ButtonStyle="ButtonStyle.Primary" style="width: 100%; margin-top: 1rem"/>
+    </LoadingContent>
+</BoxedContent>
+
+@code {
+
+    [Parameter] public EventCallback FormSubmitted { get; set; }
+    [Parameter] public string Error { get; set; }
+    [Parameter] public Guid UserId { get; set; }
+    [CascadingParameter] public IModalService Modal { get; set; }
+    [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    private List<WageOfRepairOrderViewModel> _operations = new();
+    private List<ChangeOperationStateViewModel> wageOperations = new();
+    private bool _isLoaded;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = false;
+        await GetRequest.InvokeAsync<AllWagesOfRepairOrdersHttpResponse>($"cashbox/Cashbox/AllWageOfRepairOrders?UnitId={await SessionProvider.GetCurrentUnitId()}&WorkerId={UserId}&state=0",
+            resp =>
+            {
+                if (resp.IsSuccess()) { _operations = resp.Success.Operations; }
+                else{ Console.WriteLine(resp.Error); NavigationManager.NavigateTo("/instance-view"); }
+            });
+        StateHasChanged();
+        _isLoaded = true;
+    }
+
+    private async Task PayWage(Guid id)
+    {
+        wageOperations = _operations.Where(g=> g.Id == id).Select(a => new ChangeOperationStateViewModel()
+        {
+            OperationId = a.Id,
+            State = OperationState.Conformed
+        }).ToList();
+        
+        await PatchRequest.InvokeAsync<ChangeOperationStateHttpResponse,ChangeOperationStateHttpQuery>($"cashbox/Cashbox/ChangeOperationState", new ChangeOperationStateHttpQuery(){Operations = wageOperations}, async response =>
+        {
+            if (response.IsSuccess()){StateHasChanged();}
+            else { NavigationManager.NavigateTo("/instance-view"); }
+        });
+    }
+    private async Task PayAllWage()
+    {
+        wageOperations = _operations.Select(a => new ChangeOperationStateViewModel()
+        {
+            OperationId = a.Id,
+            State = OperationState.Conformed
+        }).ToList();
+        
+        await PatchRequest.InvokeAsync<ChangeOperationStateHttpResponse,ChangeOperationStateHttpQuery>($"cashbox/Cashbox/ChangeOperationState", new ChangeOperationStateHttpQuery(){Operations = wageOperations}, async response =>
+        {
+            if (response.IsSuccess()){StateHasChanged();}
+            else { NavigationManager.NavigateTo("/instance-view"); }
+        });
+    }
+
+}

@@ -2,8 +2,10 @@
 @using Nano35.WebClient.Helpers
 @using Nano35.Contracts.Repair.Models
 @using Append.Blazor.Printing
+@using Nano35.Contexts.Http.Cashbox
 @using Nano35.Contexts.Http.Repair
 @using Nano35.Contexts.Http.storage
+@using Nano35.Contracts.Cashbox.Models
 @using Nano35.Contracts.Identity.Models
 @using RepairOrderStateType = Nano35.WebClient.Helpers.RepairOrderStateType
 @inject HttpClient HttpClient
@@ -187,6 +189,12 @@
                                 }
                                 case 8:
                                 {
+                                    @if ((_roles.Any(c => c == RolesHelper.Manager) || _roles.Any(c => c == RolesHelper.Admin)) && payment.State == 0)
+                                    {
+                                        <li class="list-group-item alert alert-primary">
+                                            <RadzenButton Text="Выплатить за Заказ наряд" Click="@(PayWage)"/>
+                                        </li>
+                                    }
                                     break;
                                 }
                             }
@@ -231,6 +239,7 @@
     private List<RepairOrderWorkViewModel> _works = new();
     private List<ArticleViewModel> _devices { get; set; }
     private bool _isLoaded;
+    private OperationViewModel payment { get; set; } = new();
     
     private UpdateRepairOrdersDeviceHttpBody DeviceEdit { get; set; }
     private UpdateRepairOrdersSerialHttpBody SerialEdit { get; set; }
@@ -244,59 +253,38 @@
 
     private async Task Update()
     {   
-        _isLoaded = false;
         await GetRequest.InvokeAsync<GetRepairOrderByIdHttpResponse>($"repair/RepairOrders/{Id}",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    _model = resp.Success.Data;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){_model = resp.Success.Data;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
+        
         await GetRequest.InvokeAsync<GetAllRepairOrderStatesHttpResponse>($"repair/RepairOrders/{Id}/States",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    _states = resp.Success.Data;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){_states = resp.Success.Data;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
+        
         _states.Sort((x, y) => DateTime.Compare(x.Date, y.Date));
         _states.Reverse();
+        
         await GetRequest.InvokeAsync<GetAllRepairOrderWorksHttpResponse>($"repair/RepairOrders/{Id}/Works",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    _works = resp.Success.Data;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){_works = resp.Success.Data;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
+        
         await GetRequest.InvokeAsync<GetAllArticlesSuccessHttpResponse>($"storage/Articles",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    _devices = resp.Success.Data;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){_devices = resp.Success.Data;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        _isLoaded = true;
         
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -305,6 +293,7 @@
         _user = await AuthService.GetCurrentUser();
         _roles = await AuthService.GetCurrentRoles();
         await Update();
+        _isLoaded = true;
     }
 
     private async Task AddWork()
@@ -317,9 +306,7 @@
         parameters.Add(nameof(UpdateRepairOrderStateForm.RepairOrderId), Id);
         var modal = Modal.Show<UpdateRepairOrderWorkForm>($"Добавить работу", parameters, modalOpts);
         await modal.Result;
-        _isLoaded = false;
         await Update();
-        _isLoaded = true;
     }
 
     private async Task SetPerformer()
@@ -328,18 +315,9 @@
         await PostRequest.InvokeAsync<SetPerformerOfRepairOrderHttpResponse, SetPerformerOfRepairOrderHttpQuery>(
             $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery, async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        _isLoaded = false;
-        await Update();
-        _isLoaded = true;
     }
     
     private async Task BecomePerformer()
@@ -351,38 +329,20 @@
             $"repair/RepairOrders/SetPerformerOfRepairOrder", SetUserAsPerformerOfRepairOrderQuery,
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        _isLoaded = false;
-        await Update();
-        _isLoaded = true;
     }
-
-
+    
     private async Task UpdateDevice()
     {
         await PatchRequest.InvokeAsync<UpdateRepairOrdersDeviceHttpResponse, UpdateRepairOrdersDeviceHttpBody>(
             $"repair/RepairOrders/Device", DeviceEdit,
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){DeviceEdit = null;await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        DeviceEdit = null;
-        await Update();
     }
     private async Task UpdateSerial()
     {
@@ -390,17 +350,12 @@
             $"repair/RepairOrders/Serial", SerialEdit,
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
+                if (resp.IsSuccess()){SerialEdit = null;await Update();}
                 else
                 {
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        SerialEdit = null;
-        await Update();
     }
     private async Task UpdateCondition()
     {
@@ -408,17 +363,9 @@
             $"repair/RepairOrders/Condition", ConditionEdit,
             async  resp=>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){ConditionEdit = null;await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        ConditionEdit = null;
-        await Update();
     }
     private async Task UpdateTrouble()
     {
@@ -426,15 +373,8 @@
             $"repair/RepairOrders/Trouble", TroubleEdit,
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    TroubleEdit = null;
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){TroubleEdit = null;await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
     }
     private async Task UpdateComplication()
@@ -443,15 +383,8 @@
             $"repair/RepairOrders/Complication", ComplicationEdit,
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    ComplicationEdit = null;
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){ComplicationEdit = null;await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
     }
 
@@ -461,16 +394,9 @@
             $"repair/RepairOrders/Diagnosed", new SetRepairOrderAsDiagnosedHttpBody {RepairOrderId = _model.Id},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
     }
     private async Task SetAsAgreement()
     {
@@ -478,36 +404,21 @@
             $"repair/RepairOrders/Agreement", new SetRepairOrderAsAgreementHttpBody {RepairOrderId = _model.Id},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
     }
     private async Task SetAsReady()
     {
-        var modal = Modal.Show<SetPerformerWage>($"Зарплата мастеру за заказ(%)*");
+        var modal = Modal.Show<SetPerformerWage>($"Зарплата мастеру за заказ*");
         var res = await modal.Result;
         await PostRequest.InvokeAsync<SetRepairOrderAsReadyHttpResponse, SetRepairOrderAsReadyHttpBody>(
             $"repair/RepairOrders/Ready", new SetRepairOrderAsReadyHttpBody {RepairOrderId = _model.Id, Wage = res.Data is double data ? data : 0},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else {NavigationManager.NavigateTo("/instance-view");}
             });
-        
-        await Update();
     }
     private async Task SetAsOnWait()
     {        
@@ -515,16 +426,9 @@
             $"repair/RepairOrders/OnWait", new SetRepairOrderAsOnWaitHttpBody {RepairOrderId = _model.Id},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
     }
     private async Task SetAsOnWork()
     {
@@ -532,16 +436,9 @@
             $"repair/RepairOrders/OnWork", new SetRepairOrderAsOnWorkHttpBody {RepairOrderId = _model.Id},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
     }
     private async Task SetAsCompleted()
     {
@@ -549,32 +446,47 @@
             $"repair/RepairOrders/Completed", new SetRepairOrderAsCompletedHttpBody {RepairOrderId = _model.Id},
             async resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
     }
     private async Task SetAsClosed()
     {
+        await GetRequest.InvokeAsync<GetOperationByRepairOrderIdHttpResponse>($"cashbox/Cashbox/OperationByRepairOrderId?repairOrderId={Id}", async resp =>
+        {
+            if (resp.IsSuccess()){payment = resp.Success.Operation;}
+            else { NavigationManager.NavigateTo("/instance-view"); }
+        });
+        
+        await GetRequest.InvokeAsync<ChangeOperationStateHttpResponse>($"cashbox/Cashbox/ChangeOperationState?operationId={payment.Id}&state=1", async response =>
+        {
+            if (response.IsSuccess()) {}
+            else { NavigationManager.NavigateTo("/instance-view"); }
+        });
+        
         await PostRequest.InvokeAsync<SetRepairOrderAsClosedHttpResponse, SetRepairOrderAsClosedHttpBody>(
             $"repair/RepairOrders/Close", new SetRepairOrderAsClosedHttpBody {RepairOrderId = _model.Id},
-            async resp =>
+            async res =>
             {
-                if (resp.IsSuccess())
-                {
-                    await Update();
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (res.IsSuccess()){await Update();}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
-        await Update();
+    }
+
+    private async Task PayWage()
+    {
+        var wageOperation = new List<ChangeOperationStateViewModel>()
+        {
+            new()
+            {
+                OperationId = payment.Id,
+                State = OperationState.Conformed
+            }
+        };
+        await PatchRequest.InvokeAsync<ChangeOperationStateHttpResponse, ChangeOperationStateHttpQuery>($"cashbox/Cashbox/ChangeOperationState",new ChangeOperationStateHttpQuery(){Operations = wageOperation}, async response =>
+        {
+            if (response.IsSuccess()) { await Update(); }
+            else { NavigationManager.NavigateTo("/instance-view"); }
+        });
     }
 }

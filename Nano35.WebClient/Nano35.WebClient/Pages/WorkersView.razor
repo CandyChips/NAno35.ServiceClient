@@ -41,8 +41,8 @@
                     @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin))
                     {
                         <RadzenButton Text="Выплатить ЗП" Size="ButtonSize.Small"
-                                      Disabled="true" ButtonType="ButtonType.Button"
-                                      ButtonStyle="ButtonStyle.Info" Click="@(_ => { })">
+                                      Disabled="false" ButtonType="ButtonType.Button"
+                                      ButtonStyle="ButtonStyle.Info" Click="@(_ => NewWage(item))">
                         </RadzenButton>
                     }
                 </Template>
@@ -93,32 +93,32 @@
                 }
             });
     }
-    //private async Task NewWage(WorkerViewModel user)
-    //{
-    //    var modalOpts = new ModalOptions()
-    //    {
-    //        DisableBackgroundCancel = true, FocusFirstElement = true
-    //    };
-    //    var parameters = new ModalParameters();
-    //    parameters.Add(nameof(WorkersWageCreateForm.UserId), user.Id);
-//
-    //    var currentUnit = "";
-    //    
-    //    await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
-    //        $"instance/Units/{await SessionProvider.GetCurrentUnitId()}",
-    //        resp =>
-    //        {
-    //            if (resp.IsSuccess()) {currentUnit = resp.Success.Data.Name;}
-    //            else
-    //            {
-    //                Console.WriteLine(resp.Error);
-    //                NavigationManager.NavigateTo("/instance-view");
-    //            }
-    //        });
-    //    var modal = Modal.Show<WorkersWageCreateForm>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
-    //    await modal.Result;
-    //    _loading = false;
-    //    await LoadWorkers();
-    //    _loading = true;    
-    //}
+    private async Task NewWage(WorkerViewModel user)
+    {
+        var modalOpts = new ModalOptions()
+        {
+            DisableBackgroundCancel = true, FocusFirstElement = true
+        };
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(WorkersWageCreateForm.UserId), user.Id);
+
+        var currentUnit = "";
+        
+        await GetRequest.InvokeAsync<GetUnitByIdHttpResponse>(
+            $"instance/Units/{await SessionProvider.GetCurrentUnitId()}",
+            resp =>
+            {
+                if (resp.IsSuccess()) {currentUnit = resp.Success.Data.Name;}
+                else
+                {
+                    Console.WriteLine(resp.Error);
+                    NavigationManager.NavigateTo("/instance-view");
+                }
+            });
+        var modal = Modal.Show<WorkersWageCreateForm>($"Выплата заработной платы из кассы: {currentUnit}", parameters, modalOpts);
+        await modal.Result;
+        _loading = false;
+        await LoadWorkers();
+        _loading = true;    
+    }
 }

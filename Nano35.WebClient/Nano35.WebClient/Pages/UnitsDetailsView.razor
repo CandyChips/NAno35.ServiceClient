@@ -3,6 +3,7 @@
 @using Nano35.Contexts.Http.Instance
 @using Nano35.Contracts.Cashbox.Artifacts
 @using Nano35.Contexts.Http.Cashbox
+@using Nano35.Contracts.Cashbox.Models
 @inject RequestManager RequestManager
 @inject ISessionProvider SessionProvider
 @inject NavigationManager NavigationManager
@@ -15,11 +16,13 @@
     <h3>График работы: @(Unit.WorkingFormat)</h3>
     <h3>В кассе: @(Unit.Cashbox) руб.</h3>
     
-    <RadzenButton Text="Добавить приход" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=NewFreeOperation />
+    <RadzenButton Text="-" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Output))" />
     
-    <RadzenButton Text="Все кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=GetAllOperations />
+    <RadzenButton Text="+" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Input))" />
     
-    <RadzenButton Text="Все прочие кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click=GetAllFreeOperations />
+    <RadzenButton Text="Все кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click="@(GetAllOperations)" />
+    
+    <RadzenButton Text="Все прочие кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click="@(GetAllFreeOperations)" />
 </LoadingContent>
 
 @code {
@@ -43,11 +46,10 @@
                 }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
-        await GetRequest.InvokeAsync<GetCashOnUnitHttpResponse>(
+        await GetRequest.InvokeAsync<GetCashOnUnitResultContract>(
             $"cashbox/Cashbox/CashOnUnit?unitId={unitId}",
             resp =>
             {
@@ -57,7 +59,6 @@
                 }
                 else
                 {
-                    Console.WriteLine(resp.Error);
                     NavigationManager.NavigateTo("/instance-view");
                 }
             });
@@ -65,12 +66,22 @@
         
     }
 
-    private async Task NewFreeOperation()
+    private async Task NewFreeOperation(FreeOperationType type)
     {
         var modalOpts = new ModalOptions(){DisableBackgroundCancel = true, FocusFirstElement = true};
-        var modal = Modal.Show<FreeOperationCreateForm>("Прочий приход", modalOpts);
-        await modal.Result;
-        await GetRequest.InvokeAsync<GetCashOnUnitHttpResponse>(
+        if (type == FreeOperationType.Input)
+        {
+            var param = new ModalParameters();
+            param.Add(nameof(FreeOperationCreateForm.Type), type);
+            await Modal.Show<FreeOperationCreateForm>("Новый приход", param, modalOpts).Result;
+        }
+        else
+        {
+            var param = new ModalParameters();
+            param.Add(nameof(FreeOperationCreateForm.Type), type);
+            await Modal.Show<FreeOperationCreateForm>("Новое списаение", param, modalOpts).Result;
+        }
+        await GetRequest.InvokeAsync<GetCashOnUnitResultContract>(
             $"cashbox/Cashbox/CashOnUnit?unitId={await SessionProvider.GetCurrentUnitId()}",
             resp =>
             {

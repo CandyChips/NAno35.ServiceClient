@@ -57,6 +57,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = true;
+        _model.NewUserId = Guid.NewGuid();
     }
 
     private async Task HandleValidSubmit()

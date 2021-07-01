@@ -3,6 +3,7 @@
 @using Nano35.Contexts.Http.storage
 @using Nano35.Contexts.Http.Instance
 @using Nano35.Contexts.Http.Cashbox
+@using Nano35.Contracts.Cashbox.Artifacts
 @using Nano35.Contracts.Cashbox.Models
 @inject HttpClient HttpClient
 @inject RequestManager RequestManager
@@ -43,7 +44,7 @@
     protected override async Task OnInitializedAsync()
     {
         _isLoaded = false;
-        await GetRequest.InvokeAsync<AllCashOperationsHttpResponse>(
+        await GetRequest.InvokeAsync<GetAllCashOperationsResultContract>(
             $"cashbox/Cashbox/AllCashOperations?UnitId={await SessionProvider.GetCurrentUnitId()}",
             resp => {if (resp.IsSuccess()){Data = resp.Success.Operations;} else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;

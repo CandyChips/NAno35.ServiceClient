@@ -17,24 +17,13 @@
         <LoadingContent IsLoaded="_isLoaded">
             <EditForm Model="@Model" OnValidSubmit="@(_ => HandleValidSubmit())">
                 <DataAnnotationsValidator />
-                <InputField Title="Примечание прочего прихода">
+                <InputField Title="@(Type == FreeOperationType.Input ? "Примечание прочего прихода" : "Примечание прочего списания")">
                     <Controls><RadzenTextBox Style="width: 100%;" @bind-Value="Model.Description"/></Controls>
                     <Validation><ValidationMessage For="@(() => Model.Description)" /></Validation>
                 </InputField>
-                <InputField Title="Сумма прочего прихода">
+                <InputField Title="@(Type == FreeOperationType.Input ? "Сумма прочего прихода" : "Сумма прочего списания")">
                     <Controls><RadzenNumeric Style="width: 100%;" @bind-Value="Model.Cash"/> </Controls>
                     <Validation><ValidationMessage For="@(() => Model.Cash)" /></Validation>
-                </InputField>
-                <InputField>
-                    <Controls> <RadzenDropDown Style="width: 100%;" 
-                                               @bind-Value="Model.Type"
-                                               AllowClear="true"
-                                               TextProperty="Text"
-                                               ValueProperty="Value"
-                                               Placeholder="..."
-                                               Data="@(Enum.GetValues(typeof(FreeOperationType)).Cast<FreeOperationType>().Select(t => new { Text = t, Value = t }))"                 /> 
-                        </Controls>
-                <Validation><ValidationMessage For="@(() => Model.Type)" /></Validation>
                 </InputField>
                 <RadzenButton type="submit" Text="Провести" ButtonStyle="ButtonStyle.Primary" Style="width: 100%" />
             </EditForm>
@@ -47,13 +36,9 @@
 {
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
+    [Parameter] public FreeOperationType Type { get; set; }
     private CreateFreeOperationHttpBody Model { get; set; } = new();
     private string Error { get; set; }
-    private enum FreeOperationType
-    {
-        Приход = 0,
-        Уход = 1
-    }
 
     private bool _isLoaded;
     private int Count;
@@ -62,7 +47,7 @@
     {
         _isLoaded = false;
         Model.NewId = Guid.NewGuid();
-        Model.Type = Contracts.Cashbox.Models.FreeOperationType.Input;
+        Model.CashboxId = await SessionProvider.GetCurrentUnitId();
         _isLoaded = true;
     }
     

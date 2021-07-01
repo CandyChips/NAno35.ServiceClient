@@ -28,6 +28,7 @@ namespace Nano35.WebClient.Services
         private readonly HttpClient _httpClient;
         private readonly AuthenticationStateProvider  _customAuthenticationStateProvider;
         private readonly HttpGet _get;
+        private readonly HttpPost _post;
         private readonly NavigationManager _navigationManager;
         public AuthService(
             RequestManager requestManager,
@@ -35,13 +36,14 @@ namespace Nano35.WebClient.Services
             HttpClient httpClient,
             AuthenticationStateProvider  customAuthenticationStateProvider, 
             HttpGet get, 
-            NavigationManager navigationManager)
+            NavigationManager navigationManager, HttpPost post)
         {
             _requestManager = requestManager;
             _httpClient = httpClient;
             _customAuthenticationStateProvider = customAuthenticationStateProvider;
             _get = get;
             _navigationManager = navigationManager;
+            _post = post;
             _localStorage = localStorage;
         }
 
@@ -92,9 +94,15 @@ namespace Nano35.WebClient.Services
             return response;
         }
 
-        public Task Register(RegisterHttpBody model)
+        public async Task Register(RegisterHttpBody model)
         {
-            throw new NotImplementedException();
+            await _post.InvokeAsync<RegisterHttpResponse, RegisterHttpBody>(
+                $"identity/identity/register", model,
+                resp =>
+                {
+                    if (!resp.IsSuccess()) return;
+                    _navigationManager.NavigateTo("/log-in");
+                });
         }
     }
 }

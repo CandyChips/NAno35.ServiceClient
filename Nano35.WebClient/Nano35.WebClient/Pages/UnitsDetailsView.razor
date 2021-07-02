@@ -10,19 +10,51 @@
 @inject HttpGet GetRequest
 
 
-<LoadingContent IsLoaded="_isLoaded">
-    <h3>Текущее подразделение: @(Unit.Name)</h3>
-    <h3>Аддресс: @(Unit.Address)</h3>
-    <h3>График работы: @(Unit.WorkingFormat)</h3>
-    <h3>В кассе: @(Unit.Cashbox) руб.</h3>
-    
-    <RadzenButton Text="-" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Output))" />
-    
-    <RadzenButton Text="+" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Input))" />
-    
-    <RadzenButton Text="Все кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click="@(GetAllOperations)" />
-    
-    <RadzenButton Text="Все прочие кассовые операции" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Primary" Click="@(GetAllFreeOperations)" />
+<LoadingContent IsLoaded="_isLoaded" >
+    <div Style="flex-direction: column;flex-wrap: wrap;min-width: 400px;display: flex;" >
+        <h3>Текущее подразделение: @(Unit.Name)</h3>
+        <h3>Аддресс: @(Unit.Address)</h3>
+        <h3>График работы: @(Unit.WorkingFormat)</h3>
+        <h3>В кассе: @(Unit.Cashbox) руб.</h3>
+        <div>
+        <RadzenButton Text="-" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Output))"/>
+        <RadzenButton Text="+" Style="margin: 1rem 0;" ButtonStyle="ButtonStyle.Info" Size="ButtonSize.Small" Click="@(_ => NewFreeOperation(FreeOperationType.Input))"/>
+        </div>
+    </div>
+    <div Style="min-width: 600px;display: flex;" >
+        <RadzenTabs>
+            <Tabs>
+                <RadzenTabsItem Text="Кассовые операции">
+                    <RadzenGrid EmptyText="Нет кассовых операций." AllowPaging="true"
+                                Style="width: 100%" PageSize="16" Data="@AllOperations"
+                                TItem="OperationViewModel">
+                        <Columns>
+                            <RadzenGridColumn TItem="OperationViewModel" Property="Item.Date" Title="Дата"/>
+                            <RadzenGridColumn TItem="OperationViewModel" Property="Item.Cash" Width="140px" Title="Сумма"/>
+                            <RadzenGridColumn TItem="OperationViewModel" Width="100px" Title="Статус">
+                                <Template Context="item"> @item.State </Template>
+                            </RadzenGridColumn>
+
+                        </Columns>
+                    </RadzenGrid>
+                </RadzenTabsItem>
+                <RadzenTabsItem Text="Прочие кассовые операции">
+                    <RadzenGrid EmptyText="Нет кассовых операций." AllowPaging="true"
+                                Style="width: 100%" PageSize="16" Data="@AllFreeOperations" 
+                                TItem="FreeOperationViewModel">
+                        <Columns>
+                            <RadzenGridColumn TItem="FreeOperationViewModel" Property="Item.Date" Title="Дата"/>
+                            <RadzenGridColumn TItem="FreeOperationViewModel" Property="Item.Cash" Width="140px" Title="Сумма" />
+                            <RadzenGridColumn TItem="FreeOperationViewModel" Width="100px" Title="Статус" >
+                                <Template Context="item"> @item.State </Template>
+                            </RadzenGridColumn>
+                                            
+                        </Columns>
+                    </RadzenGrid>
+                </RadzenTabsItem>
+            </Tabs>
+        </RadzenTabs>
+    </div>
 </LoadingContent>
 
 @code {
@@ -30,6 +62,8 @@
     [CascadingParameter] public IModalService Modal { get; set; }
     [CascadingParameter] BlazoredModalInstance ModalInstance { get; set; }
     private UnitViewModel Unit { get; set; }
+    private List<OperationViewModel> AllOperations { get; set; } = new();
+    private List<FreeOperationViewModel> AllFreeOperations { get; set; } = new();
     private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
@@ -40,28 +74,22 @@
             $"instance/Units/{unitId}",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    Unit = resp.Success.Data;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){Unit = resp.Success.Data;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
         await GetRequest.InvokeAsync<GetCashOnUnitResultContract>(
             $"cashbox/Cashbox/CashOnUnit?unitId={unitId}",
             resp =>
             {
-                if (resp.IsSuccess())
-                {
-                    Unit.Cashbox = resp.Success.Cash;
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("/instance-view");
-                }
+                if (resp.IsSuccess()){Unit.Cashbox = resp.Success.Cash;}
+                else{NavigationManager.NavigateTo("/instance-view");}
             });
+        await GetRequest.InvokeAsync<GetAllCashOperationsResultContract>(
+            $"cashbox/Cashbox/AllCashOperations?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp => {if (resp.IsSuccess()){AllOperations = resp.Success.Operations;} else{NavigationManager.NavigateTo("/instance-view");}});
+        await GetRequest.InvokeAsync<GetAllFreeCashOperationsResultContract>(
+            $"cashbox/Cashbox/AllFreeCashOperations?UnitId={await SessionProvider.GetCurrentUnitId()}",
+            resp => {if (resp.IsSuccess()){AllFreeOperations = resp.Success.Operations;} else{NavigationManager.NavigateTo("/instance-view");}});
         _isLoaded = true;
         
     }

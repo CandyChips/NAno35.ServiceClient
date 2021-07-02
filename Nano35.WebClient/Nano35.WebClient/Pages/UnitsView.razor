@@ -26,10 +26,10 @@
                         <RadzenGridColumn TItem="UnitViewModel" TextAlign="TextAlign.Center" Property="Name" Title="Название" />
                         <RadzenGridColumn TItem="UnitViewModel" TextAlign="TextAlign.Center" Property="Address" Title="Адресс" />
                         <RadzenGridColumn TItem="UnitViewModel" TextAlign="TextAlign.Center" Property="Phone" Title="Телефон">
-                             <Template Context="item">
-                                 +7@(item.Phone)
-                             </Template>
-                         </RadzenGridColumn>
+                            <Template Context="item">
+                                +7@(item.Phone)
+                            </Template>
+                        </RadzenGridColumn>
                         <RadzenGridColumn TItem="UnitViewModel" TextAlign="TextAlign.Center" Property="WorkingFormat" Title="Формат работы" />
                         @if (_roles.Contains(RolesHelper.Manager) || _roles.Contains(RolesHelper.Admin)){
                             <RadzenGridColumn TItem="UnitViewModel" Bubble="false" TextAlign="TextAlign.Center">
@@ -45,6 +45,17 @@
         </Tabs>
     </RadzenTabs>
 </LoadingContent>
+
+<style>
+    .rz-tabview-panels {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        display: flex;
+    }    
+    .rz-tabview-panel {
+        display: flex;
+    }
+</style>
 
 @code
 {

@@ -32,10 +32,10 @@
             <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Unit" Title="Подразделение" />
             <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Date" Title="Клиент" />
             <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Property="Cash" Title="Цена" />
-            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Width="200px">
+            <RadzenGridColumn TItem="SelleViewModel" TextAlign="TextAlign.Center" Width="220px">
                 <Template Context="item">
-                    <RadzenButton Click=@(_ => { }) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
-                    <RadzenButton Click=@(_ => PrintSaleAsync(item.Id)) Text="Этикетка" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary"/>
+                    <RadzenButton Click=@(_ => { }) Text="Информация" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Style="padding-left: 2px; padding-right: 2px;"/>
+                    <RadzenButton Click=@(_ => PrintSaleAsync(item.Id)) Text="Товарный чек" Size="ButtonSize.Small" ButtonStyle="ButtonStyle.Secondary" Style="padding-left: 2px; padding-right: 2px;" />
                 </Template>
             </RadzenGridColumn>
         </Columns>
@@ -86,6 +86,6 @@
 
     private async Task PrintSaleAsync(Guid saleId)
     {
-        await PrintingService.Print($"https://192.168.100.125/docs/StorageItems/SelleDocument/{saleId}");
+        await PrintingService.Print($"https://nano35.ru/docs/StorageItems/SelleDocument/{saleId}&{await SessionProvider.GetCurrentInstanceId()}");
     }
 }
